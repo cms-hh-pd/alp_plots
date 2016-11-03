@@ -9,7 +9,7 @@ from ROOT import TChain, TH1F, TFile, vector, TCanvas, gROOT
 
 from Analysis.alp_analysis.samplelists import samlists
 from Analysis.alp_plots.histOpt import hist_opt
-import Analysis.alp_plots.UtilsDraw
+import Analysis.alp_plots.UtilsDraw as UtilsDraw
 
 TH1F.AddDirectory(0)
 
