@@ -1,3 +1,5 @@
 
-./output
-.pyc
+*./output/*
+*.pyc
+*~
+*__init__.py

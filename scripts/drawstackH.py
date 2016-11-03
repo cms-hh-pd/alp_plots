@@ -1,4 +1,3 @@
-#!/usr/bin/env python 
 
 import json
 import os
@@ -9,8 +8,8 @@ import importlib
 from ROOT import TChain, TH1F, TFile, vector, TCanvas, gROOT
 
 from Analysis.alp_analysis.samplelists import samlists
-from Analysis.alp_plots.utils.histOpt import hist_opt  #debug - ImportError: No module named alp_plots.utils.histOpt
-import Analysis.alp_plots.utils.UtilsDraw
+from Analysis.alp_plots.histOpt import hist_opt
+import Analysis.alp_plots.UtilsDraw
 
 TH1F.AddDirectory(0)
 
@@ -21,9 +20,9 @@ samMClist  = ['tt','st']
 intLumi_fb = 12.9 # plots normalized to this
 
 iDir       = '$CMSSW_BASE/src/Analysis/alp_analysis/output/'
-vDirMC     = 'trg_mc_def'
+vDirMC     = 'trg_mc_def2' #good SF
 vDirData   = 'trg_data_def'
-oDir       = '$CMSSW_BASE/src/Analysis/alp_plots/output/trg_def'
+oDir       = './output/trg_def2'
 # ---------------
 
 # parsing parameters
