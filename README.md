@@ -12,5 +12,11 @@ Use 'python scriptname' to execute each script.
 
 ## SCRIPTS DESCRIPTION
 
-- drawstackH -> stack MC over data comparison
-                Used for: trigger efficiency plots
+- drawstackH -> to get stacked bkg vs data OR stacked bkg vs signal
+                Used for: 
+			- trigger efficiency plots
+			- selection of mva input variables
+
+- drawcompH -> to get comparison of distros from the same Sample after different selections
+                Used for: 
+			- compare categories with different number of btags
