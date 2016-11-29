@@ -106,11 +106,21 @@ hist_opt = {
        'yname' : "",
        'ylog'  : "" },
 
+   "h_jets_ht_r" : {
+       'hname' : "h_jets_ht_r",
+       'rebin' : 10,
+       'xname' : "additional jets ht",
+       'xmin'  : 30.,
+       'xmax'  : 1000.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
    "h_jet0_csv" : {
        'hname' : "h_jet0_csv",
-       'rebin' : 1, #1
+       'rebin' : 2, #1
        'xname' : "jet0 CSV",
-       'xmin'  : 0.75,# 0.5 0.75
+       'xmin'  : 0.4,# 0.5 0.75
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -118,9 +128,9 @@ hist_opt = {
 
    "h_jet1_csv" : {
        'hname' : "h_jet1_csv",
-       'rebin' : 1, #4 1
+       'rebin' : 2, #4 1
        'xname' : "jet1 CSV",
-       'xmin'  : 0.75,#0. 0.75
+       'xmin'  : 0.4,#0. 0.75
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -128,9 +138,9 @@ hist_opt = {
 
    "h_jet2_csv" : {
        'hname' : "h_jet2_csv",
-       'rebin' : 1, #1
+       'rebin' : 2, #1
        'xname' : "jet2 CSV",
-       'xmin'  : 0.75,#0.75
+       'xmin'  : 0.4,#0.75
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -138,9 +148,9 @@ hist_opt = {
 
    "h_jet3_csv" : {
        'hname' : "h_jet3_csv",
-       'rebin' : 1, #1
+       'rebin' : 2, #1
        'xname' : "jet3 CSV",
-       'xmin'  : 0.75,#0.75
+       'xmin'  : 0.4,#0.75
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -151,7 +161,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 0 pT",
        'xmin'  : 0.,
-       'xmax'  : 300.,
+       'xmax'  : 500.,#300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -161,7 +171,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 1 pT",
        'xmin'  : 0.,
-       'xmax'  : 300.,
+       'xmax'  : 500.,#300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -171,7 +181,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 2 pT",
        'xmin'  : 0.,
-       'xmax'  : 300.,
+       'xmax'  : 500.,#300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -181,7 +191,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 3 pT",
        'xmin'  : 0.,
-       'xmax'  : 300.,
+       'xmax'  : 500, #300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -191,7 +201,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 0 pT (pt sorted)",
        'xmin'  : 0.,
-       'xmax'  : 300.,
+       'xmax'  : 900., #300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -201,7 +211,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 1 pT (pt sorted)",
        'xmin'  : 0.,
-       'xmax'  : 300.,
+       'xmax'  : 500., #300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -222,6 +232,56 @@ hist_opt = {
        'xname' : "jet 3 pT (pt sorted)",
        'xmin'  : 0.,
        'xmax'  : 300.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "h_jet0_eta" : {
+       'hname' : "h_jet0_eta",
+       'rebin' : 2,
+       'xname' : "jet 0 |#eta|",
+       'xmin'  : 0.,
+       'xmax'  : 3.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "h_jet1_eta" : {
+       'hname' : "h_jet1_eta",
+       'rebin' : 2,
+       'xname' : "jet 1 |#eta|",
+       'xmin'  : 0.,
+       'xmax'  : 3.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "h_jet2_eta" : {
+       'hname' : "h_jet2_eta",
+       'rebin' : 2,
+       'xname' : "jet 2 |#eta|",
+       'xmin'  : 0.,
+       'xmax'  : 3.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "h_jet3_eta" : {
+       'hname' : "h_jet3_eta",
+       'rebin' : 2,
+       'xname' : "jet 3 |#eta|",
+       'xmin'  : 0.,
+       'xmax'  : 3.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "h_jet0pt_pt" : {
+       'hname' : "h_jet0pt_pt",
+       'rebin' : 4,
+       'xname' : "jet 0 pT (pt sorted)",
+       'xmin'  : 0.,
+       'xmax'  : 900., #300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -387,6 +447,16 @@ hist_opt = {
        'yname' : "",
        'ylog'  : "" },
 
+   "h_X_mass" : {
+       'hname' : "h_X_mass",
+       'rebin' : 10,
+       'xname' : "X mass",
+       'xmin'  : 0.,
+       'xmax'  : 1200.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
    "h_H0H1_mass" : {
        'hname' : "h_H0H1_mass",
        'rebin' : 10,
@@ -477,5 +547,36 @@ hist_opt = {
        'yname' : "trailing di-jet mass",
        'ymin'  : 0.,
        'ymax'  : 600. },
+
+#bdt
+   "h_bdt_allVar" : {
+       'hname' : "h_bdt_allVar",
+       'rebin' : 4,
+       'xname' : "bdt output allVar",
+       'xmin'  : 0.,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "h_bdt_massVar" : {
+       'hname' : "h_bdt_massVar",
+       'rebin' : 4,
+       'xname' : "bdt output massVar",
+       'xmin'  : 0.,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "h_bdt_HHVar" : {
+       'hname' : "h_bdt_HHVar",
+       'rebin' : 4,
+       'xname' : "bdt output HHVar",
+       'xmin'  : 0.,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
 
 }

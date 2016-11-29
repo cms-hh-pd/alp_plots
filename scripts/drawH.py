@@ -1,4 +1,6 @@
 
+# to draw single distros or to compare maximum two normalized to unity
+
 import json
 import os
 from glob import glob
@@ -21,8 +23,8 @@ histList   = ['h_nevts', 'h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt',
               'h_H1_mass','h_H1_pt','h_H1_eta','h_H1_csthst2_a','h_H1_csthst3_a','h_H1_dr','h_H1_deta_a','h_H1_dphi_a',
               'h_H0H1_mass','h_H0H1_pt','h_H0H1_eta','h_H0H1_csthst0_a','h_H0H1_csthst1_a','h_H0H1_dr','h_H0H1_deta_a','h_H0H1_dphi_a']
 histList2  = ['h_H0_H1_mass'] #2D histos
-samData    = []
-samMClist  = ['SM'] #'signals','tt' ,'tt','qcd'
+sam1 = ['QCDHT200to300']
+sam2  = ['SM'] #'signals','tt' ,'tt','qcd'
 intLumi_fb = 12.9 # plots normalized to this
 
 iDir       = '../alp_analysis/output/' #'../alp_analysis/output/' #'/lustre/cmswork/hh/alp_baseSelector/'

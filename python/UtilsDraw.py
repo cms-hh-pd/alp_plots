@@ -29,31 +29,32 @@ def getRelErr(a,erra,b,errb):
     return math.sqrt(math.pow(erra/a,2)+math.pow(errb/b,2))
 #------------
 
-def getWeightedHistos(hist, filelist, plotDir, lumi):
-    hs = []    
+def getWeightedHistos(hist, filelist, plotDir, lumi, useWeight):
+    hlist = []    
     for f in filelist:  #debug - not efficient to loop on file
         w = 1
         tf = TFile(f)
         if not tf: 
-            print "WARNING: files do not exist"
-
+            print "WARNING: files do not exist"  
+    if useWeight:
         if "Run" in f: #data
             w = 1
         else:         
             if(tf.Get("h_w_oneInvFb")):
                 h = tf.Get("h_w_oneInvFb")
                 w = h.GetBinContent(1)
-                #print f
                 w *= lumi;
             else:
                 print "WARNING: weight not found in {}".format(f)
-        if(tf.Get(plotDir+"/"+hist)):
-            h = tf.Get(plotDir+"/"+hist)
-            h.Scale(w)
-            hs.append(h)
-        else:
-            print "WARNING: hist {} not found in {}".format(hist,f)
-    return hs
+    
+    if(tf.Get(plotDir+"/"+hist)):
+        h = tf.Get(plotDir+"/"+hist)
+        h.Scale(w)
+        hlist.append(h)
+    else:
+        print "WARNING: hist {} not found in {}".format(hist,f)
+
+    return hlist
 #------------
 
 def setYmaxStack(h1, h2, herr, c, hname):
@@ -92,13 +93,63 @@ def setYmax(hs, c, hname):
         h.SetMaximum(ymax)
 #------------
 
-def getScale(hlist, norm):
+def getScale(hlist1, hlist2):
     hsInt = 0
-    for h in hlist: 
+    norm = 0
+    for h in hlist1: 
         hsInt += h.Integral()
-    scale = norm/hsInt
+    for h in hlist2: 
+        if isinstance(h,int):
+           norm = h
+           break
+        else: norm += h.Integral()
+    if  hsInt: scale = norm/hsInt
+    else: scale = 1.
     return scale
 #------------
+
+def getStackH(histos, hsOpt, samples, rebin,  color, scale, fill): #hsOpt['rebin']
+    if color: col = color
+    else: col = samOpt['fillcolor']
+
+    herr = histos[0].Clone("hs_error")  
+    herr.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+    herr.Reset()
+    herr.Rebin(rebin)
+    herr.GetXaxis().SetTitle(hsOpt['xname'])
+    herr.GetYaxis().SetTitle(hsOpt['yname'])
+    herr.SetFillStyle(3003)
+    herr.SetFillColor(col)
+    herr.SetLineColor(col)
+    herr.SetLineWidth(2)         
+    herr.SetMarkerSize(0)
+    herr.SetMarkerColor(col)
+    herr.SetMinimum(0.)
+
+    hs   = THStack("hs","")
+    for i, h in enumerate(histos):
+        h.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+        h.SetMinimum(0.)
+        h.Scale(scale)
+        samOpt = sam_opt[samples[i]]       
+        #print samOpt['sam_name']
+        h.Rebin(rebin)
+        h.SetMarkerStyle(8)
+        h.SetMarkerSize(0.)
+        if fill: 
+            h.SetFillColorAlpha(col,0.2)
+            h.SetFillStyle(samOpt['fillstyle'])
+        if i==len(histos)-1 :
+            h.SetLineStyle(samOpt['linestyle'])
+            h.SetLineWidth(samOpt['linewidth'])         
+            h.SetLineColor(col)
+            if not fill: h.SetMarkerSize(0.8)
+        else:     
+            h.SetLineWidth(1)         
+            h.SetLineColorAlpha(col,0.)
+        hs.Add(h)
+        herr.Add(h)
+    return hs, herr
 
 ##
 # DRAWING FUNCTIONS
@@ -380,85 +431,53 @@ def drawH1Stack(hdata, hsig, hbkg, hsOpt, samData, samSig, samBkg, ratio, norm, 
     return True
 #------------
 
-def drawH1(hdata, hmc, hsOpt, samData, samMc, ratio, norm, oDir):
+def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, sam1, sam2, ratio, norm, oDir, colors, dofill):
     gStyle.SetOptStat(False)
     legend = setLegend(1,1)
     c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
 
-   #add data histos 
-#    if hdata:
-#       hD = hdata[0].Clone("h_data")
-#    hD.Reset()
-#    for i, h in enumerate(hdata): 
-#        hD.Add(h)
-#    samOpt = sam_opt[samData[0]] #once per data
-#    hD.Rebin(hsOpt['rebin'])
-#    hD.SetMarkerStyle(8)
-#    hD.SetMarkerSize(0.9)
-#    hD.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
-#    hD.GetXaxis().SetTitle(hsOpt['xname'])
-#    hD.GetYaxis().SetTitle(hsOpt['yname'])
-#    hD.SetLineColor(samOpt['linecolor'])
-#    hD.SetLineStyle(samOpt['linestyle'])
-#    hD.SetLineWidth(samOpt['linewidth'])  
-#    legend.AddEntry(hD, samOpt['label'])
-   #end Data
+    ymax = 0.
+    if(norm): scale = getScale(hlist1, hlist2)
+    else: scale = 1.
+    hs1, herr1 =  getStackH(hlist1, hsOpt, sam1, hsOpt['rebin'], colors[0], scale, dofill[0])
+    legend.AddEntry(hlist1[len(hlist1)-1], legstack1)
+    if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.1
+    if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.1
 
-   #mc histos (stack and stat error)
-#    if(norm): scale = getScale(hmc, hD.Integral())
-#    else: scale = 1.
+    if(norm): scale = getScale(hlist2, hlist2)
+    hs2, herr2 =  getStackH(hlist2, hsOpt, sam2, hsOpt['rebin'], colors[1], scale, dofill[1])
+    legend.AddEntry(hlist2[len(hlist2)-1], legstack2)
+    if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.1
+    if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.1
 
-#    herr = hmc[0].Clone("h_bkgSum")
-#    herr.Reset()
-#    herr.Rebin(hsOpt['rebin'])
-#    herr.SetFillStyle(3003)
-#    herr.SetFillColor(1)
-#    herr.SetLineColor(1)
-#    herr.SetMarkerSize(0)
-    scale = 1.
-    for i, h in enumerate(hmc):
-        h.Rebin(hsOpt['rebin'])
-        h.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
-        h.SetMinimum(0.)
-        if(norm): h.Scale(1/h.Integral())
-        samOpt = sam_opt[samMc[i]]       
-        h.SetMarkerStyle(8)
-        h.SetMarkerSize(0.1)
-        #h.SetFillColorAlpha(samOpt['fillcolor'],0.2)
-        #h.SetFillStyle(samOpt['fillstyle'])        
-        h.SetLineColor(samOpt['linecolor'])
-        h.SetLineStyle(samOpt['linestyle'])
-        h.SetLineWidth(samOpt['linewidth'])         
-        h.GetXaxis().SetTitle(hsOpt['xname'])
-        h.GetYaxis().SetTitle(hsOpt['yname'])
-        #h.SetMinimum(0.)
-        legend.AddEntry(h, samOpt['label'])
-        #hs.Add(h)
-        #herr.Add(h)
-        if i==0: h.Draw("HISTE")
-        else: h.Draw("HISTEsame")
-    #end mc
-
-    setYmax(hmc, 1.1, hsOpt['hname'])  
+   #debug -- needed before drawing hs
+    herr1.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+    herr1.SetMinimum(0.)
+    herr1.SetMaximum(ymax)
+    herr1.Draw("E")
+   #--
     legend.Draw("same")
-    drawCMS(12.9, "")
-    c1.Update()
-    
-    nevData = 0
-    nevMc = 0
-    nevDataErr = 0
-    nevMcErr = 0
-#    if hsOpt['hname']=='h_nevts': 
-#        nevData = hD.GetBinContent(1)
-#        nevMc = h.GetBinContent(1)
-#        nevDataErr = hD.GetBinError(1)
-#        nevMcErr = h.GetBinError(1)
+    drawCMS(-1, "")
 
+    hs1.SetMaximum(ymax)
+    herr1.SetMaximum(ymax)
+    hs1.Draw("HISTsame")
+    herr1.Draw("Esame")
+    hs2.SetMaximum(ymax)
+    herr2.SetMaximum(ymax)
+    if dofill[1]:
+        hs2.Draw("HISTsame")
+        herr2.Draw("Esame")
+    else:
+        hs2.Draw("Esame")
+        herr2.Draw("E2same")
+
+    c1.Update()    
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".pdf")
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".png")            
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".root")  
 
-    return [nevData,nevDataErr,nevMc,nevMcErr]
+    return True
 #------------
 
 def drawH1comp(hmc, hsOpt, samMc, legList, ratio, norm, oDir, colors):
@@ -558,9 +577,9 @@ def drawCMS(lumi, text, onTop=False):
     latex.SetTextSize(0.035)
     latex.SetTextColor(1)
     latex.SetTextFont(42)
-    latex.SetTextAlign(33)
+    latex.SetTextAlign(33)     
     if (type(lumi) is float or type(lumi) is int) and float(lumi) > 0: latex.DrawLatex(0.90, 0.94, "%.1f fb^{-1}  (13 TeV)" % (float(lumi)))
-    elif type(lumi) is str: latex.DrawLatex(0.90, 0.94, "%s fb^{-1}  (13 TeV)" % lumi)
+    else: latex.DrawLatex(0.90, 0.94, "simulation (13 TeV)")
     if not onTop: latex.SetTextAlign(11)
     latex.SetTextFont(62)
     latex.SetTextSize(0.03 if len(text)>0 else 0.035)
