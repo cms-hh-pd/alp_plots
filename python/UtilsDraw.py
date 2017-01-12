@@ -131,17 +131,17 @@ def getStackH(histos, hsOpt, samples, rebin,  color, scale, fill): #hsOpt['rebin
         h.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         h.SetMinimum(0.)
         h.Scale(scale)
-        samOpt = sam_opt[samples[i]]       
+#        samOpt = sam_opt[samples[i]]       
         #print samOpt['sam_name']
         h.Rebin(rebin)
         h.SetMarkerStyle(8)
         h.SetMarkerSize(0.)
         if fill: 
             h.SetFillColorAlpha(col,0.2)
-            h.SetFillStyle(samOpt['fillstyle'])
+            h.SetFillStyle(1) #samOpt['fillstyle']
         if i==len(histos)-1 :
-            h.SetLineStyle(samOpt['linestyle'])
-            h.SetLineWidth(samOpt['linewidth'])         
+            h.SetLineStyle(1) #samOpt['linestyle']
+            h.SetLineWidth(2)  #samOpt['linewidth']
             h.SetLineColor(col)
             if not fill: h.SetMarkerSize(0.8)
         else:     
@@ -324,6 +324,31 @@ def drawH1Stack_sig(hsig, hbkg, hsOpt, samSig, samBkg, ratio, norm, oDir, kfacto
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".root")  
 
     return True
+#------------
+
+def drawEffH(histos, leg, fld, snames1, oDir, colors):
+    gStyle.SetOptStat(False)
+    c1 = TCanvas("c1", "eff", 800, 800)
+
+    for i, h in enumerate(histos):
+        if i == 0: continue
+        h.SetMarkerStyle(8)
+        h.SetMarkerSize(0.9)
+        #h.GetXaxis().SetRangeUser(0,1)
+        h.SetMinimum(0.)
+        h.GetXaxis().SetTitle(leg)
+        h.GetYaxis().SetTitle("acc x eff")
+        h.SetLineColor(colors[i])
+        h.SetLineStyle(1)
+        h.SetLineWidth(2)
+        if i==1 : h.Draw("HIST")
+        else: h.Draw("HISTsame")
+
+    c1.Update()
+    c1.SaveAs(oDir+"/"+"eff.pdf")
+    c1.SaveAs(oDir+"/"+"eff.png")
+#    c1.SaveAs(oDir+"/"+leg+".root")
+
 #------------
 
 def drawH1Stack(hdata, hsig, hbkg, hsOpt, samData, samSig, samBkg, ratio, norm, oDir, kfactor):

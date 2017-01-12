@@ -156,6 +156,46 @@ hist_opt = {
        'yname' : "",
        'ylog'  : "" },
 
+   "h_jet0_cmva" : {
+       'hname' : "h_jet0_cmva",
+       'rebin' : 2, 
+       'xname' : "jet0 CMVA",
+       'xmin'  : 0.,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "h_jet1_cmva" : {
+       'hname' : "h_jet1_cmva",
+       'rebin' : 2, 
+       'xname' : "jet1 CMVA",
+       'xmin'  : 0.,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "h_jet2_cmva" : {
+       'hname' : "h_jet2_cmva",
+       'rebin' : 2, 
+       'xname' : "jet2 CMVA",
+       'xmin'  : 0.,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "h_jet3_cmva" : {
+       'hname' : "h_jet3_cmva",
+       'rebin' : 2, 
+       'xname' : "jet3 CMVA",
+       'xmin'  : 0.,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
    "h_jet0_pt" : {
        'hname' : "h_jet0_pt",
        'rebin' : 4,
