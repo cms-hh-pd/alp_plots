@@ -45,24 +45,24 @@ iDir       = '/lustre/cmswork/hh/alp_baseSelector/'
 oDir = args.oDir
 
 # ---------------
-# SM vs Data - def
+# sig vs bkg
 if args.whichPlots == 0:
     samlist1 = ['SM']
     samlist2 = ['data_ichep']
-    optList = ["def_cmva","def_cmva"]
+    optList = ["def_cmva","def_cmva_mixed"]
     legList = ["signal (HH4b SM)", "bkg (mixed data)"]
-    colorList = [632, 1] 
+    colorList = [632, 430] 
     useWeight = [1, 0] 
     dofill = [1,1]
     oname = "comp_sigBkg_preBDT"
 
-# Data - def vs mixed - 2% of lumi
+# bkg vs data - 2% of lumi
 elif args.whichPlots == 1:
     samlist1 = ['data_ichep']
     samlist2 = ['data_ichep']
     optList = ["def_cmva_mixed_f20","def_cmva_f20"]
     legList = ["bkg (1/20)", "data (1/20)"]
-    colorList = [395, 1]
+    colorList = [430, 1]
     useWeight = [0, 0]
     dofill = [1,1]
     oname = "comp_dataBkg_f20_preBDT"
@@ -78,13 +78,13 @@ elif args.whichPlots == 2:
     dofill = [1,1]
     oname = "comp_sig_defMixed_preBDT"
 
-# SM - CSV vs CMVA
+# sig - CSV vs CMVA
 elif args.whichPlots == 3:
     samlist1 = ['SM']
     samlist2 = ['SM']
     optList = ["def_csv","def_cmva"]
     legList = ["HH4b SM, 4 med CSV", "HH4b SM, 4 med CMVA"]
-    colorList = [632+4, 632-4] 
+    colorList = [632-4, 632] 
     useWeight = [1, 1] 
     dofill = [1,1]
     oname = "comp_sig_csvcmva_preBDT"
@@ -95,7 +95,7 @@ elif args.whichPlots == 4:
     samlist2 = ['data_ichep']
     optList = ["def_csv_mixed","def_cmva_mixed"]
     legList = ["bkg, 4 med CSV", "bkg, 4 med CMVA"]
-    colorList = [395+4, 395]
+    colorList = [430-4, 430]
     useWeight = [0, 0]
     dofill = [1,1]
     oname = "comp_bkg_csvcmva_preBDT"
