@@ -1,5 +1,7 @@
 
-*output/*
+*out*
 *.pyc
 *~
 *__init__.py
+*.swp
+*.swo

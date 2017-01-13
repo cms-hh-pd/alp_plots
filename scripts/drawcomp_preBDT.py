@@ -129,13 +129,25 @@ else:
 #useWeight = [0, 1] 
 #dofill = [1,0]
 
-#optList = ["def_mixed_frac20", "def_frac20"]
-#samlist1 = ['data_ichep']
-#samlist2 = ['data_ichep']
-#legList = ["data (1/20) mixed", "data (1/20)"]
-#colorList = [395, 1] 
-#useWeight = [0, 0] 
-#dofill = [1,0]
+#SM
+#optList = ["pt30btag0_Trg","pt30btag1_Trg","pt30btag2_Trg","pt30btag3_Trg","pt30btag4_Trg"]
+#legList = [">=0 CSVmed", ">=1 CSVmed", ">=2 CSVmed", ">=3 CSVmed", ">=4 CSVmed"]
+#colorList = [1, 416, 880+2, 430, 632-4, 632+8]
+#optList = ["pt30btag0_noTrg","pt30btag1_noTrg","pt30btag2_noTrg","pt30btag3_noTrg","pt30btag4_noTrg"]
+#legList = [">=0 CSVmed, noTrg", ">=1 CSVmed, noTrg", ">=2 CSVmed, noTrg", ">=3 CSVmed, noTrg", ">=4 CSVmed, noTrg"]
+#colorList = [1, 416, 880+2, 430, 632-4, 632+8]
+#optList = ["pt30btag0_Trg","pt30btag0_Trg_Truth","pt30btag3_Trg","pt30btag3_Trg_Truth","pt30btag4_Trg","pt30btag4_Trg_Truth"]
+#legList = [">=0 CSVmed", ">=0 CSVmed, matched", ">=3 CSVmed", ">=3 CSVmed, matched", ">=4 CSVmed", ">=4 CSVmed, matched"]
+#colorList = [1, 880+2, 416, 430, 632-4, 800-3]
+
+#tt
+#optList = ["pt30btag1_Trg","pt30btag2_Trg","pt30btag3_Trg","pt30btag4_Trg"]
+#legList = [">=1 CSVmed", ">=2 CSVmed", ">=3 CSVmed", ">=4 CSVmed"]
+#colorList = [1, 880+2, 416, 430]
+#qcd
+#optList = ["pt30btag2_noTrg", "pt30btag3_noTrg", "pt30btag4_noTrg"]
+#legList = [">=2 CSVmed, noTrg", ">=3 CSVmed, noTrg", ">=4 CSVmed, noTrg"]
+#colorList = [1, 880+2, 416, 430]
 
 #--------------
 
