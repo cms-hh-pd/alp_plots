@@ -614,7 +614,7 @@ def drawCMS(lumi, text, onTop=False):
 
 def setLegend(doRight, doTop):
     leg = TLegend(0.55,0.70,0.90,0.90)
-    leg.SetTextSize(0.025)
+    leg.SetTextSize(0.03335)
     return leg
 #------------
 
