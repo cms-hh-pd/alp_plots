@@ -25,7 +25,7 @@ histList   = ['h_nevts', 'h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt',
               'h_H1_mass','h_H1_pt','h_H1_eta','h_H1_csthst2_a','h_H1_csthst3_a','h_H1_dr','h_H1_deta_a','h_H1_dphi_a',
               'h_H0H1_mass','h_H0H1_pt','h_H0H1_eta','h_H0H1_csthst0_a','h_H0H1_csthst1_a','h_H0H1_dr','h_H0H1_deta_a','h_H0H1_dphi_a',
               'h_jet0_eta', 'h_jet1_eta', 'h_jet2_eta', 'h_jet3_eta',
-              #'h_jets_ht_r', 'h_X_mass',
+              'h_X_mass', 'h_jets_ht_r',
              ]
 histList2  = ['h_H0_H1_mass'] #2D histos
 intLumi_fb = 1. # plots normalized to this
@@ -207,5 +207,5 @@ for h in histList:
     hOpt = hist_opt[h]
 
     if hs1 and hs2:
-        UtilsDraw.drawH1(hs1, legList[0], hs2, legList[1], hOpt, snames1, snames2, doRatio, doNorm, oDir, colors, dofill)
+        UtilsDraw.drawH1(hs1, legList[0], hs2, legList[1], hOpt, doRatio, doNorm, oDir, colors, dofill)
 

@@ -29,6 +29,22 @@ def getRelErr(a,erra,b,errb):
     return math.sqrt(math.pow(erra/a,2)+math.pow(errb/b,2))
 #------------
 
+def getHistos_bdt(hist, filename, plotDir):
+    hlist = []   
+    hname = hist+"_"+plotDir
+    tf = TFile(filename)
+    if not tf: 
+        print "WARNING: files do not exist"  
+    
+    if(tf.Get(plotDir+"/"+hname)):
+        h = tf.Get(plotDir+"/"+hname)
+        hlist.append(h)
+    else:
+        print "WARNING: hist {} not found in {}".format(hist,tf)
+
+    return hlist
+#------------
+
 def getWeightedHistos(hist, filelist, plotDir, lumi, useWeight):
     hlist = []    
     for f in filelist:  #debug - not efficient to loop on file
@@ -45,14 +61,14 @@ def getWeightedHistos(hist, filelist, plotDir, lumi, useWeight):
                 w = h.GetBinContent(1)
                 w *= lumi;
             else:
-                print "WARNING: weight not found in {}".format(f)
+                print "WARNING: weight not found in {}".format(tf)
     
     if(tf.Get(plotDir+"/"+hist)):
         h = tf.Get(plotDir+"/"+hist)
         h.Scale(w)
         hlist.append(h)
     else:
-        print "WARNING: hist {} not found in {}".format(hist,f)
+        print "WARNING: hist {} not found in {}".format(hist,tf)
 
     return hlist
 #------------
@@ -108,7 +124,7 @@ def getScale(hlist1, hlist2):
     return scale
 #------------
 
-def getStackH(histos, hsOpt, samples, rebin,  color, scale, fill): #hsOpt['rebin']
+def getStackH(histos, hsOpt, rebin,  color, scale, fill): #hsOpt['rebin']
     if color: col = color
     else: col = samOpt['fillcolor']
 
@@ -131,8 +147,6 @@ def getStackH(histos, hsOpt, samples, rebin,  color, scale, fill): #hsOpt['rebin
         h.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         h.SetMinimum(0.)
         h.Scale(scale)
-#        samOpt = sam_opt[samples[i]]       
-        #print samOpt['sam_name']
         h.Rebin(rebin)
         h.SetMarkerStyle(8)
         h.SetMarkerSize(0.)
@@ -456,7 +470,7 @@ def drawH1Stack(hdata, hsig, hbkg, hsOpt, samData, samSig, samBkg, ratio, norm, 
     return True
 #------------
 
-def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, sam1, sam2, ratio, norm, oDir, colors, dofill):
+def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, ratio, norm, oDir, colors, dofill):
     gStyle.SetOptStat(False)
     legend = setLegend(1,1)
     c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
@@ -464,13 +478,13 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, sam1, sam2, ratio, norm,
     ymax = 0.
     if(norm): scale = getScale(hlist1, hlist2)
     else: scale = 1.
-    hs1, herr1 =  getStackH(hlist1, hsOpt, sam1, hsOpt['rebin'], colors[0], scale, dofill[0])
+    hs1, herr1 =  getStackH(hlist1, hsOpt, hsOpt['rebin'], colors[0], scale, dofill[0])
     legend.AddEntry(hlist1[len(hlist1)-1], legstack1)
     if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.1
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.1
 
     if(norm): scale = getScale(hlist2, hlist2)
-    hs2, herr2 =  getStackH(hlist2, hsOpt, sam2, hsOpt['rebin'], colors[1], scale, dofill[1])
+    hs2, herr2 =  getStackH(hlist2, hsOpt, hsOpt['rebin'], colors[1], scale, dofill[1])
     legend.AddEntry(hlist2[len(hlist2)-1], legstack2)
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.1
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.1
@@ -500,7 +514,7 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, sam1, sam2, ratio, norm,
     c1.Update()    
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".pdf")
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".png")            
-    c1.SaveAs(oDir+"/"+hsOpt['hname']+".root")  
+    #c1.SaveAs(oDir+"/"+hsOpt['hname']+".root")  
 
     return True
 #------------

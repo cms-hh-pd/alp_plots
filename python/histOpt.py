@@ -619,4 +619,107 @@ hist_opt = {
        'yname' : "",
        'ylog'  : "" },
 
+################################
+#after BDT (new plots)
+
+   "classifier" : {
+       'hname' : "classifier",
+       'rebin' : 1,
+       'xname' : "BDT output",
+       'xmin'  : 0.,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "classifier_log" : {
+       'hname' : "classifier_log",
+       'rebin' : 1,
+       'xname' : "BDT output",
+       'xmin'  : 0.,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "DiJets[0].mass()" : {
+       'hname' : "dijets0_mass",
+       'rebin' : 1,
+       'xname' : "leading di-jet mass",
+       'xmin'  : 0.,
+       'xmax'  : 600.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "DiJets[1].mass()" : {
+       'hname' : "dijets1_mass",
+       'rebin' : 1,
+       'xname' : "trailing di-jet mass",
+       'xmin'  : 0.,
+       'xmax'  : 600.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "DiHiggs[0].mass()" : {
+       'hname' : "dihiggs_mass",
+       'rebin' : 1,
+       'xname' : "di-higgs candidate mass",
+       'xmin'  : 0.,
+       'xmax'  : 1200.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "DiHiggs[0].MX()" : {
+       'hname' : "mX",
+       'rebin' : 1,
+       'xname' : "m_X",
+       'xmin'  : 0.,
+       'xmax'  : 1200.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "CSV3" : {
+       'hname' : "CSV3",
+       'rebin' : 1, 
+       'xname' : "jet2 CSV",
+       'xmin'  : 0.4,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "CSV4" : {
+       'hname' : "CSV4",
+       'rebin' : 1, 
+       'xname' : "jet3 CSV",
+       'xmin'  : 0.4,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "CMVA3" : {
+       'hname' : "CMVA3",
+       'rebin' : 1, 
+       'xname' : "jet2 CMVA",
+       'xmin'  : 0.1,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
+   "CMVA4" : {
+       'hname' : "CMVA4",
+       'rebin' : 1, 
+       'xname' : "jet3 CMVA",
+       'xmin'  : 0.1,
+       'xmax'  : 1.,
+       'xlog'  : "",
+       'yname' : "",
+       'ylog'  : "" },
+
 }
