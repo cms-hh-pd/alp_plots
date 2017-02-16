@@ -476,15 +476,17 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, ratio, norm, oDir, color
     c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
 
     ymax = 0.
-    if(norm): scale = getScale(hlist1, hlist2)
-    else: scale = 1.
-    hs1, herr1 =  getStackH(hlist1, hsOpt, hsOpt['rebin'], colors[0], scale, dofill[0])
+    if(norm): scale1 = getScale(hlist1, hlist2)
+    else: scale1 = 1.
+    print scale1
+    hs1, herr1 =  getStackH(hlist1, hsOpt, hsOpt['rebin'], colors[0], scale1, dofill[0])
     legend.AddEntry(hlist1[len(hlist1)-1], legstack1)
     if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.1
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.1
 
-    if(norm): scale = getScale(hlist2, hlist2)
-    hs2, herr2 =  getStackH(hlist2, hsOpt, hsOpt['rebin'], colors[1], scale, dofill[1])
+    if(norm): scale2 = getScale(hlist2, hlist2)
+    print scale2
+    hs2, herr2 =  getStackH(hlist2, hsOpt, hsOpt['rebin'], colors[1], scale2, dofill[1])
     legend.AddEntry(hlist2[len(hlist2)-1], legstack2)
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.1
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.1
@@ -515,6 +517,30 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, ratio, norm, oDir, color
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".pdf")
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".png")            
     #c1.SaveAs(oDir+"/"+hsOpt['hname']+".root")  
+
+    if ratio:
+        c2 = TCanvas("c2", "r"+hsOpt['hname'], 800, 400) 
+     
+        h1 = hs1.GetHistrogram()
+        norm_factor = scale1
+        hdiff = hs1.Clone("h_diff")
+        hdiff.Add(hs2,-1.)
+        hdiff_e = hs1.Clone("h_diff_err")
+        hdiff_e.Add(hs2,norm_factor**2)
+
+        #for b in full_hists["cr_diff_err"]: hdiff_e.value = np.sqrt(hdiff_e.value) 
+
+        hres = hdiff.Clone("h_residual")
+        hres.Divide(hdiff_e)
+
+        hres.Draw()
+#        full_hists["cr_frac"] = full_hists["cr_diff"] \
+#                .Clone(full_hists_name.format("cr_frac"))
+#        full_hists["cr_frac"].Divide(full_hists["cr_bkg_scaled"])
+#        full_hists["cr_frac_err2"] = full_hists["cr_frac"] \
+#                .Clone(full_hists_name.format("cr_frac_err2"))
+#        full_hists["cr_frac_inv_err2"] = full_hists["cr_frac"] \
+#                .Clone(full_hists_name.format("cr_frac_inv_err2"))
 
     return True
 #------------
