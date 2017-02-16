@@ -1,4 +1,5 @@
 # to compare histograms - max samples with different options
+# python scripts/drawcomp_preBDT.py -w 0 -n -c -o plots_moriond/
 
 import json
 import os
@@ -16,6 +17,20 @@ import Analysis.alp_plots.UtilsDraw as UtilsDraw
 TH1F.AddDirectory(0)
 gROOT.SetBatch(True)
 
+# parsing parameters
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("-w", "--whichPlots", help="which plots to be produced", type=int, default='-1')
+parser.add_argument("-n", "--doNorm"   , help="normalize to data"       , action='store_true')
+parser.add_argument("-p", "--plotDir"  , help="root file subfolder in which histos are", default="pair")
+parser.add_argument("-c", "--customCol", help="use custom colors"       , action='store_true')
+parser.add_argument("-o", "--oDir"     , help="output directory"        , default="output/")
+parser.set_defaults(doNorm=False, customCol=False)
+args = parser.parse_args()
+
+iDir       = '/lustre/cmswork/hh/alp_moriond_base/'
+oDir = args.oDir
+
 # exe parameters
 histList   = ['h_nevts', 'h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt', 'h_jet3pt_pt', 
               'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt', 'h_jets_ht', 
@@ -30,42 +45,39 @@ histList   = ['h_nevts', 'h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt',
 histList2  = ['h_H0_H1_mass'] #2D histos
 intLumi_fb = 1. # plots normalized to this
 
-# parsing parameters
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--whichPlots", help="which plots to be produced", type=int, default='-1')
-parser.add_argument("-n", "--doNorm"   , help="normalize to data"       , action='store_true')
-parser.add_argument("-p", "--plotDir"  , help="root file subfolder in which histos are", default="pair")
-parser.add_argument("-c", "--customCol", help="use custom colors"       , action='store_true')
-parser.add_argument("-o", "--oDir"     , help="output directory"        , default="output/")
-parser.set_defaults(doNorm=False, customCol=False)
-args = parser.parse_args()
-
-iDir       = '/lustre/cmswork/hh/alp_baseSelector/'
-oDir = args.oDir
-
 # ---------------
 # sig vs bkg
 if args.whichPlots == 0:
     samlist1 = ['SM']
-    samlist2 = ['data_ichep']
+    samlist2 = ['data']
     optList = ["def_cmva","def_cmva_mixed"]
     legList = ["signal (HH4b SM)", "bkg (mixed data)"]
-    colorList = [632, 430] 
+    colorList = [632, 430]
     useWeight = [1, 0] 
     dofill = [1,1]
     oname = "comp_sigBkg_preBDT"
 
 # bkg vs data - 2% of lumi
 elif args.whichPlots == 1:
-    samlist1 = ['data_ichep']
-    samlist2 = ['data_ichep']
-    optList = ["def_cmva_mixed_f20","def_cmva_f20"]
-    legList = ["bkg (1/20)", "data (1/20)"]
+    samlist1 = ['test']
+    samlist2 = ['data']
+    optList = ["def_cmva_mixed","def_cmva"]
+    legList = ["bkg (mixed data)", "data"]
     colorList = [430, 1]
     useWeight = [0, 0]
     dofill = [1,1]
-    oname = "comp_dataBkg_f20_preBDT"
+    oname = "comp_dataBkg_preBDT"
+
+# bkg vs data - 2% of lumi
+#elif args.whichPlots == 1:
+#    samlist1 = ['data_moriond']
+#    samlist2 = ['data_moriond']
+#    optList = ["def_cmva_mixed_f20","def_cmva_f20"]
+#    legList = ["bkg (1/20)", "data (1/20)"]
+#    colorList = [430, 1]
+#    useWeight = [0, 0]
+#    dofill = [1,1]
+#    oname = "comp_dataBkg_f20_preBDT"
 
 # SM - def vs mixed
 elif args.whichPlots == 2:
@@ -91,8 +103,8 @@ elif args.whichPlots == 3:
 
 # bkg - CSV vs CMVA
 elif args.whichPlots == 4:
-    samlist1 = ['data_ichep']
-    samlist2 = ['data_ichep']
+    samlist1 = ['data_moriond']
+    samlist2 = ['data_moriond']
     optList = ["def_csv_mixed","def_cmva_mixed"]
     legList = ["bkg, 4 med CSV", "bkg, 4 med CMVA"]
     colorList = [430-4, 430]
