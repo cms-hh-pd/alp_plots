@@ -470,23 +470,26 @@ def drawH1Stack(hdata, hsig, hbkg, hsOpt, samData, samSig, samBkg, ratio, norm, 
     return True
 #------------
 
-def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, ratio, norm, oDir, colors, dofill):
+def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, ratio, norm, oDir, colors, dofill, rebin):
     gStyle.SetOptStat(False)
     legend = setLegend(1,1)
     c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
+
+    if rebin > 0: rb = rebin
+    else: rb =  hsOpt['rebin']
 
     ymax = 0.
     if(norm): scale1 = getScale(hlist1, hlist2)
     else: scale1 = 1.
     print scale1
-    hs1, herr1 =  getStackH(hlist1, hsOpt, hsOpt['rebin'], colors[0], scale1, dofill[0])
+    hs1, herr1 =  getStackH(hlist1, hsOpt,rb, colors[0], scale1, dofill[0])
     legend.AddEntry(hlist1[len(hlist1)-1], legstack1)
     if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.1
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.1
 
     if(norm): scale2 = getScale(hlist2, hlist2)
     print scale2
-    hs2, herr2 =  getStackH(hlist2, hsOpt, hsOpt['rebin'], colors[1], scale2, dofill[1])
+    hs2, herr2 =  getStackH(hlist2, hsOpt, rb, colors[1], scale2, dofill[1])
     legend.AddEntry(hlist2[len(hlist2)-1], legstack2)
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.1
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.1

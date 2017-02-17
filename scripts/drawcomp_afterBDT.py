@@ -24,7 +24,8 @@ parser.add_argument("-w", "--whichPlots", help="which plots to be produced", typ
 parser.add_argument("-n", "--doNorm"   , help="normalize to data"       , action='store_false')
 parser.add_argument("-b", "--bdt"      , help="bdt version, equal to input file name", default="")
 parser.add_argument("-c", "--customCol", help="use custom colors"       , action='store_false')
-parser.add_argument("-r", "--plotResidual", help="to plot residuals"    , action='store_true')
+parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)"    , type=int, default=-1)
+parser.add_argument("--res", dest="plotResidual", help="to plot residuals"    , action='store_true')
 parser.add_argument("-o", "--oDir"     , help="output directory"        , default="plots_moriond")
 parser.set_defaults(doNorm=True, customCol=True, plotResidual=False)
 args = parser.parse_args()
@@ -162,10 +163,12 @@ for n, sam in enumerate(samples):
 #----------------------------------
 for h in histList:
     hOpt = hist_opt[h]
-    if h == 'classifier': h+='-'+args.bdt    
+    if h == 'classifier': 
+        h+='-'+args.bdt    
+        if args.clrebin > 0: rebin = args.clrebin
     hs1 = UtilsDraw.getHistos_bdt(h, filename, plotDir[0])
     hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDir[1])
 
     if hs1 and hs2:
-        UtilsDraw.drawH1(hs1, legList[0], hs2, legList[1], hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill)
+        UtilsDraw.drawH1(hs1, legList[0], hs2, legList[1], hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, rebin)
 
