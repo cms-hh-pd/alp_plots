@@ -5,7 +5,8 @@ import math
 from glob import glob
 
 # ROOT imports
-from ROOT import TChain, TH1D, TH2D, TFile, vector, TCanvas, TLatex, TLegend, THStack, gStyle
+from ROOT import TChain, TH1D, TH2D, TFile, vector, TCanvas, TLatex, TLine, TLegend, THStack, gStyle
+from rootpy.plotting import Hist, Hist2D
 
 from Analysis.alp_analysis.alpSamplesOptions  import sam_opt
 
@@ -109,7 +110,7 @@ def setYmax(hs, c, hname):
         h.SetMaximum(ymax)
 #------------
 
-def getScale(hlist1, hlist2):
+def getScale(hlist1, hlist2): #h2/h1
     hsInt = 0
     norm = 0
     for h in hlist1: 
@@ -124,7 +125,7 @@ def getScale(hlist1, hlist2):
     return scale
 #------------
 
-def getStackH(histos, hsOpt, rebin,  color, scale, fill): #hsOpt['rebin']
+def getStackH(histos, hsOpt, rebin,  color, scale, fill):
     if color: col = color
     else: col = samOpt['fillcolor']
 
@@ -161,9 +162,11 @@ def getStackH(histos, hsOpt, rebin,  color, scale, fill): #hsOpt['rebin']
         else:     
             h.SetLineWidth(1)         
             h.SetLineColorAlpha(col,0.)
+        if i==0: h_  = h.Clone("h_")
+        else: h_.Add(h)
         hs.Add(h)
         herr.Add(h)
-    return hs, herr
+    return hs, herr, h_
 
 ##
 # DRAWING FUNCTIONS
@@ -470,7 +473,7 @@ def drawH1Stack(hdata, hsig, hbkg, hsOpt, samData, samSig, samBkg, ratio, norm, 
     return True
 #------------
 
-def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, ratio, norm, oDir, colors, dofill, rebin):
+def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, residuals, norm, oDir, colors, dofill, rebin):
     gStyle.SetOptStat(False)
     legend = setLegend(1,1)
     c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
@@ -481,18 +484,23 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, ratio, norm, oDir, color
     ymax = 0.
     if(norm): scale1 = getScale(hlist1, hlist2)
     else: scale1 = 1.
-    print scale1
-    hs1, herr1 =  getStackH(hlist1, hsOpt,rb, colors[0], scale1, dofill[0])
+    print "scale1", scale1
+    hs1, herr1, h1 =  getStackH(hlist1, hsOpt,rb, colors[0], scale1, dofill[0])
     legend.AddEntry(hlist1[len(hlist1)-1], legstack1)
     if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.1
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.1
 
     if(norm): scale2 = getScale(hlist2, hlist2)
-    print scale2
-    hs2, herr2 =  getStackH(hlist2, hsOpt, rb, colors[1], scale2, dofill[1])
+    print "scale2", scale2
+    hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, colors[1], scale2, dofill[1])
     legend.AddEntry(hlist2[len(hlist2)-1], legstack2)
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.1
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.1
+
+    print "h1Int ",  h1.Integral()
+    print h1.GetBinContent(1), h1.GetBinError(1)
+    print h2.GetBinContent(1), h2.GetBinError(1)
+    print herr1.GetBinContent(1), herr1.GetBinError(1)
 
    #debug -- needed before drawing hs
     herr1.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -519,31 +527,53 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, ratio, norm, oDir, color
     c1.Update()    
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".pdf")
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".png")            
-    #c1.SaveAs(oDir+"/"+hsOpt['hname']+".root")  
+    c1.SaveAs(oDir+"/"+hsOpt['hname']+".root") 
 
-    if ratio:
-        c2 = TCanvas("c2", "r"+hsOpt['hname'], 800, 400) 
-     
-        h1 = hs1.GetHistrogram()
-        norm_factor = scale1
-        hdiff = hs1.Clone("h_diff")
-        hdiff.Add(hs2,-1.)
-        hdiff_e = hs1.Clone("h_diff_err")
-        hdiff_e.Add(hs2,norm_factor**2)
-
-        #for b in full_hists["cr_diff_err"]: hdiff_e.value = np.sqrt(hdiff_e.value) 
-
+    if residuals: # data as h2!!!
+        if residuals>1:
+            c2 = TCanvas("c2", "r"+hsOpt['hname'], 800, 800)    
+            c2.Divide(1,2)
+            c2.cd(1)
+        else:
+            c2 = TCanvas("c2", "r"+hsOpt['hname'], 800, 400)    
+        norm_factor = scale1       
+        hdiff = h2.Clone("h_diff")
+        hdiff.Add(h1,-1.)   
+        hdiff_e = h2.Clone("h_diff_err")
+        hdiff_e.Add(h1,norm_factor**2)
+        for i in range(0, hdiff_e.GetXaxis().GetNbins()): #improve
+            hdiff_e.SetBinContent(i, math.sqrt(hdiff_e.GetBinContent(i)))
+            hdiff_e.SetBinError(i,1.) #DEBUG!
+        hres = Hist(10,0,1, name="")
         hres = hdiff.Clone("h_residual")
         hres.Divide(hdiff_e)
+        hres.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+        hres.SetMarkerStyle(8)
+        hres.SetMarkerSize(0.8)
+        hres.SetMarkerColor(1)
+        hres.SetLineColor(1)
+        hres.GetXaxis().SetTitle(hsOpt['xname'])
+        hres.GetYaxis().SetTitle('residuals (sigma units)')
+        hres.Draw("E X0")
+        line = TLine(hsOpt['xmin'],0.,hsOpt['xmax'],0.);
+        line.Draw()
+        if residuals>1: #draw also pull with fit
+            c2.cd(2)
+            gStyle.SetOptFit(1)
+            res_a = []
+            for i in range(0, hres.GetXaxis().GetNbins()): #improve
+                if (not hres.IsBinOverflow(i)) and (math.fabs(hres.GetBinContent(i)) != 0):
+                    res_a.append(hres.GetBinContent(i))
+            res_pull = Hist(50, -5., 5, name = "h_res_pull")
+            res_pull.GetXaxis().SetTitle("residuals (sigma units)")
+            for v in res_a: res_pull.fill(v)
+            res_pull.Fit("gaus", "ILL")
+            res_pull.Draw("E X0")
 
-        hres.Draw()
-#        full_hists["cr_frac"] = full_hists["cr_diff"] \
-#                .Clone(full_hists_name.format("cr_frac"))
-#        full_hists["cr_frac"].Divide(full_hists["cr_bkg_scaled"])
-#        full_hists["cr_frac_err2"] = full_hists["cr_frac"] \
-#                .Clone(full_hists_name.format("cr_frac_err2"))
-#        full_hists["cr_frac_inv_err2"] = full_hists["cr_frac"] \
-#                .Clone(full_hists_name.format("cr_frac_inv_err2"))
+        c2.Update()    
+        c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.pdf")
+        c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.png")            
+        c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.root")   
 
     return True
 #------------
