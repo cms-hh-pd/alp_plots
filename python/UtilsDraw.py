@@ -1,4 +1,3 @@
-
 import json
 import os
 import math
@@ -46,27 +45,27 @@ def getHistos_bdt(hist, filename, plotDir):
     return hlist
 #------------
 
-def getWeightedHistos(hist, filelist, plotDir, lumi, useWeight):
+def getHistos(hist, filelist, plotDir, lumi, normtolumi):
     hlist = []    
     for f in filelist:  #debug - not efficient to loop on file
-        w = 1
+        norm = 1
         tf = TFile(f)
         if not tf: 
             print "WARNING: files do not exist"  
-    if useWeight:
+    if normtolumi:
         if "Run" in f: #data
-            w = 1
+            norm = 1
         else:         
             if(tf.Get("h_w_oneInvFb")):
                 h = tf.Get("h_w_oneInvFb")
-                w = h.GetBinContent(1)
-                w *= lumi;
+                norm = h.GetBinContent(1)
+                norm *= lumi;
             else:
-                print "WARNING: weight not found in {}".format(tf)
+                print "WARNING: 'h_w_oneInvFb' not found in {}".format(tf)
     
     if(tf.Get(plotDir+"/"+hist)):
         h = tf.Get(plotDir+"/"+hist)
-        h.Scale(w)
+        h.Scale(norm)
         hlist.append(h)
     else:
         print "WARNING: hist {} not found in {}".format(hist,tf)
@@ -484,23 +483,23 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, residuals, norm, oDir, c
     ymax = 0.
     if(norm): scale1 = getScale(hlist1, hlist2)
     else: scale1 = 1.
-    print "scale1", scale1
+    #print "scale1", scale1
     hs1, herr1, h1 =  getStackH(hlist1, hsOpt,rb, colors[0], scale1, dofill[0])
     legend.AddEntry(hlist1[len(hlist1)-1], legstack1)
     if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.1
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.1
 
     if(norm): scale2 = getScale(hlist2, hlist2)
-    print "scale2", scale2
+    #print "scale2", scale2
     hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, colors[1], scale2, dofill[1])
     legend.AddEntry(hlist2[len(hlist2)-1], legstack2)
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.1
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.1
 
-    print "h1Int ",  h1.Integral()
-    print h1.GetBinContent(1), h1.GetBinError(1)
-    print h2.GetBinContent(1), h2.GetBinError(1)
-    print herr1.GetBinContent(1), herr1.GetBinError(1)
+    #print "h1Int ",  h1.Integral()
+    #print h1.GetBinContent(1), h1.GetBinError(1)
+    #print h2.GetBinContent(1), h2.GetBinError(1)
+    #print herr1.GetBinContent(1), herr1.GetBinError(1)
 
    #debug -- needed before drawing hs
     herr1.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -527,7 +526,7 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, residuals, norm, oDir, c
     c1.Update()    
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".pdf")
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".png")            
-    c1.SaveAs(oDir+"/"+hsOpt['hname']+".root") 
+    #c1.SaveAs(oDir+"/"+hsOpt['hname']+".root") 
 
     if residuals: # data as h2!!!
         if residuals>1:
@@ -573,58 +572,10 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, residuals, norm, oDir, c
         c2.Update()    
         c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.pdf")
         c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.png")            
-        c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.root")   
+        #c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.root")   
 
     return True
 #------------
-
-def drawH1comp(hmc, hsOpt, samMc, legList, ratio, norm, oDir, colors):
-    gStyle.SetOptStat(False)
-    legend = setLegend(1,1)
-    c1 = TCanvas("c1", hsOpt['hname'], 800, 800)
-
-    scale = 1.
-    for i, h in enumerate(hmc):
-        h.Rebin(hsOpt['rebin'])
-        h.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
-        h.SetMinimum(0.)
-        if(norm): h.Scale(1/h.Integral())
-        samOpt = sam_opt[samMc[i]]
-        h.SetMarkerStyle(8)
-        h.SetMarkerSize(0.1)
-        #h.SetFillColorAlpha(samOpt['fillcolor'],0.2)
-        #h.SetFillStyle(samOpt['fillstyle'])        
-        if colors: h.SetLineColor(colors[i])
-        else : h.SetLineColor(samOpt['linecolor'])
-        h.SetLineStyle(samOpt['linestyle'])
-        h.SetLineWidth(samOpt['linewidth'])
-        h.GetXaxis().SetTitle(hsOpt['xname'])
-        h.GetYaxis().SetTitle(hsOpt['yname'])
-        leg = samOpt['label']+", "+legList[i]
-        legend.AddEntry(h, leg)
-        if i==0: h.Draw("HISTE")
-        else: h.Draw("HISTEsame")
-    #end mc
-
-    setYmax(hmc, 1.1, hsOpt['hname'])
-    legend.Draw("same")
-    drawCMS(12.9, "")
-    c1.Update()
-
-    #debug
-    nevOpt1= 0
-    nevOpt2= 0
-    if hsOpt['hname']=='h_nevts': 
-        nevOpt1 = hmc[0].GetBinContent(1)
-        nevOpt2 = hmc[1].GetBinContent(1)
-
-    c1.SaveAs(oDir+"/"+hsOpt['hname']+".pdf")
-    c1.SaveAs(oDir+"/"+hsOpt['hname']+".png")
-    c1.SaveAs(oDir+"/"+hsOpt['hname']+".root")
-
-    return [nevOpt1,nevOpt2]
-#------------
-
 
 def drawH2(hs, hsOpt, sname, oDir):
     gStyle.SetOptStat(False)

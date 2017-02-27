@@ -53,8 +53,8 @@ if args.whichPlots == 0:
     optList = ["def_cmva","def_cmva_mixed"]
     legList = ["signal (HH4b SM)", "bkg (mixed data)"]
     colorList = [632, 430]
-    useWeight = [1, 0] 
-    dofill = [1,1]
+    doNormToLumi = [True, False] 
+    dofill = [True,True]
     oname = "comp_sigBkg_preBDT"
 
 # bkg vs data - 2% of lumi
@@ -64,8 +64,8 @@ elif args.whichPlots == 1:
     optList = ["def_cmva_mixed","def_cmva"]
     legList = ["bkg (mixed data)", "data"]
     colorList = [430, 1]
-    useWeight = [0, 0]
-    dofill = [1,1]
+    doNormToLumi = [False, False]
+    dofill = [True,True]
     oname = "comp_dataBkg_preBDT"
 
 # bkg vs data - 2% of lumi
@@ -75,7 +75,7 @@ elif args.whichPlots == 1:
 #    optList = ["def_cmva_mixed_f20","def_cmva_f20"]
 #    legList = ["bkg (1/20)", "data (1/20)"]
 #    colorList = [430, 1]
-#    useWeight = [0, 0]
+#    doNormToLumi = [False, False]
 #    dofill = [1,1]
 #    oname = "comp_dataBkg_f20_preBDT"
 
@@ -86,8 +86,8 @@ elif args.whichPlots == 2:
     optList = ["def_cmva_mixed","def_cmva"]
     legList = ["HH4b SM mixed", "HH4b SM"]
     colorList = [632-4, 632]
-    useWeight = [0, 1]
-    dofill = [1,1]
+    doNormToLumi = [False, True]
+    dofill = [True,True]
     oname = "comp_sig_defMixed_preBDT"
 
 # sig - CSV vs CMVA
@@ -97,8 +97,8 @@ elif args.whichPlots == 3:
     optList = ["def_csv","def_cmva"]
     legList = ["HH4b SM, 4 med CSV", "HH4b SM, 4 med CMVA"]
     colorList = [632-4, 632] 
-    useWeight = [1, 1] 
-    dofill = [1,1]
+    doNormToLumi = [True, True] 
+    dofill = [True,True]
     oname = "comp_sig_csvcmva_preBDT"
 
 # bkg - CSV vs CMVA
@@ -108,8 +108,8 @@ elif args.whichPlots == 4:
     optList = ["def_csv_mixed","def_cmva_mixed"]
     legList = ["bkg, 4 med CSV", "bkg, 4 med CMVA"]
     colorList = [430-4, 430]
-    useWeight = [0, 0]
-    dofill = [1,1]
+    doNormToLumi = [False, False]
+    dofill = [True,True]
     oname = "comp_bkg_csvcmva_preBDT"
 
 #QCD - def vs mixed
@@ -123,8 +123,8 @@ elif args.whichPlots == 5:
     #samlist2 = ['qcd_200to500_m']
     #legList = ["QCD 200<HT<500", "QCD 200<HT<500 mixed"]
     #colorList = [416, 1]
-    useWeight = [0, 1]  
-    dofill = [1,0]
+    doNormToLumi = [False, True]  
+    dofill = [True,False]
     oname = "comp_qcd_defMixed_preBDT"
 
 else: 
@@ -138,7 +138,7 @@ else:
 #samlist2 = ['SM']
 #legList = ["QCD HT>500 + tt + 300SM", "SM"]
 #colorList = [1, 420] 
-#useWeight = [0, 1] 
+#doNormToLumi = [0, 1] 
 #dofill = [1,0]
 
 #SM
@@ -174,7 +174,7 @@ plotDir    = args.plotDir
 print "HISTS FROM FOLDER {}".format(plotDir) 
 
 doNorm     = args.doNorm
-doRatio = False
+doResiduals = False
 
 if doNorm: oDir = oDir+"_norm/"
 else: oDir = oDir+"/"
@@ -214,10 +214,10 @@ for sname in snames2:
 
 #----------------------------------
 for h in histList:    
-    hs1 = UtilsDraw.getWeightedHistos(h, files1, plotDir, intLumi_fb, useWeight[0])
-    hs2 = UtilsDraw.getWeightedHistos(h, files2, plotDir, intLumi_fb, useWeight[1])
+    hs1 = UtilsDraw.getHistos(h, files1, plotDir, intLumi_fb, doNormToLumi[0])
+    hs2 = UtilsDraw.getHistos(h, files2, plotDir, intLumi_fb, doNormToLumi[1])
     hOpt = hist_opt[h]
 
     if hs1 and hs2:
-        UtilsDraw.drawH1(hs1, legList[0], hs2, legList[1], hOpt, doRatio, doNorm, oDir, colors, dofill)
+        UtilsDraw.drawH1(hs1, legList[0], hs2, legList[1], hOpt, doResiduals, doNorm, oDir, colors, dofill, 0)
 

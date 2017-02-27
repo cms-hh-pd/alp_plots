@@ -21,12 +21,12 @@ gROOT.SetBatch(True)
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-w", "--whichPlots", help="which plots to be produced", type=int, default='-1')
-parser.add_argument("-n", "--doNorm"   , help="normalize to data"       , action='store_false')
-parser.add_argument("-b", "--bdt"      , help="bdt version, equal to input file name", default="")
-parser.add_argument("-c", "--customCol", help="use custom colors"       , action='store_false')
+parser.add_argument("-b", "--bdt"       , help="bdt version, equal to input file name", default="")
+parser.add_argument("-o", "--oDir"     , help="output directory"        , default="plots_moriond")
 parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)"    , type=int, default=-1)
 parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==fit)" , type=int, default=0)
-parser.add_argument("-o", "--oDir"     , help="output directory"        , default="plots_moriond")
+parser.add_argument("-n", "--doNorm"    , help="do not normalize"       , action='store_false')
+parser.add_argument("-c", "--customCol" , help="do not use custom colors"       , action='store_false')
 parser.set_defaults(doNorm=True, customCol=True, plotResidual=False)
 args = parser.parse_args()
 
@@ -49,13 +49,22 @@ intLumi_fb = 1. # plots normalized to this
 
 which = args.whichPlots
 
-if which == 0:
+if which == -1:
+    samples = ['sig', 'sample']
+    fractions = ['test','']
+    regions = ['sr','sr']
+    legList = ["signal (HH4b SM - pangea) - SR - test fract", "signal (HH4b SM) - SR"]
+    colorList = [632, 630]
+    dofill = [True,True]
+    oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
+
+elif which == 0:
     samples = ['sig', 'bkg']
     fractions = ['test','test']
     regions = ['','']
-    legList = ["signal (HH4b SM)", "bkg (mixed data)"]
+    legList = ["signal (HH4b SM) - test fract", "bkg (mixed data) - test fract"]
     colorList = [632, 430]
-    dofill = [1,1]
+    dofill = [True,True]
     oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
 
 elif which == 1:
@@ -64,7 +73,7 @@ elif which == 1:
     regions = ['','']
     legList = ["signal (HH4b SM) - train fract", "bkg (mixed data) - train fract"]
     colorList = [632, 430]
-    dofill = [1,1]
+    dofill = [True,True]
     oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
 
 elif which == 2:
@@ -73,7 +82,7 @@ elif which == 2:
     regions = ['sr', 'sr']
     legList = ["signal (HH4b SM) - SR", "bkg (mixed data) - SR"]
     colorList = [632, 430]
-    dofill = [1,1]
+    dofill = [True,True]
     oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
 
 elif which == 3:
@@ -82,7 +91,7 @@ elif which == 3:
     regions = ['cr', 'cr']
     legList = ["signal (HH4b SM) - CR", "bkg (mixed data) - CR"]
     colorList = [632, 430]
-    dofill = [1,1]
+    dofill = [True,True]
     oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
 
 elif which == 4:
@@ -91,7 +100,7 @@ elif which == 4:
     regions = ['sr', 'sr']
     legList = ["signal (HH4b SM) - SR, train fract", "bkg (mixed data) - SR, train fract"]
     colorList = [632, 430]
-    dofill = [1,1]
+    dofill = [True,True]
     oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
 
 elif which == 5:
@@ -100,7 +109,7 @@ elif which == 5:
     regions = ['cr','cr']
     legList = ["bkg (mixed data) - CR", "data - CR"]
     colorList = [430, 1]
-    dofill = [1,0]
+    dofill = [True,False]
     oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
 
 elif which == 6:
@@ -109,7 +118,7 @@ elif which == 6:
     regions = ['','sr']
     legList = ["bkg (mixed data)", "data - SR"]
     colorList = [430, 416]
-    dofill = [1,1]
+    dofill = [True,True]
     oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
 
 elif which == 7:
@@ -118,7 +127,7 @@ elif which == 7:
     regions = ['', '']
     legList = ["signal (HH4b SM) - train", "signal (HH4b SM) - test"]
     colorList = [632, 600]
-    dofill = [1,1]
+    dofill = [True,True]
     oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
 
 elif which == 8:
@@ -127,7 +136,7 @@ elif which == 8:
     regions = ['', '']
     legList = ["bkg (mixed data) - train", "bkg (mixed data) - test"]
     colorList = [430, 400]
-    dofill = [1,1]
+    dofill = [True,True]
     oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
     
 else: 
