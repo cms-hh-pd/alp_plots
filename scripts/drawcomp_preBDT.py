@@ -50,7 +50,7 @@ intLumi_fb = 1. # plots normalized to this
 if args.whichPlots == 0:
     samlist1 = ['SM']
     samlist2 = ['data']
-    optList = ["def_cmva","def_cmva_mixed"]
+    optList = ["mass_cmva","mass_cmva_mixed"]
     legList = ["signal (HH4b SM)", "bkg (mixed data)"]
     colorList = [632, 430]
     doNormToLumi = [True, False] 
@@ -59,7 +59,7 @@ if args.whichPlots == 0:
 
 # bkg vs data - 2% of lumi
 elif args.whichPlots == 1:
-    samlist1 = ['test']
+    samlist1 = ['data']
     samlist2 = ['data']
     optList = ["def_cmva_mixed","def_cmva"]
     legList = ["bkg (mixed data)", "data"]
@@ -219,5 +219,5 @@ for h in histList:
     hOpt = hist_opt[h]
 
     if hs1 and hs2:
-        UtilsDraw.drawH1(hs1, legList[0], hs2, legList[1], hOpt, doResiduals, doNorm, oDir, colors, dofill, 0)
+        UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], hOpt, doResiduals, doNorm, oDir, colors, dofill, 0)
 

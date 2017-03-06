@@ -52,23 +52,23 @@ def getHistos(hist, filelist, plotDir, lumi, normtolumi):
         tf = TFile(f)
         if not tf: 
             print "WARNING: files do not exist"  
-    if normtolumi:
-        if "Run" in f: #data
-            norm = 1
-        else:         
-            if(tf.Get("h_w_oneInvFb")):
-                h = tf.Get("h_w_oneInvFb")
-                norm = h.GetBinContent(1)
-                norm *= lumi;
-            else:
-                print "WARNING: 'h_w_oneInvFb' not found in {}".format(tf)
+        if normtolumi:
+            if "Run" in f: #data
+                norm = 1
+            else:         
+                if(tf.Get("h_w_oneInvFb")):
+                    h = tf.Get("h_w_oneInvFb")
+                    norm = h.GetBinContent(1)
+                    norm *= lumi;
+                else:
+                    print "WARNING: 'h_w_oneInvFb' not found in {}".format(tf)
     
-    if(tf.Get(plotDir+"/"+hist)):
-        h = tf.Get(plotDir+"/"+hist)
-        h.Scale(norm)
-        hlist.append(h)
-    else:
-        print "WARNING: hist {} not found in {}".format(hist,tf)
+        if(tf.Get(plotDir+"/"+hist)):
+            h = tf.Get(plotDir+"/"+hist)
+            h.Scale(norm)
+            hlist.append(h)
+        else:
+            print "WARNING: hist {} not found in {}".format(hist,tf)
 
     return hlist
 #------------
@@ -124,9 +124,7 @@ def getScale(hlist1, hlist2): #h2/h1
     return scale
 #------------
 
-def getStackH(histos, hsOpt, rebin,  color, scale, fill):
-    if color: col = color
-    else: col = samOpt['fillcolor']
+def getStackH(histos, hsOpt, rebin, snames, color, scale, fill):
 
     herr = histos[0].Clone("hs_error")  
     herr.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -135,15 +133,19 @@ def getStackH(histos, hsOpt, rebin,  color, scale, fill):
     herr.GetXaxis().SetTitle(hsOpt['xname'])
     herr.GetYaxis().SetTitle(hsOpt['yname'])
     herr.SetFillStyle(3003)
-    herr.SetFillColor(col)
-    herr.SetLineColor(col)
+#    herr.SetFillColor(col)
+ #   herr.SetLineColor(col)
     herr.SetLineWidth(2)         
     herr.SetMarkerSize(0)
-    herr.SetMarkerColor(col)
+  #  herr.SetMarkerColor(col)
     herr.SetMinimum(0.)
 
     hs   = THStack("hs","")
     for i, h in enumerate(histos):
+        if color: col = color
+        else: col = sam_opt[snames[i]]['fillcolor']
+        #print sam_opt[snames[i]]['sam_name']
+
         h.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         h.SetMinimum(0.)
         h.Scale(scale)
@@ -472,7 +474,7 @@ def drawH1Stack(hdata, hsig, hbkg, hsOpt, samData, samSig, samBkg, ratio, norm, 
     return True
 #------------
 
-def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, residuals, norm, oDir, colors, dofill, rebin):
+def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residuals, norm, oDir, colors, dofill, rebin, headerOpt):
     gStyle.SetOptStat(False)
     legend = setLegend(1,1)
     c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
@@ -484,14 +486,15 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, residuals, norm, oDir, c
     if(norm): scale1 = getScale(hlist1, hlist2)
     else: scale1 = 1.
     #print "scale1", scale1
-    hs1, herr1, h1 =  getStackH(hlist1, hsOpt,rb, colors[0], scale1, dofill[0])
+    hs1, herr1, h1 =  getStackH(hlist1, hsOpt, rb, snames1, colors[0], scale1, dofill[0])
     legend.AddEntry(hlist1[len(hlist1)-1], legstack1)
     if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.1
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.1
 
     if(norm): scale2 = getScale(hlist2, hlist2)
+    else: scale2 = 1.
     #print "scale2", scale2
-    hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, colors[1], scale2, dofill[1])
+    hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, snames2, colors[1], scale2, dofill[1])
     legend.AddEntry(hlist2[len(hlist2)-1], legstack2)
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.1
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.1
@@ -508,7 +511,7 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, residuals, norm, oDir, c
     herr1.Draw("E")
    #--
     legend.Draw("same")
-    drawCMS(-1, "")
+    drawCMS(-1, headerOpt)
 
     hs1.SetMaximum(ymax)
     herr1.SetMaximum(ymax)
@@ -522,6 +525,16 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, residuals, norm, oDir, c
     else:
         hs2.Draw("Esame")
         herr2.Draw("E2same")
+
+    nev1 = 0
+    nev2 = 0
+    nev1err = 0
+    nev2err = 0
+    if hsOpt['hname']=='h_nevts': 
+        nev1 = herr1.GetBinContent(1)
+        nev2 = herr2.GetBinContent(1)
+        nev1err = herr1.GetBinError(1)
+        nev2err = herr2.GetBinError(1)
 
     c1.Update()    
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".pdf")
@@ -574,7 +587,7 @@ def drawH1(hlist1, legstack1, hlist2, legstack2, hsOpt, residuals, norm, oDir, c
         c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.png")            
         #c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.root")   
 
-    return True
+    return [nev1,nev1err,nev2,nev2err]
 #------------
 
 def drawH2(hs, hsOpt, sname, oDir):
@@ -620,7 +633,7 @@ def drawH2(hs, hsOpt, sname, oDir):
 ##
 # DRAWING TOOLS
 #################
-def drawCMS(lumi, text, onTop=False):
+def drawCMS(lumi, text, onTop=False ):
     latex = TLatex()
     latex.SetNDC()
     latex.SetTextSize(0.035)
@@ -632,8 +645,10 @@ def drawCMS(lumi, text, onTop=False):
     if not onTop: latex.SetTextAlign(11)
     latex.SetTextFont(62)
     latex.SetTextSize(0.03 if len(text)>0 else 0.035)
-    if not onTop: latex.DrawLatex(0.15, 0.87 if len(text)>0 else 0.855, "CMS")
-    else: latex.DrawLatex(0.20, 0.99, "CMS")
+    if not onTop: 
+        latex.DrawLatex(0.15, 0.855, "CMS   "+text)
+    else: 
+        latex.DrawLatex(0.15, 0.88, "CMS   "+text)
 #------------
 
 def setLegend(doRight, doTop):

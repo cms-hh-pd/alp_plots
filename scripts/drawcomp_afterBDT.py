@@ -1,5 +1,5 @@
 # to compare histograms - max samples with different options
-# python scripts/drawcomp_afterBDT.py -n -c -w 0 -b 20170116-181049
+# python scripts/drawcomp_afterBDT.py -w 0 -b 20170116-181049
 
 import json
 import os
@@ -27,23 +27,29 @@ parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)"    , 
 parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==fit)" , type=int, default=0)
 parser.add_argument("-n", "--doNorm"    , help="do not normalize"       , action='store_false')
 parser.add_argument("-c", "--customCol" , help="do not use custom colors"       , action='store_false')
-parser.set_defaults(doNorm=True, customCol=True, plotResidual=False)
+parser.add_argument("--short", help="draw hist list short" , dest="doShort", action='store_true')
+parser.set_defaults(doShort=False, doNorm=True, customCol=True, plotResidual=False)
 args = parser.parse_args()
 
 iDir       = '../hh2bbbb_limit/' #'/lustre/cmswork/hh/alp_afterMVA/'
 filename = iDir+"/"+args.bdt+".root"
+headerOpt = args.bdt
 
 # exe parameters
-histList   = [ "classifier",
-              'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt', 'h_jets_ht', 
-              'h_jet2_csv','h_jet3_csv',
-              'h_jet2_cmva','h_jet3_cmva',
-              'h_H0_mass','h_H0_csthst0_a','h_H0_dr', #'h_H0_pt','h_H0_eta','h_H0_csthst1_a','h_H0_deta_a','h_H0_dphi_a',
-              'h_H1_mass','h_H1_csthst2_a','h_H1_dr', #'h_H1_pt','h_H1_eta','h_H1_csthst2_a','h_H1_csthst3_a','h_H1_dr','h_H1_deta_a','h_H1_dphi_a',
-              'h_H0H1_mass', 'h_H0H1_csthst0_a', 'h_H0H1_dr', #'h_H0H1_pt','h_H0H1_eta','h_H0H1_csthst1_a',,'h_H0H1_deta_a','h_H0H1_dphi_a',
-              'h_jet0_eta', 'h_jet1_eta', 'h_jet2_eta', 'h_jet3_eta',
-              'h_X_mass', 'h_jets_ht_r',               
-             ]
+if args.doShort:
+    histList   = [ 'h_H0_mass', 'h_H1_mass', 'h_H0H1_mass', 'classifier']
+else:
+    histList   = [
+                  'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt', 'h_jets_ht', 
+                  'h_jet2_csv','h_jet3_csv',
+                  'h_jet2_cmva','h_jet3_cmva',
+                  'h_H0_mass','h_H0_csthst0_a','h_H0_dr', #'h_H0_pt','h_H0_eta','h_H0_csthst1_a','h_H0_deta_a','h_H0_dphi_a',
+                  'h_H1_mass','h_H1_csthst2_a','h_H1_dr', #'h_H1_pt','h_H1_eta','h_H1_csthst2_a','h_H1_csthst3_a','h_H1_dr','h_H1_deta_a','h_H1_dphi_a',
+                  'h_H0H1_mass', 'h_H0H1_csthst0_a', 'h_H0H1_dr', #'h_H0H1_pt','h_H0H1_eta','h_H0H1_csthst1_a',,'h_H0H1_deta_a','h_H0H1_dphi_a',
+                  'h_jet0_eta', 'h_jet1_eta', 'h_jet2_eta', 'h_jet3_eta',
+                  'h_X_mass', 'h_jets_ht_r',               
+                  'classifier'
+                 ]
 histList2  = ["DiJets[0].mass()-DiJets[1].mass()", "CSV_Jet2-CSV_Jet3", "CMVA_Jet2-CMVA_Jet3",] #2D histos,
 intLumi_fb = 1. # plots normalized to this
 
@@ -169,6 +175,7 @@ for n, sam in enumerate(samples):
     oDir += option #keep the second sample options
     if not os.path.exists(oDir): os.mkdir(oDir)
 
+sname = [] #to avoid crash
 #----------------------------------
 for h in histList:
     hOpt = hist_opt[h]
@@ -178,5 +185,5 @@ for h in histList:
     hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDir[1])
 
     if hs1 and hs2:
-        UtilsDraw.drawH1(hs1, legList[0], hs2, legList[1], hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin)
+        UtilsDraw.drawH1(hs1, sname, legList[0], hs2, sname, legList[1], hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt)
 
