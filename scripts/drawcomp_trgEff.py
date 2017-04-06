@@ -28,27 +28,54 @@ args = parser.parse_args()
 iDir       = '/lustre/cmswork/hh/alp_moriond_base/'
 oDir = args.oDir
 
-# exe parameters
-#histList   = ['h_nevts']
-
-histList   = ['h_nevts', 'h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt', 'h_jet3pt_pt', 
-              'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt', 'h_jets_ht', 
-              'h_jet0_csv', 'h_jet1_csv', 'h_jet2_csv', 'h_jet3_csv',
-              'h_jet0_cmva', 'h_jet1_cmva', 'h_jet2_cmva', 'h_jet3_cmva',
-              'h_all_ht', 'h_met_pt', 'h_mu0_pt', 'h_mu0_iso03', 'h_mu_n', 'h_mu_pt', 'h_mu_iso03']
+# draw nevt only if not normalized
+if not args.doNorm:
+    histList   = ['h_nevts']
+else:
+    histList   = ['h_nevts', 'h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt', 'h_jet3pt_pt', 
+                  'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt', 'h_jets_ht', 
+                  'h_jet0_csv', 'h_jet1_csv', 'h_jet2_csv', 'h_jet3_csv',
+                  'h_jet0_cmva', 'h_jet1_cmva', 'h_jet2_cmva', 'h_jet3_cmva',
+                  'h_all_ht', 'h_met_pt', 'h_mu0_pt', 'h_mu0_iso03', 'h_mu_n', 'h_mu_pt', 'h_mu_iso03']
 
 intLumi_fb = 35.9 # plots normalized to this
+weights = [[],[]]
 # ---------------
 
 # sig vs bkg
+if args.whichPlots == -2:
+    optList = ["trgeff_2cmva_2l","trgeff_2cmva_2l"] #2 leptons
+    plotDir = 'trg_Iso'
+    samlist1 = ['tt']
+    samlist2 = ['data_singleMu']
+    legList = [["TT, 2mu"], ["data, 2mu"]]
+    weights = [[0.010760],[]]
+    colorList = [430, 1]
+    doNormToLumi = [True, False] 
+    dofill = [True,False]
+    oname = "comp_mcData_trgEff_2cmva_2lept"
+
+if args.whichPlots == -1:
+    optList = ["trgeff_2cmva_2l","trgeff_2cmva_2l"] #2 leptons
+    plotDir = 'trg_IsoAndJet'
+    samlist1 = ['tt']
+    samlist2 = ['data_singleMu']
+    legList = [["TT, 2mu"], ["data, 2mu"]]
+    weights = [[0.010760],[]]
+    colorList = [430, 1]
+    doNormToLumi = [True, False] 
+    dofill = [True,False]
+    oname = "comp_mcData_trgEff_2cmva_2lept"
+
 if args.whichPlots == 0:
     optList = ["trgeff_2cmva","trgeff_2cmva"]
     plotDir = 'trg_Iso'
     samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
-    legList = ["mc", "data"]
+    legList = [["single top","WJetsNuL","TT"], ["data"]]
+    weights = [[0,0,0,0,0,0,0,0,0,0,0.010760],[]]
     colorList = [430, 1]
-    doNormToLumi = [True, True] 
+    doNormToLumi = [True, False] 
     dofill = [True,False]
     oname = "comp_mcData_trgEff_2cmva"
 
@@ -57,9 +84,10 @@ elif args.whichPlots == 1:
     plotDir = 'trg_IsoAndJet'
     samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
-    legList = ["mc", "data"]
+    legList = [["single top","WJetsNuL","TT"], ["data"]]
+    weights = [[0,0,0,0,0,0,0,0,0,0,0.010760],[]]
     colorList = [430, 1]
-    doNormToLumi = [True, True] 
+    doNormToLumi = [True, False] 
     dofill = [True,False]
     oname = "comp_mcData_trgEff_2cmva"
 
@@ -70,7 +98,7 @@ elif args.whichPlots == 2:
     samlist2 = ['data_singleMu']
     legList = ["mc", "data"]
     colorList = [430, 1]
-    doNormToLumi = [True, True] 
+    doNormToLumi = [True, False] 
     dofill = [True,False]
     oname = "comp_mcData_trgEff_4cmva"
 
@@ -81,7 +109,7 @@ elif args.whichPlots == 3:
     samlist2 = ['data_singleMu']
     legList = ["mc", "data"]
     colorList = [430, 1]
-    doNormToLumi = [True, True] 
+    doNormToLumi = [True, False] 
     dofill = [True,False]
     oname = "comp_mcData_trgEff_4cmva"
 
@@ -132,11 +160,11 @@ for sname in snames2:
 
 #----------------------------------
 for h in histList:    
-    hs1 = UtilsDraw.getHistos(h, files1, plotDir, intLumi_fb, doNormToLumi[0])
-    hs2 = UtilsDraw.getHistos(h, files2, plotDir, intLumi_fb, doNormToLumi[1])
+    hs1 = UtilsDraw.getHistos(h, files1, plotDir, intLumi_fb, doNormToLumi[0], weights[0])
+    hs2 = UtilsDraw.getHistos(h, files2, plotDir, intLumi_fb, doNormToLumi[1], weights[1])
     hOpt = hist_opt[h]
     if hs1 and hs2:
-        n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], hOpt, doResiduals, doNorm, oDir, colors, dofill, 0, plotDir)
+        n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], hOpt, doResiduals, doNorm, oDir, colors, dofill, 0, plotDir, False)
         if n2: 
            print "### n1/n2 numEvents: {} +- {} ###".format(n1/n2, UtilsDraw.getRelErr(n1,n1err,n2,n2err)*n1/n2) 
            print "### n1: {} +- {} ###".format(n1,n1err) 
