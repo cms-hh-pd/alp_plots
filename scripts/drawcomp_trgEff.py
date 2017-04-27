@@ -40,78 +40,113 @@ else:
 
 intLumi_fb = 35.9 # plots normalized to this
 weights = [[],[]]
+header = ""
 # ---------------
 
 # sig vs bkg
 if args.whichPlots == -2:
     optList = ["trgeff_2cmva_2l","trgeff_2cmva_2l"] #2 leptons
     plotDir = 'trg_Iso'
-    samlist1 = ['tt']
+    samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
-    legList = [["TT, 2mu"], ["data, 2mu"]]
-    weights = [[0.010760],[]]
+    legList = [["single top","WJetsNuL","TT"], ["data"]]
+    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
     oname = "comp_mcData_trgEff_2cmva_2lept"
+    header = " 2mu"
 
 if args.whichPlots == -1:
     optList = ["trgeff_2cmva_2l","trgeff_2cmva_2l"] #2 leptons
     plotDir = 'trg_IsoAndJet'
-    samlist1 = ['tt']
+    samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
-    legList = [["TT, 2mu"], ["data, 2mu"]]
-    weights = [[0.010760],[]]
+    legList = [["single top","WJetsNuL","TT"], ["data"]]
+    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
     oname = "comp_mcData_trgEff_2cmva_2lept"
+    header = " 2mu"
 
 if args.whichPlots == 0:
-    optList = ["trgeff_2cmva","trgeff_2cmva"]
+    optList = ["trg_2cmva_plots","trg_2cmva_plots"]
     plotDir = 'trg_Iso'
     samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
     legList = [["single top","WJetsNuL","TT"], ["data"]]
-    weights = [[0,0,0,0,0,0,0,0,0,0,0.010760],[]]
+    weights = [[0.003334,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
+#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
     oname = "comp_mcData_trgEff_2cmva"
 
 elif args.whichPlots == 1:
-    optList = ["trgeff_2cmva","trgeff_2cmva"]
+    optList = ["trg_2cmva_plots","trg_2cmva_plots"]
     plotDir = 'trg_IsoAndJet'
     samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
     legList = [["single top","WJetsNuL","TT"], ["data"]]
-    weights = [[0,0,0,0,0,0,0,0,0,0,0.010760],[]]
+    weights = [[0.005361,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
+#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
     oname = "comp_mcData_trgEff_2cmva"
 
 elif args.whichPlots == 2:
-    optList = ["trgeff_4cmva","trgeff_4cmva"]
+    optList = ["trg_4cmva_plots","trg_4cmva_plots"]
     plotDir = 'trg_Iso'
     samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
-    legList = ["mc", "data"]
+    legList = [["single top","WJetsNuL","TT"], ["data"]]
+    weights = [[0.005361,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
+#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
     oname = "comp_mcData_trgEff_4cmva"
 
 elif args.whichPlots == 3:
-    optList = ["trgeff_4cmva","trgeff_4cmva"]
+    optList = ["trg_4cmva_plots","trg_4cmva_plots"]
     plotDir = 'trg_IsoAndJet'
     samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
-    legList = ["mc", "data"]
+    legList = [["single top","WJetsNuL","TT"], ["data"]]
+#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
+    weights = [[0.005361,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
     oname = "comp_mcData_trgEff_4cmva"
+
+elif args.whichPlots == 4:
+    optList = ["trg_3cmva","trg_3cmva"]
+    plotDir = 'trg_Iso'
+    samlist1 = ['trigger']
+    samlist2 = ['data_singleMu']
+    legList = [["single top","WJetsNuL","TT"], ["data"]]
+    weights = [[0.005361,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
+#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
+    colorList = [430, 1]
+    doNormToLumi = [True, False] 
+    dofill = [True,False]
+    oname = "comp_mcData_trgEff_3cmva"
+
+elif args.whichPlots == 5:
+    optList = ["trg_3cmva","trg_3cmva"]
+    plotDir = 'trg_IsoAndJet'
+    samlist1 = ['trigger']
+    samlist2 = ['data_singleMu']
+    legList = [["single top","WJetsNuL","TT"], ["data"]]
+#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
+    weights = [[0.005361,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
+    colorList = [430, 1]
+    doNormToLumi = [True, False] 
+    dofill = [True,False]
+    oname = "comp_mcData_trgEff_3cmva"
 
 oDir += "/"+oname
 
@@ -164,7 +199,7 @@ for h in histList:
     hs2 = UtilsDraw.getHistos(h, files2, plotDir, intLumi_fb, doNormToLumi[1], weights[1])
     hOpt = hist_opt[h]
     if hs1 and hs2:
-        n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], hOpt, doResiduals, doNorm, oDir, colors, dofill, 0, plotDir, False)
+        n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], hOpt, doResiduals, doNorm, oDir, colors, dofill, 0, plotDir+header, False)
         if n2: 
            print "### n1/n2 numEvents: {} +- {} ###".format(n1/n2, UtilsDraw.getRelErr(n1,n1err,n2,n2err)*n1/n2) 
            print "### n1: {} +- {} ###".format(n1,n1err) 

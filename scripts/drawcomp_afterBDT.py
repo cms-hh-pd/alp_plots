@@ -27,8 +27,8 @@ parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)"    , 
 parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==fit)" , type=int, default=0)
 parser.add_argument("-n", "--doNorm"    , help="do not normalize"       , action='store_false')
 parser.add_argument("-c", "--noCustomCol" , help="do not use custom colors"       , action='store_true')
-parser.add_argument("--short", help="draw hist list short" , dest="doShort", action='store_true')
-parser.set_defaults(doShort=False, doNorm=True, noCustomCol=False, plotResidual=False)
+parser.add_argument("-l", "--list", help="hist list" , dest="hlist", type=int, default=1)
+parser.set_defaults(doNorm=True, noCustomCol=False, plotResidual=False)
 args = parser.parse_args()
 
 iDir       = '../hh2bbbb_limit/' #'/lustre/cmswork/hh/alp_afterMVA/'
@@ -36,9 +36,9 @@ filename = iDir+"/"+args.bdt+".root"
 headerOpt = args.bdt
 
 # exe parameters
-if args.doShort:
+if args.hlist == 0:
     histList   = [ 'h_H0_mass', 'h_H1_mass', 'h_H0H1_mass', 'classifier']
-else:
+elif args.hlist == 1:
     histList   = [
                   'h_jets_ht', 'h_jets_ht_r',                
                   'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt', 
@@ -46,11 +46,24 @@ else:
                   'h_csv3','h_csv4',
                   'h_cmva3','h_cmva4',
                   'h_H0_mass','h_H0_pt','h_H0_csthst0_a','h_H0_dr','h_H0_dphi',
-                  'h_H1_mass','h_H1_pt','h_H1_csthst2_a','h_H1_dr','h_H1_dphi',
+                  'h_H1_mass','h_H1_pt','h_H1_csthst2_a', 'h_H1_dr','h_H1_dphi',
                   'h_H0H1_mass', 'h_H0H1_pt', 'h_H0H1_csthst0_a', 'h_H0H1_dr',
                   'h_X_mass', 
                   'classifier'
                  ]
+# exact list of BDT input variables:
+elif args.hlist == 2:
+    histList   = [
+                  'h_jets_ht', 'h_jets_ht_r',
+                  'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt',
+                  'h_jet0_eta', 'h_jet1_eta', 'h_jet2_eta', 'h_jet3_eta',
+                  'h_cmva3','h_cmva4',
+                  'h_H0_mass','h_H0_pt','h_H0_csthst0_a','h_H0_dr','h_H0_dphi',
+                  'h_H1_mass','h_H1_pt', 'h_H1_dr','h_H1_dphi',
+                  'h_H0H1_mass', 'h_H0H1_pt', 'h_H0H1_csthst0_a', #'h_H0H1_dr',
+                  'h_X_mass'
+                 ]
+
 histList2  = ["DiJets[0].mass()-DiJets[1].mass()", "CSV_Jet2-CSV_Jet3", "CMVA_Jet2-CMVA_Jet3",] #2D histos,
 intLumi_fb = 1. # plots normalized to this
 weights = [[],[]]
@@ -192,7 +205,7 @@ elif which == 9:
     dofill = [True,False]
     isMC = False
     oname = 'comp_bkgdata_afterBDT'
-    headerOpt = "   H1-H2 mass blinded" #h1-h2 mass cut
+    headerOpt = " BDT[0.8-1] & H1-H2 mass blinded" #h1-h2 mass cut
 
 elif which == 10:
     samples = [['bkg'],['bkg']] #data always  second
@@ -207,7 +220,7 @@ elif which == 10:
 
 #antitag ---
 elif which == 11:
-    samples = [['additional'],['data']] #data always  second
+    samples = [['antiMixed'],['data']] #data always  second
     fractions = ['','']
     regions = ['cr','cr'] #    regions = ['cr','cr']
     legList = [["bkg (mixed data)"], ["data"]]
@@ -218,7 +231,7 @@ elif which == 11:
     headerOpt = "   4thjetCMVA<=medWP" #h1-h2 mass cut
 
 elif which == 12:
-    samples = [['additional'],['bkg']] #data always  second
+    samples = [['antiMixed'],['bkg']] #data always  second
     fractions = ['','test']
     regions = ['cr','cr'] #    regions = ['cr','cr']
     legList = [["mixed data - antiTag"], ["mixed data - 4CMVA"]]
@@ -228,6 +241,16 @@ elif which == 12:
     oname = 'comp_antiTagMixed_afterBDT'
     headerOpt = "    " #h1-h2 mass cut
 
+elif which == 13:
+    samples = [['antiMixed'],['data']] #data always  second
+    fractions = ['','']
+    regions = ['sr','sr'] # check on 0.8-1 region
+    legList = [["bkg (mixed data)"], ["data"]]
+    colorList = [430, 1]
+    dofill = [True,False]
+    isMC = False
+    oname = 'comp_antiTagdata_afterBDT'
+    headerOpt = "   4thjetCMVA<=medWP" #h1-h2 mass cut
     
 else: 
     print "ERROR: wrong '-w' argument"
