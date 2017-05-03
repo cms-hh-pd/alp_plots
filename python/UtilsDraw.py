@@ -29,21 +29,31 @@ def getRelErr(a,erra,b,errb):
     return math.sqrt(math.pow(erra/a,2)+math.pow(errb/b,2))
 #------------
 
-def getHistos_bdt(hist, filename, plotDirs, weights):
+def getHistos_bdt(hist, filename, plotDirs, weights, sf):
     hlist = [] 
     tf = TFile(filename)
     if not tf: 
         print "WARNING: files do not exist"  
-
+    print 'aa'
     for i, Dir in enumerate(plotDirs):
         hname = hist+"_"+Dir            
+        print hname
         if(tf.Get(Dir+"/"+hname)):
+            print hname
             w = 1.
+            sf_ = 1.
             if len(weights)>0:
 	            if weights[i]>0:
         	        w = weights[i]
+            if len(sf)>0:
+                if sf[i]>=0:
+                    sf_ = sf[i]
+            print w*sf_
             h = tf.Get(Dir+"/"+hname)
-            h.Scale(w)
+            print h.GetName()
+            print h.Integral()
+            h.Scale(w*sf_)
+            print h.Integral()
             hlist.append(h)
         else:
             print "WARNING: hist {} not found in {}".format(hist,tf)
@@ -76,10 +86,11 @@ def getHistos_tdr(hist, filelist, plotDir, lumi, normtolumi, weight):
 #------------
 
 
-def getHistos(hist, filelist, plotDir, lumi, normtolumi, weight):
+def getHistos(hist, filelist, plotDir, lumi, normtolumi, weight, sf):
     hlist = []    
     for i, f in enumerate(filelist):  #debug - not efficient to loop on file
         w = 1.
+        sf_ = 1.
         tf = TFile(f)
         #print tf
         if not tf: 
@@ -89,16 +100,20 @@ def getHistos(hist, filelist, plotDir, lumi, normtolumi, weight):
             norm = 1
         else:
             if len(weight)>0:
-	            if weight[i]>=0:
-        	        w = weight[i]
+	        if weight[i]>=0:
+                    w = weight[i]
             else:
                 if(tf.Get("h_w_oneInvFb")):
                     h = tf.Get("h_w_oneInvFb")
                     w = h.GetBinContent(1)
                 else:
                     print "WARNING: 'h_w_oneInvFb' not found in {}".format(tf)
-            if normtolumi: norm = w*lumi;
-            else: norm = w
+            if len(sf)>0:
+                if sf[i]>=0:
+                    sf_ = sf[i]
+
+            if normtolumi: norm = w*lumi*sf_
+            else: norm = w*sf_
 
         print norm    
         if(tf.Get(plotDir+"/"+hist)):
@@ -148,22 +163,37 @@ def setYmax(hs, c, hname):
         h.SetMaximum(ymax)
 #------------
 
-def getScale(hlist1, hlist2): #h2/h1
+def getScale(hsOpt, hlist1, hlist2, skip1=-1, skip2=-1): #h2/h1
+
+    for h in hlist1:         
+        h.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+    for h in hlist2:         
+        h.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+
     hsInt = 0
+    hsSkip = 0
     norm = 0
-    for h in hlist1: 
+    for i, h in enumerate(hlist1):
+        if i==skip1: 
+            hsSkip += h.Integral()
+            print 'skip', hsSkip
+            continue 
         hsInt += h.Integral()
-    for h in hlist2: 
+        print h.Integral()
+    for i, h in enumerate(hlist2): 
         if isinstance(h,int):
            norm = h
            break
+        elif i==skip2: 
+            continue 
         else: norm += h.Integral()
-    if  hsInt: scale = norm/hsInt
+    if  hsInt: scale = norm/(hsInt+hsSkip)
     else: scale = 1.
+    print hsInt
     return scale
 #------------
 
-def getStackH(histos, hsOpt, rebin, snames, color, scale, fill):
+def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, hl2):
 
     if color: col = color
     else: col = sam_opt[snames[0]]['fillcolor']
@@ -194,6 +224,7 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill):
         h.Rebin(rebin)
         h.SetMarkerStyle(8)
         h.SetMarkerSize(0.)
+        print h.Integral()
         if fill: 
             h.SetFillColorAlpha(col,0.2)
             h.SetFillStyle(1) #samOpt['fillstyle']
@@ -247,23 +278,26 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if rebin > 0: rb = rebin
     else: rb =  hsOpt['rebin']
 
+    isNevts=False
+    if hsOpt['hname']=="h_nevts": isNevts=True
     ymax = 0.
-    if(norm): scale1 = getScale(hlist1, hlist2) #debug -v1 1.25
+
+    if(norm): scale1 = getScale(hsOpt,hlist1, hlist2) #debug -v1 1.25
     else: scale1 = 1.
-    #print "scale1", scale1
-    hs1, herr1, h1 =  getStackH(hlist1, hsOpt, rb, snames1, colors[0], scale1, dofill[0])
+    print "scale1", scale1
+    hs1, herr1, h1 =  getStackH(hlist1, hsOpt, rb, snames1, colors[0], scale1, dofill[0], hlist2)
     if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.15
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.15
-    if hsOpt['hname']=="h_nevts":  print "h1Int ",  h1.GetBinContent(1), h1.GetBinError(1)
+    if isNevts:  print "h1Int ",  h1.GetBinContent(1), h1.GetBinError(1)
 #    if hsOpt['hname']=="h_jets_n":  print "h1Int ",  h1.Integral(), h1.GetBinError(1)
 
-    if(norm): scale2 = getScale(hlist2, hlist2) #debug -v1 1.
+    if(norm): scale2 = getScale(hsOpt,hlist2, hlist2) #debug -v1 1.
     else: scale2 = 1.
-    #print "scale2", scale2
-    hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, snames2, colors[1], scale2, dofill[1])
+    print "scale2", scale2
+    hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, snames2, colors[1], scale2, dofill[1], hlist2)
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.15
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.15
-    if hsOpt['hname']=="h_nevts":  print "h2Int ",  h2.GetBinContent(1), h2.GetBinError(1)
+    if isNevts:  print "h2Int ",  h2.GetBinContent(1), h2.GetBinError(1)
 #    if hsOpt['hname']=="h_jets_n":  print "h2Int ",  h2.Integral(), h2.GetBinError(1)
 
     #print herr1.GetBinContent(1), herr1.GetBinError(1)
@@ -286,9 +320,9 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         #for n, leg in enumerate(legstack1):
         #    legend.AddEntry(hlist1[n], leg)
         legend.AddEntry(hlist1[0], legstack1[0])
-        legend.AddEntry(hlist1[len(hlist1)-2], legstack1[1]) #debug
-        legend.AddEntry(hlist1[len(hlist1)-1], legstack1[2]) #debug
-#        legend.AddEntry(hlist1[len(hlist1)-1], legstack1[1]) #debug
+        #legend.AddEntry(hlist1[len(hlist1)-2], legstack1[1]) #debug
+        #legend.AddEntry(hlist1[len(hlist1)-1], legstack1[2]) #debug
+        legend.AddEntry(hlist1[len(hlist1)-1], legstack1[1]) #debug
     else:
         legend.AddEntry(hlist1[len(hlist1)-1], legstack1[0])
     legend.AddEntry(hlist2[len(hlist2)-1], legstack2[0]) #debug - one leg for second samplelist
@@ -311,7 +345,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     nev2 = 0
     nev1err = 0
     nev2err = 0
-    if hsOpt['hname']=='h_nevts': 
+    if isNevts: 
 #    if hsOpt['hname']=='h_jets_n': 
         nev1 = herr1.GetBinContent(1)
         nev2 = herr2.GetBinContent(1)
@@ -345,7 +379,9 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
             if n1 and n2 and e1 and e2 : 
                 hres.SetBinContent(i,(n2-n1)/math.sqrt(e1*e1+e2*e2)) #debug v1
             #elif not checkbin: hres.SetBinContent(i,0) #to avoid error
-                hres.SetBinError(i,1)
+               # hres.SetBinError(i,1)
+                err = (pow(n1,3) + 15*pow(n1,2)*n2+15*pow(n2,2)*n1 + pow(n2,3))/(4*pow((n1+n2),3))
+                hres.SetBinError(i, err)
      # to chek just histos ratio:
      #  hres = Hist(10,0,1, name="")
      #  hres = hdiff.Clone("h_residual")
@@ -363,6 +399,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         line.Draw()
         if residuals>1: #draw also pull with fit
             c2.cd(2)
+            gStyle.SetOptStat(111)
             gStyle.SetOptFit(1)
             res_a = []
             for i in range(0, hres.GetXaxis().GetNbins()): #improve

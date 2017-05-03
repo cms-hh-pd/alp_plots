@@ -29,14 +29,14 @@ iDir       = '/lustre/cmswork/hh/alp_moriond_base/'
 oDir = args.oDir
 
 # draw nevt only if not normalized
-if not args.doNorm:
-    histList   = ['h_nevts']
-else:
-    histList   = ['h_nevts', 'h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt', 'h_jet3pt_pt', 
+#if not args.doNorm:
+#    histList   = ['h_nevts']
+#else:
+histList   = ['h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt', 'h_jet3pt_pt', 
                   'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt', 'h_jets_ht', 
                   'h_jet0_csv', 'h_jet1_csv', 'h_jet2_csv', 'h_jet3_csv',
                   'h_jet0_cmva', 'h_jet1_cmva', 'h_jet2_cmva', 'h_jet3_cmva',
-                  'h_all_ht', 'h_met_pt', 'h_mu0_pt', 'h_mu0_iso03', 'h_mu_n', 'h_mu_pt', 'h_mu_iso03']
+                  'h_all_ht', 'h_met_pt', 'h_mu0_pt', 'h_mu0_iso03', 'h_mu_n', 'h_mu_pt', 'h_mu_iso03','h_nevts']
 
 intLumi_fb = 35.9 # plots normalized to this
 weights = [[],[]]
@@ -50,7 +50,7 @@ if args.whichPlots == -2:
     samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
     legList = [["single top","WJetsNuL","TT"], ["data"]]
-    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
+    weights = [[0.005361,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
@@ -63,7 +63,7 @@ if args.whichPlots == -1:
     samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
     legList = [["single top","WJetsNuL","TT"], ["data"]]
-    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
+    weights = [[0.005361,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
@@ -75,8 +75,9 @@ if args.whichPlots == 0:
     plotDir = 'trg_Iso'
     samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
-    legList = [["single top","WJetsNuL","TT"], ["data"]]
-    weights = [[0.003334,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
+    legList = [["single top", "WJetsNuL", "TT"], ["data"]] 
+    weights = [[0.005361,0.002020,0.002077,  0.023619,  0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]] 
+    sf = [[0.9182,0.9182,0.9182,0.9182,0.9182,0.9182,0.9182,0.9182,0.9182,0.9182,0.9182],[]]
 #    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
@@ -195,8 +196,8 @@ for sname in snames2:
 
 #----------------------------------
 for h in histList:    
-    hs1 = UtilsDraw.getHistos(h, files1, plotDir, intLumi_fb, doNormToLumi[0], weights[0])
-    hs2 = UtilsDraw.getHistos(h, files2, plotDir, intLumi_fb, doNormToLumi[1], weights[1])
+    hs1 = UtilsDraw.getHistos(h, files1, plotDir, intLumi_fb, doNormToLumi[0], weights[0], sf[0])
+    hs2 = UtilsDraw.getHistos(h, files2, plotDir, intLumi_fb, doNormToLumi[1], weights[1], sf[1])
     hOpt = hist_opt[h]
     if hs1 and hs2:
         n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], hOpt, doResiduals, doNorm, oDir, colors, dofill, 0, plotDir+header, False)

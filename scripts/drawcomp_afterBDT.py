@@ -37,7 +37,7 @@ headerOpt = args.bdt
 
 # exe parameters
 if args.hlist == 0:
-    histList   = [ 'h_H0_mass', 'h_H1_mass', 'h_H0H1_mass', 'classifier']
+    histList   = [ 'classifier'] #'h_H0_mass', 'h_H1_mass', 'h_H0H1_mass',
 elif args.hlist == 1:
     histList   = [
                   'h_jets_ht', 'h_jets_ht_r',                
@@ -63,10 +63,26 @@ elif args.hlist == 2:
                   'h_H0H1_mass', 'h_H0H1_pt', 'h_H0H1_csthst0_a', #'h_H0H1_dr',
                   'h_X_mass'
                  ]
+# exact list of BDT input variables:
+elif args.hlist == 3:
+    histList   = [
+                  'h_jets_ht', 'h_jets_ht_r',
+                  'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt',
+                  'h_jet0_eta', 'h_jet1_eta', 'h_jet2_eta', 'h_jet3_eta',
+                  'h_cmva3','h_cmva4',
+                  'h_H0_mass','h_H0_pt','h_H0_csthst0_a','h_H0_dr','h_H0_dphi',
+                  'h_H1_mass','h_H1_pt', 'h_H1_dr','h_H1_dphi',
+                  'h_H0H1_mass', 'h_H0H1_pt', 'h_H0H1_csthst0_a', #'h_H0H1_dr', 'h_H0H1_dphi_a',
+                  'h_X_mass'
+                 ]
+
+
+
 
 histList2  = ["DiJets[0].mass()-DiJets[1].mass()", "CSV_Jet2-CSV_Jet3", "CMVA_Jet2-CMVA_Jet3",] #2D histos,
 intLumi_fb = 1. # plots normalized to this
 weights = [[],[]]
+sf = [[],[]]
 
 which = args.whichPlots
 
@@ -83,26 +99,48 @@ if which == -3:
     headerOpt = ""
 
 elif which == -2:
-    samples = [['sig'], ['sample']]
-    fractions = ['train','']
+    samples = [['sm'], ['sig']]
+    fractions = ['','']
     regions = ['','']
-    legList = [["ggHH4b - pangeaSM"], ["ggHH4b - SM"]]
-    colorList = [633, 630]
+    legList = [["ggHH4b - SM"], ["ggHH4b - PangeaSM"]]
+    colorList = [630, 633]
     dofill = [True,True]
     isMC = True
-    oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
+    oname = 'comp_SMpangeaSM_afterBDT'
     headerOpt = ""
 
+#elif which == 4:
+ #   samples = [['sm'], ['bkg']]
+  #  fractions = ['test','test']
+   # regions = ['','']
+    #legList = [["ggHH4b SM"], ["bkg (mixed data)"]]  # - test fract
+    #colorList = [632, 430]
+    #dofill = [True,True]
+    #isMC = True
+    #oname = 'comp_sigBkg_afterBDT'
+    #headerOpt = "    test fr." #{}".format()
+
 elif which == -1:
-    samples = [['sig'], ['sample']]
-    fractions = ['test','']
-    regions = ['sr','sr']
-    legList = [["ggHH4b - pangeaSM"],["ggHH4b - SM"]]
-    colorList = [633, 630]
+    samples = [['pan'], ['sig']]
+    fractions = ['','']
+    regions = ['','']
+    legList = [["ggHH4b - Pangea"], ["ggHH4b - PangeaSM"]]
+    colorList = [630, 633]
     dofill = [True,True]
     isMC = True
-    oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
-    headerOpt = "SR"
+    oname = 'comp_SMpangea_afterBDT'
+    headerOpt = ""
+
+#elif which == -1:
+ #   samples = [['sig'], ['sample']]
+  ##  fractions = ['test','']
+   # regions = ['sr','sr']
+  #  legList = [["ggHH4b - pangeaSM"],["ggHH4b - SM"]]
+  #  colorList = [633, 630]
+  #  dofill = [True,True]
+  #  isMC = True
+  #  oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
+  #  headerOpt = "SR"
 
 elif which == 0:
     samples = [['sig'], ['bkg']]
@@ -111,6 +149,7 @@ elif which == 0:
     legList = [["ggHH4b SM"], ["bkg (mixed data)"]]  # - test fract
     colorList = [632, 430]
     dofill = [True,True]
+    sf = [[9901117.35673],[1.]]
     isMC = True
     oname = 'comp_sigBkg_afterBDT'
     headerOpt = "    test fr." #{}".format()
@@ -118,13 +157,14 @@ elif which == 0:
 elif which == 1:
     samples = [['sig'], ['bkg']]
     fractions = ['train','train']
-    regions = ['ms','ms']
+    regions = ['','']
     legList = [["ggHH4b SM"], ["bkg (mixed data)"]]
     colorList = [632, 430]
     dofill = [True,True]
+    sf = [[9901117.35673],[1.]]
     isMC = True
     oname = 'comp_sigBkg_afterBDT'
-    headerOpt = "    train fr. H1-H2 mass blinded" 
+    headerOpt = "    train fr."#H1-H2 mass blinded 
 
 elif which == 2:
     samples = [['sig'], ['bkg']]
@@ -199,34 +239,48 @@ elif which == 8:
 elif which == 9:
     samples = [['bkg'],['data']] #data always  second
     fractions = ['test','']
-    regions = ['ms','ms'] 
+    regions = ['msbdt','msbdt'] 
     legList = [["bkg (mixed data)"], ["data"]]
     colorList = [430, 1]
+    sf = [[1.],[1.]]
     dofill = [True,False]
     isMC = False
     oname = 'comp_bkgdata_afterBDT'
     headerOpt = " BDT[0.8-1] & H1-H2 mass blinded" #h1-h2 mass cut
 
 elif which == 10:
-    samples = [['bkg'],['bkg']] #data always  second
-    fractions = ['test','test']
-    regions = ['ms',''] 
-    legList = [["bkg (mixed data), mCut"], ["bkg (mixed data)"]]
-    colorList = [404, 430]
-    dofill = [True,True]
+    samples = [['bkg'],['data']] #data always  second
+    fractions = ['test','']
+    regions = ['ms','ms'] 
+    legList = [["bkg (mixed data)"], ["data"]]
+    colorList = [430, 1]
+    sf = [[1.],[1.]]
+    dofill = [True,False]
     isMC = False
-    oname = 'comp_bkgbkg__mCR_afterBDT'
-    headerOpt = "   H1-H2 mass blinded" #h1-h2 mass cut
+    oname = 'comp_bkgdata_afterBDT'
+    headerOpt = "    H1-H2 mass blinded" #
+
+#elif which == 10:
+#    samples = [['bkg'],['bkg']] #data always  second
+ #   fractions = ['test','test']
+#    regions = ['ms',''] 
+ #   legList = [["bkg (mixed data), mCut"], ["bkg (mixed data)"]]
+ #   colorList = [404, 430]
+ #   dofill = [True,True]
+ #   isMC = False
+ #   oname = 'comp_bkgbkg__mCR_afterBDT'
+ #   headerOpt = "   H1-H2 mass blinded" #h1-h2 mass cut
 
 #antitag ---
 elif which == 11:
     samples = [['antiMixed'],['data']] #data always  second
     fractions = ['','']
-    regions = ['cr','cr'] #    regions = ['cr','cr']
+    regions = ['',''] #    regions = ['cr','cr']
     legList = [["bkg (mixed data)"], ["data"]]
     colorList = [430, 1]
     dofill = [True,False]
     isMC = False
+    sf = [[1.],[1.]]
     oname = 'comp_antiTagdata_afterBDT'
     headerOpt = "   4thjetCMVA<=medWP" #h1-h2 mass cut
 
@@ -236,6 +290,7 @@ elif which == 12:
     regions = ['cr','cr'] #    regions = ['cr','cr']
     legList = [["mixed data - antiTag"], ["mixed data - 4CMVA"]]
     colorList = [416, 430]
+    sf = [[1.],[1.]]
     dofill = [True,True]
     isMC = False
     oname = 'comp_antiTagMixed_afterBDT'
@@ -248,9 +303,10 @@ elif which == 13:
     legList = [["bkg (mixed data)"], ["data"]]
     colorList = [430, 1]
     dofill = [True,False]
+    sf = [[1.],[1.]]
     isMC = False
     oname = 'comp_antiTagdata_afterBDT'
-    headerOpt = "   4thjetCMVA<=medWP" #h1-h2 mass cut
+    headerOpt = "  BDT[0.8-1] & 4thjetCMVA<=medWP" #h1-h2 mass cut
     
 else: 
     print "ERROR: wrong '-w' argument"
@@ -323,9 +379,9 @@ sname = [] #to avoid crash
 for h in histList:
     hOpt = hist_opt[h]
     if h == 'classifier': 
-        h+='-'+args.bdt    
-    hs1 = UtilsDraw.getHistos_bdt(h, filename, plotDirs1, weights[0])
-    hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDirs2, weights[1])
+        h+='-20170502-234140' #+args.bdt   #20170502-234140
+    hs1 = UtilsDraw.getHistos_bdt(h, filename, plotDirs1, weights[0], sf[0])
+    hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDirs2, weights[1], sf[1])
 
     if hs1 and hs2:
         n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], 

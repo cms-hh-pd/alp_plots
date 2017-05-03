@@ -25,6 +25,7 @@ parser.add_argument("-n", "--doNorm"   , help="normalize to data"       , action
 parser.add_argument("-p", "--plotDir"  , help="root file subfolder in which histos are", default="pair")
 parser.add_argument("-c", "--customCol", help="use custom colors"       , action='store_true')
 parser.add_argument("-o", "--oDir"     , help="output directory"        , default="output/")
+parser.add_argument("-l", "--list", help="hist list" , dest="hlist", type=int, default=1)
 parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==fit)" , type=int, default=0)
 parser.set_defaults(doNorm=False, customCol=False)
 args = parser.parse_args()
@@ -33,22 +34,24 @@ iDir       = '/lustre/cmswork/hh/alp_moriond_base/'
 oDir = args.oDir +"/"
 
 # exe parameters
-#histList   = ['h_nevts' ]
+if args.hlist == 0:
+    histList   = ['h_nevts' ]
 #histList   = ['h_njets' ]
-
-histList   = ['h_nevts', 'h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt', 'h_jet3pt_pt', 
+elif args.hlist == 1:
+    histList   = ['h_nevts', 'h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt', 'h_jet3pt_pt', 
               'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt', 'h_jets_ht', 
               'h_jet0_csv', 'h_jet1_csv', 'h_jet2_csv','h_jet3_csv',
               'h_jet0_cmva', 'h_jet1_cmva', 'h_jet2_cmva','h_jet3_cmva',
               'h_H0_mass','h_H0_pt','h_H0_eta','h_H0_csthst0_a','h_H0_csthst1_a','h_H0_dr','h_H0_deta_a','h_H0_dphi','h_H0_dphi_a',
               'h_H1_mass','h_H1_pt','h_H1_eta','h_H1_csthst2_a','h_H1_csthst3_a','h_H1_dr','h_H1_deta_a','h_H1_dphi','h_H1_dphi_a',
-              'h_H0H1_mass','h_H0H1_pt','h_H0H1_eta','h_H0H1_csthst0_a','h_H0H1_csthst1_a','h_H0H1_dr','h_H0H1_deta_a','h_H0H1_dphi_a',
+              'h_H0H1_mass','h_H0H1_pt','h_H0H1_eta','h_H0H1_csthst0_a','h_H0H1_csthst1_a','h_H0H1_dr','h_H0H1_deta_a','h_H0H1_dphi_a', 'h_H0H1_dphi',
               'h_jet0_eta', 'h_jet1_eta', 'h_jet2_eta', 'h_jet3_eta',
               'h_X_mass', 'h_jets_ht_r',
              ]
 histList2  = ['h_H0_H1_mass'] #2D histos
-intLumi_fb = 1. # plots normalized to this
+intLumi_fb = 35.9 # plots normalized to this
 weights = [[],[]]
+sf = [[],[]]
 headerOpt = ""
 
 # ---------------
@@ -81,7 +84,7 @@ elif args.whichPlots == -1:
 elif args.whichPlots == 0:
     samlist1 = ['SM']
     samlist2 = ['Data']
-    optList = ["mass_cmva","mass_cmva_mixed"]
+    optList = ["def_cmva","def_cmva_mixed"] #mass
     legList = ["signal (HH4b SM)", "bkg (mixed data)"]
     colorList = [632, 430]
     doNormToLumi = [True, False] 
@@ -162,7 +165,7 @@ elif args.whichPlots == 4:
 #    oname = "comp_qcdBkg_preBDT"
 
 elif args.whichPlots == 6:
-    optList = ['def_cmva_plots','def_cmva_mixed']
+    optList = ['def_cmva_mixed','def_cmva_mixed']
     samlist1 = ['qcd_m500']
     samlist2 = ['qcd_m500']
     legList = [['QCD HT>500'], ['QCD HT>200 - mixed']] #200
@@ -185,13 +188,15 @@ elif args.whichPlots == 7:
     isMC = True
     oname = "comp_ttMixtt_preBDT"   
 
-elif args.whichPlots == 8:
-    optList = ['def_cmva','def_cmva_plots'] #'def_cmva_mixed
+elif args.whichPlots == 8: #okay - 20170502
+    optList = ['def_cmva','def_cmva_mixed']
     samlist1 = ['tt','qcd_m']  #m b
     samlist2 = ['Data']
     legList = [['tt','QCD HT>200'], ['mixed data']]  #QCD bEnr.   HT>200
     colorList = [402, 430]
-    weights = [[0.010760,22.325121,4.826995,0.843187,0.110750,0.059825,0.007443,0.003055],[]]
+    weights = [[0.010760,29.599755,6.338876,0.511526,0.149046,0.078782,0.009964,0.004075],[]]
+    sf = [[1,1.0282,1.0282,1.0282,1.0282,1.0282,1.0282,1.0282],[]]
+#   22.325121,4.826995,0.843187,0.110750,0.059825,0.007443,0.003055],[]]
 #    weights = [[0.010760,17.635231,3.476259,0.509821,0.089584,0.046491,0.005935,0.002410],[]]
     doNormToLumi = [True, False]
     dofill = [True,True]
@@ -200,19 +205,20 @@ elif args.whichPlots == 8:
     oname = "comp_qcdttBkg_preBDT"
 
 elif args.whichPlots == 81:
-    optList = ['def_cmva','def_cmva'] #'def_cmva_mixed
-    samlist1 = ['tt','qcd_m']  #m b
+    optList = ['def_cmva','def_cmva']
+    samlist1 = ['tt','qcd_m']
     samlist2 = ['SM']
     legList = [['tt','QCD HT>200'], ['ggHH4b SM (1000x)']]
     colorList = [402, 632]
-    weights = [[0.010760,22.325121,4.826995,0.843187,0.110750,0.059825,0.007443,0.003055],[0.03784]]
+    weights = [[0.010760,29.599755,6.338876,0.511526,0.149046,0.078782,0.009964,0.004075],[0.03784]]
+    sf = [[1,1.0282,1.0282,1.0282,1.0282,1.0282,1.0282,1.0282],[]]
     doNormToLumi = [True, True]
     dofill = [True,False]
     isMC = True
     oname = "comp_qcdttSig_preBDT"
 
 elif args.whichPlots == 9:
-    optList = ['def_cmva_plots','antitag3_cmva']
+    optList = ['def_cmva_mixed','antitag3_cmva']
     samlist1 = ['Data']
     samlist2 = ['Data']
     legList = [['4cmva mixed data'], ['antitag3 data']]
@@ -237,13 +243,15 @@ elif args.whichPlots == 10:
     headerOpt = "4th Jet antitag"
 
 elif args.whichPlots == 11:
-    optList = ['def_cmva','def_cmva'] #'def_cmva_mixed'
-    samlist1 = ['qcd_m']  #m 
+    optList = ['def_cmva','def_cmva']
+    samlist1 = ['qcd_m']
     samlist2 = ['qcd_b']
     legList = [['QCD'], ['QCD bEnr.']]
     colorList = [402, 430]
-    weights = [[22.325121,4.826995,0.843187,0.110750,0.059825,0.007443,0.003055],
+    weights = [[29.599755,6.338876,0.511526,0.149046,0.078782,0.009964,0.004075],
                [0.023755, 0.085170, 0.032952, 18.475847, 6.122864, 0.623063, 0.364026, 0.030071, 0.013571, 0.004531, 2.798854, 0.929341, 0.079645, 0.050250]]
+    sf = [[1.0282,1.0282,1.0282,1.0282,1.0282,1.0282,1.0282],
+          [1.4819,1.4819,1.4819,1.4819,1.4819,1.4819,1.4819, 1.4819,1.4819,1.4819,1.4819,1.4819,1.4819,1.4819]]
     doNormToLumi = [True, True]
     dofill = [True,False]
     isMC = True
@@ -335,8 +343,8 @@ for sname in snames2:
 
 #----------------------------------
 for h in histList:    
-    hs1 = UtilsDraw.getHistos(h, files1, plotDir, intLumi_fb, doNormToLumi[0], weights[0])
-    hs2 = UtilsDraw.getHistos(h, files2, plotDir, intLumi_fb, doNormToLumi[1], weights[1])
+    hs1 = UtilsDraw.getHistos(h, files1, plotDir, intLumi_fb, doNormToLumi[0], weights[0], sf[0])
+    hs2 = UtilsDraw.getHistos(h, files2, plotDir, intLumi_fb, doNormToLumi[1], weights[1], sf[1])
     hOpt = hist_opt[h]
 
     if hs1 and hs2:
