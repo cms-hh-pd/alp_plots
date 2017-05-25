@@ -22,17 +22,17 @@ parser.add_argument("-n", "--doNorm"   , help="normalize to data"       , action
 parser.add_argument("-p", "--plotDir"  , help="root file subfolder in which histos are", default="trg_Iso") #trg_IsoAndJet
 parser.add_argument("-c", "--customCol", help="use custom colors"       , action='store_true')
 parser.add_argument("-o", "--oDir"     , help="output directory"        , default="output/")
+parser.add_argument("-l", "--list", help="hist list" , dest="hlist", type=int, default=1)
 parser.set_defaults(doNorm=False, customCol=False)
 args = parser.parse_args()
 
 iDir       = '/lustre/cmswork/hh/alp_moriond_base/'
 oDir = args.oDir
 
-# draw nevt only if not normalized
-#if not args.doNorm:
-#    histList   = ['h_nevts']
-#else:
-histList   = ['h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt', 'h_jet3pt_pt', 
+if args.hlist == 0:
+    histList   = ['h_nevts']
+elif args.hlist == 1:
+    histList   = ['h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt', 'h_jet3pt_pt', 
                   'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt', 'h_jets_ht', 
                   'h_jet0_csv', 'h_jet1_csv', 'h_jet2_csv', 'h_jet3_csv',
                   'h_jet0_cmva', 'h_jet1_cmva', 'h_jet2_cmva', 'h_jet3_cmva',
@@ -40,6 +40,7 @@ histList   = ['h_jets_n','h_jet0pt_pt', 'h_jet1pt_pt', 'h_jet2pt_pt', 'h_jet3pt_
 
 intLumi_fb = 35.9 # plots normalized to this
 weights = [[],[]]
+sf = [[],[]]
 header = ""
 # ---------------
 
@@ -75,10 +76,9 @@ if args.whichPlots == 0:
     plotDir = 'trg_Iso'
     samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
-    legList = [["single top", "WJetsNuL", "TT"], ["data"]] 
-    weights = [[0.005361,0.002020,0.002077,  0.023619,  0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]] 
-    sf = [[0.9182,0.9182,0.9182,0.9182,0.9182,0.9182,0.9182,0.9182,0.9182,0.9182,0.9182],[]]
-#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
+    legList = [["single top", "WJetsNuL", "TT"], ["data"]]  
+    weights = [[0.005361,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
+    sf = [[0.91823,0.91823,0.91823,0.91823,0.91823,0.91823,0.91823,0.91823,0.91823,0.91823,0.91823],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
@@ -91,7 +91,7 @@ elif args.whichPlots == 1:
     samlist2 = ['data_singleMu']
     legList = [["single top","WJetsNuL","TT"], ["data"]]
     weights = [[0.005361,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
-#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
+    sf = [[0.91228,0.91228,0.91228,0.91228,0.91228,0.91228,0.91228,0.91228,0.91228,0.91228,0.91228],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
@@ -104,7 +104,7 @@ elif args.whichPlots == 2:
     samlist2 = ['data_singleMu']
     legList = [["single top","WJetsNuL","TT"], ["data"]]
     weights = [[0.005361,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
-#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
+    sf = [[0.935,0.935,0.935,0.935,0.935,0.935,0.935,0.935,0.935,0.935,0.935],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
@@ -116,8 +116,8 @@ elif args.whichPlots == 3:
     samlist1 = ['trigger']
     samlist2 = ['data_singleMu']
     legList = [["single top","WJetsNuL","TT"], ["data"]]
-#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
     weights = [[0.005361,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
+    sf = [[0.878,0.878,0.878,0.878,0.878,0.878,0.878,0.878,0.878,0.878,0.878],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
@@ -130,7 +130,7 @@ elif args.whichPlots == 4:
     samlist2 = ['data_singleMu']
     legList = [["single top","WJetsNuL","TT"], ["data"]]
     weights = [[0.005361,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
-#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
+    sf = [[0.898,0.898,0.898,0.898,0.898,0.898,0.898,0.898,0.898,0.898,0.898],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]
@@ -139,11 +139,11 @@ elif args.whichPlots == 4:
 elif args.whichPlots == 5:
     optList = ["trg_3cmva","trg_3cmva"]
     plotDir = 'trg_IsoAndJet'
-    samlist1 = ['trigger']
+    samlist1 = ['trigger'] 
     samlist2 = ['data_singleMu']
-    legList = [["single top","WJetsNuL","TT"], ["data"]]
-#    weights = [[0.00334368,0.00208575,0.00202288, 0.023754, 0.013946, 0.009457, 0.000688, 0.000682, 0.000259, 0.000012, 0.010760],[]]
-    weights = [[0.005361,0.002020,0.002077, 0.023619,0.013342,0.009363,0.000679,0.000672,0.000253,0.000011, 0.010760],[]]
+    legList = [["single top", "WJetsNuL", "TT"], ["data"]]  
+    weights = [[0.005361,0.002020,0.002077,  0.023619,  0.013342,0.009363,0.000679,0.000672,0.000253,0.000011,0.010760],[]]  
+    sf = [[0.863,0.863,0.863,0.863,0.863,0.863,0.863,0.863,0.863,0.863,0.863],[]]
     colorList = [430, 1]
     doNormToLumi = [True, False] 
     dofill = [True,False]

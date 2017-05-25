@@ -242,6 +242,20 @@ elif args.whichPlots == 10:
     oname = "comp_antag_mixData_preBDT"
     headerOpt = "4th Jet antitag"
 
+elif args.whichPlots == 12:
+    optList = ['antitag3_cmva_mixed_5nn','antitag3_cmva_200k']
+    samlist1 = ['Data']
+    samlist2 = ['Data']
+    legList = [['mixed data'], ['data']]
+    colorList = [430, 1]
+    weights = [[],[]]
+    sf = [[0.0625],[]] #0.713595625
+    doNormToLumi = [False, False]
+    dofill = [True,False]
+    isMC = False
+    oname = "comp_antag5nn_mixData_preBDT"
+    headerOpt = "4th Jet antitag - 5nn - 200k"
+
 elif args.whichPlots == 11:
     optList = ['def_cmva','def_cmva']
     samlist1 = ['qcd_m']

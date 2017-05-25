@@ -21,7 +21,8 @@ gROOT.SetBatch(True)
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-w", "--whichPlots", help="which plots to be produced", type=int, default='-1')
-parser.add_argument("-b", "--bdt"       , help="bdt version, equal to input file name", default="")
+parser.add_argument("-b", "--bdt"  
+     , help="bdt version, equal to input file name", default="")
 parser.add_argument("-o", "--oDir"     , help="output directory"        , default="plots_moriond")
 parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)"    , type=int, default=-1)
 parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==fit)" , type=int, default=0)
@@ -34,6 +35,7 @@ args = parser.parse_args()
 iDir       = '../hh2bbbb_limit/' #'/lustre/cmswork/hh/alp_afterMVA/'
 filename = iDir+"/"+args.bdt+".root"
 headerOpt = args.bdt
+getChi = False
 
 # exe parameters
 if args.hlist == 0:
@@ -83,6 +85,7 @@ histList2  = ["DiJets[0].mass()-DiJets[1].mass()", "CSV_Jet2-CSV_Jet3", "CMVA_Je
 intLumi_fb = 1. # plots normalized to this
 weights = [[],[]]
 sf = [[],[]]
+getVar = False
 
 which = args.whichPlots
 
@@ -273,16 +276,16 @@ elif which == 10:
 
 #antitag ---
 elif which == 11:
-    samples = [['antiMixed'],['data']] #data always  second
+    samples = [['amixed-0'],['data']] #data always  second
     fractions = ['','']
     regions = ['',''] #    regions = ['cr','cr']
-    legList = [["bkg (mixed data)"], ["data"]]
+    legList = [["bkg (mixed data 5nn)"], ["data"]]
     colorList = [430, 1]
     dofill = [True,False]
     isMC = False
-    sf = [[1.],[1.]]
-    oname = 'comp_antiTagdata_afterBDT'
-    headerOpt = "   4thjetCMVA<=medWP" #h1-h2 mass cut
+    sf = [[0.0625],[1.]] #1.
+    oname = 'comp_antiTagdata5nn_afterBDT'
+    headerOpt = "   5nn, 4thjetCMVA<=medWP" #h1-h2 mass cut
 
 elif which == 12:
     samples = [['antiMixed'],['bkg']] #data always  second
@@ -297,17 +300,110 @@ elif which == 12:
     headerOpt = "    " #h1-h2 mass cut
 
 elif which == 13:
-    samples = [['antiMixed'],['data']] #data always  second
+    samples = [[''],['data']] #data always  second  -- amixed-0-5-10-15
     fractions = ['','']
     regions = ['sr','sr'] # check on 0.8-1 region
-    legList = [["bkg (mixed data)"], ["data"]]
+    legList = [["bkg (mixed data)"], ["data"]] # -- nn 0-5-10-15
     colorList = [430, 1]
     dofill = [True,False]
-    sf = [[1.],[1.]]
+    sf = [[0.25],[1.]]
     isMC = False
-    oname = 'comp_antiTagdata_afterBDT'
+    oname = 'comp_antiTagdata_nn-0-5-10-15'
     headerOpt = "  BDT[0.8-1] & 4thjetCMVA<=medWP" #h1-h2 mass cut
-    
+
+elif which == 14: # -l 0 !!
+    getVar = True
+  #  samples = [['amixed-0','amixed-5','amixed-12','amixed-18','amixed-24'],[]] # bin variance
+  #  samples = [['amixed-0','amixed-1','amixed-2','amixed-3','amixed-4','amixed-5','amixed-6','amixed-7','amixed-8','amixed-9','amixed-10','amixed-11','amixed-12','amixed-13','amixed-14','amixed-15','amixed-16','amixed-17','amixed-18','amixed-19','amixed-20','amixed-21','amixed-22','amixed-23','amixed-24'],[]] # bin variance
+    samples = [['amixed-91','amixed-92','amixed-93','amixed-94','amixed-95','amixed-96','amixed-97','amixed-98','amixed-99'],[]]
+#    samples = [['amixed-0','amixed-11','amixed-22','amixed-33','amixed-44','amixed-55','amixed-66','amixed-77','amixed-88','amixed-99'],[]]
+#    samples = [['amixed-0','amixed-11','amixed-22','amixed-33','amixed-44','amixed-55','amixed-66','amixed-77','amixed-88','amixed-99'],[]]
+    fractions = ['','']
+    regions = ['','']
+    legList = [["bkg (mixed data - 10th nn)"], []] #up to 5 nn
+    colorList = [430, 1]
+    dofill = [False,False]
+    isMC = False
+    oname = 'comp_antiTagdata_nnVar_10'
+    headerOpt = "  4thjetCMVA<=medWP"
+
+## 10nn
+elif which == 15: # -l 0 !!
+    getChi = True
+    xbmin = 21 #41 21
+    #labels = ['1-1','2-2','3-3','4-4','5-5','6-6','7-7','8-8','9-9','10-10']
+    #samples = [['mixed-0','mixed-11','mixed-22','mixed-33','mixed-44','mixed-55','mixed-66','mixed-77','mixed-88','mixed-99'],['data']]
+    #samples = [['mixed-0','mixed-1','mixed-2','mixed-3','mixed-4','mixed-5','mixed-6','mixed-7','mixed-8','mixed-9'],['data']]
+    labels = ['9-10','10-9','8-7','7-8','6-5','5-6','4-3','3-4','2-1','1-2']
+    samples = [['mixed-89','mixed-98','mixed-76','mixed-67','mixed-54','mixed-45','mixed-32','mixed-23','mixed-10','mixed-1'],['data']]
+    fractions = ['','']
+    regions = ['','']
+    legList = [["bkg (mixed data - 10nn)"], ["data"]]
+    colorList = [430, 1]
+    dofill = [False,False]
+    isMC = False
+    #oname = 'comp_mixedData_10nn_chi_diag_30b'
+    oname = 'comp_mixedData_10nn_chi_rdm_30b'
+    #headerOpt = "  antitag selection - 10nn diagonal - 30bins"
+    headerOpt = "  antitag selection - 10nn various comb. - 30bins"
+
+## 10nn
+elif which == 16: # -l 0 !!
+    getVar = True
+    samples = [['mixed-0','mixed-11','mixed-22','mixed-33','mixed-44','mixed-55','mixed-66','mixed-77','mixed-88','mixed-99'],[]]
+    #samples = [['mixed-0','mixed-1','mixed-2','mixed-3','mixed-4','mixed-5','mixed-6','mixed-7','mixed-8','mixed-9'],[]]
+    #samples = [['mixed-89','mixed-98','mixed-76','mixed-67','mixed-54','mixed-45','mixed-32','mixed-23','mixed-10','mixed-1'],[]]
+    fractions = ['','']
+    regions = ['','']
+    legList = [["bkg (mixed data - 10nn)"], []]
+    colorList = [430, 1]
+    dofill = [False,False]
+    isMC = False
+    oname = 'comp_mixedData_10nn_var_diag'
+    #oname = 'comp_mixedData_10nn_var_rdm'
+    headerOpt = "  antitag selection - 10nn diagonal"
+    #headerOpt = "  antitag selection - 10nn various comb."
+
+## 20nn - short
+elif which == 17: # -l 0 !!
+    getVar = True
+    samples = [['mixed-0','mixed-1','mixed-2','mixed-3','mixed-4','mixed-5','mixed-6','mixed-7','mixed-8','mixed-9',
+                'mixed-10','mixed-11','mixed-12','mixed-13','mixed-14','mixed-15','mixed-16','mixed-17','mixed-18 mixed-38'],[]]
+#    samples = [['mixed-19','mixed-20','mixed-21','mixed-22','mixed-23','mixed-24','mixed-25','mixed-26','mixed-27',
+#                'mixed-28','mixed-29','mixed-30','mixed-31','mixed-32','mixed-33','mixed-34','mixed-35','mixed-36','mixed-37','mixed-38'],[]]
+    fractions = ['','']
+    regions = ['','']
+    legList = [["bkg (mixed data - 20nn)"], []] #up to 5 nn
+    colorList = [430, 1]
+    dofill = [False,False]
+    isMC = False
+    oname = 'comp_mixedData_20nn_var_diag'
+#    oname = 'comp_mixedData_20nn_var_20'
+    headerOpt = "  def selection - 20nn diagonal"
+#    headerOpt = "  def selection - 20nn comb. with 20th"
+
+## 20nn - short
+elif which == 18: # -l 0 !!
+    getChi = True
+    xbmin = 41 #21
+#    labels = ['11','22','33','44','55','66','77','88','99','1010','1111','1212','1313','1414','1515','1616','1717','1818','1919','2020']
+#    samples = [['mixed-0','mixed-1','mixed-2','mixed-3','mixed-4','mixed-5','mixed-6','mixed-7','mixed-8','mixed-9',
+#                'mixed-10','mixed-11','mixed-12','mixed-13','mixed-14','mixed-15','mixed-16','mixed-17','mixed-18','mixed-38'],['data']]
+
+    labels = ['201','202','203','204','205','206','207','208','209','2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020']
+    samples = [['mixed-19','mixed-20','mixed-21','mixed-22','mixed-23','mixed-24','mixed-25','mixed-26','mixed-27',
+                'mixed-28','mixed-29','mixed-30','mixed-31','mixed-32','mixed-33','mixed-34','mixed-35','mixed-36','mixed-37','mixed-38'],['data']]
+    fractions = ['','']
+    regions = ['','']
+    legList = [["bkg (mixed data - 20nn)"], ["data"]]
+    colorList = [430, 1]
+    dofill = [False,False]
+    isMC = False
+#    oname = 'comp_antiTagdata_20nn_Chi_diag'
+    oname = 'comp_antiTagdata_20nn_Chi_20'
+#    headerOpt = "  antitag selection - 20nn diagonal - 10bins"
+    headerOpt = "  antitag selection - 20nn comb. with 20th - 10bins"
+   
 else: 
     print "ERROR: wrong '-w' argument"
     exit()
@@ -379,12 +475,17 @@ sname = [] #to avoid crash
 for h in histList:
     hOpt = hist_opt[h]
     if h == 'classifier': 
-        h+='-20170502-234140' #+args.bdt   #20170502-234140
+        h+='-20170502-234140' #+args.bdt   #20170502-234140 #debug!!
     hs1 = UtilsDraw.getHistos_bdt(h, filename, plotDirs1, weights[0], sf[0])
     hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDirs2, weights[1], sf[1])
 
-    if hs1 and hs2:
-        n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], 
+    if getVar: # variance check
+        UtilsDraw.drawBinVar(hs1, snames1, legList[0], hOpt, oDir, args.clrebin, headerOpt, isMC)
+    if getChi: # chi square
+        UtilsDraw.drawChiSquare(hs1, snames1, legList[0], hs2, hOpt, oDir, xbmin, headerOpt, isMC, labels)
+    else: 
+        if hs1 and hs2:
+            n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], 
                          hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt, isMC)
         #if n2: 
         #   print "### n1/n2 numEvents: {} +- {} ###".format(n1/n2, UtilsDraw.getRelErr(n1,n1err,n2,n2err)*n1/n2) 
