@@ -403,6 +403,42 @@ elif which == 18: # -l 0 !!
     oname = 'comp_antiTagdata_20nn_Chi_20'
 #    headerOpt = "  antitag selection - 20nn diagonal - 10bins"
     headerOpt = "  antitag selection - 20nn comb. with 20th - 10bins"
+
+elif which == 20: # -l 0 !!
+    samples = [['GluGluHToBB'],['sig']] #data always  second
+    fractions = ['','test']
+    regions = ['',''] #    regions = ['cr','cr']
+    legList = [["ggHbb"], ["HH4b SM"]]
+    colorList = [[602], [632]]
+    dofill = [True,True]
+    isMC = True
+    sf = [[0.005817],[(33.53*0.5824*0.5824/(4172119.0*0.2))]] 
+    oname = 'comp_gghsig_afterBDT'
+    headerOpt = "    "
+
+elif which == 21: # -l 0 !!
+    samples = [['VBFHToBB'],['sig']] #data always  second
+    fractions = ['','test']
+    regions = ['',''] #    regions = ['cr','cr']
+    legList = [["vbfHbb"], ["HH4b SM"]]
+    colorList = [[434], [632]]
+    dofill = [True,True]
+    isMC = True
+    sf = [[0.000462],[(33.53*0.5824*0.5824/(4172119.0*0.2))]]
+    oname = 'comp_vbfhsig_afterBDT'
+    headerOpt = "    "
+
+elif which == 22: # -l 0 !!
+    samples = [['ttHTobb'],['sig']] #data always  second
+    fractions = ['','test']
+    regions = ['',''] #    regions = ['cr','cr']
+    legList = [["ttHbb"], ["HH4b SM"]]
+    colorList = [[419], [632]]
+    dofill = [True,True]
+    isMC = True
+    sf = [[0.000076],[(33.53*0.5824*0.5824/(4172119.0*0.2))]]
+    oname = 'comp_tthsig_afterBDT'
+    headerOpt = "    "
    
 else: 
     print "ERROR: wrong '-w' argument"
@@ -475,7 +511,7 @@ sname = [] #to avoid crash
 for h in histList:
     hOpt = hist_opt[h]
     if h == 'classifier': 
-        h+='-20170502-234140' #+args.bdt   #20170502-234140 #debug!!
+        h+='-'+args.bdt   #20170502-234140 #debug!!
     hs1 = UtilsDraw.getHistos_bdt(h, filename, plotDirs1, weights[0], sf[0])
     hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDirs2, weights[1], sf[1])
 

@@ -200,8 +200,8 @@ def getScale(hsOpt, hlist1, hlist2, skip1=-1, skip2=-1): #h2/h1
 
 def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, hl2):
 
-    if color: col = color
-    else: col = sam_opt[snames[0]]['fillcolor']
+    #if color: col = color
+    #else: col = sam_opt[snames[0]]['fillcolor']
 
     herr = histos[0].Clone("hs_error")  
     herr.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -209,13 +209,13 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, hl2):
     herr.Rebin(rebin)
     herr.GetXaxis().SetTitle(hsOpt['xname'])
     herr.GetYaxis().SetTitle('Events') #hsOpt['yname']
-    herr.GetYaxis().SetTitleSize(20)
-    herr.GetYaxis().SetTitleFont(43)
-    herr.GetYaxis().SetTitleOffset(1.40)
-    herr.GetYaxis().SetLabelFont(43)
-    herr.GetYaxis().SetLabelSize(18)
+    #herr.GetYaxis().SetTitleSize(30)
+    #herr.GetYaxis().SetTitleFont(43)
+    #herr.GetYaxis().SetTitleOffset(1.40)
+    #herr.GetYaxis().SetLabelFont(43)
+    #herr.GetYaxis().SetLabelSize(25)
     herr.SetFillStyle(3005)
-    herr.SetFillColor(col)
+   # herr.SetFillColor(col)
     herr.SetLineColor(922)
     herr.SetLineWidth(0)         
     herr.SetMarkerSize(0)
@@ -224,7 +224,7 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, hl2):
 
     hs   = THStack("hs","")
     for i, h in enumerate(histos):         
-        if color: col = color
+        if color: col = color[i]
         else: col = sam_opt[snames[i]]['fillcolor']
         #print sam_opt[snames[i]]['sam_name']
 
@@ -237,10 +237,10 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, hl2):
         print h.Integral()
         if fill: 
             h.SetFillColorAlpha(col,0.2)
-            h.SetFillStyle(1) #samOpt['fillstyle']
+            h.SetFillStyle(1)
         if i==len(histos)-1 :
-            h.SetLineStyle(1) #samOpt['linestyle']
-            h.SetLineWidth(2)  #samOpt['linewidth']
+            h.SetLineStyle(1)
+            h.SetLineWidth(2)
             h.SetLineColor(col)
             if not fill: 
                 h.SetMarkerSize(0.6)
@@ -428,6 +428,7 @@ def drawBinVar(hlist, snames, legstack, hsOpt, oDir, rebin, headerOpt, isMC):
 
 def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residuals, norm, oDir, colors, dofill, rebin, headerOpt, isMC):  
     gStyle.SetOptStat(False)
+    gStyle.SetOptTitle(0);
 
     c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
    # c1.cd()
@@ -483,9 +484,9 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         #for n, leg in enumerate(legstack1):
         #    legend.AddEntry(hlist1[n], leg)
         legend.AddEntry(hlist1[0], legstack1[0])
-        #legend.AddEntry(hlist1[len(hlist1)-2], legstack1[1]) #trg
-        #legend.AddEntry(hlist1[len(hlist1)-1], legstack1[2]) #trg
-        legend.AddEntry(hlist1[len(hlist1)-1], legstack1[1]) #debug
+        legend.AddEntry(hlist1[len(hlist1)-2], legstack1[1]) #trg
+        legend.AddEntry(hlist1[len(hlist1)-1], legstack1[2]) #trg
+        #legend.AddEntry(hlist1[len(hlist1)-1], legstack1[1]) #debug
     else:
         legend.AddEntry(hlist1[len(hlist1)-1], legstack1[0])
     if len(hlist1)>1: legend.AddEntry(herr1, 'bkg. unc. (stat.only)')
@@ -495,7 +496,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if(ymax > 1000): TGaxis.SetMaxDigits(3)
     hs1.SetMaximum(ymax)
     herr1.SetMaximum(ymax)
-    hs1.Draw("HISTsame")
+    hs1.Draw("HISTsame") #Esame
     if len(hlist1)>1: herr1.Draw("E2same")
     else: herr1.Draw("Esame")
     hs2.SetMaximum(ymax)
@@ -570,7 +571,10 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         hrat.GetXaxis().SetLabelFont(43)
         hrat.GetXaxis().SetLabelSize(20)
         hrat.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
-        hrat.GetYaxis().SetRangeUser(0.4,1.6)
+        if hrat.GetBinContent(1) == 0.: #sr only
+            hrat.GetYaxis().SetRangeUser(0.,3.0)
+        else:
+            hrat.GetYaxis().SetRangeUser(0.8,1.2)
         hrat.GetYaxis().SetTitleSize(20)
         hrat.GetYaxis().SetTitleFont(43)
         hrat.GetYaxis().SetTitleOffset(1.40)
@@ -669,7 +673,7 @@ def drawH1tdrAcc(hs, snames, leg,
     c1 = TCanvas("c1", 'acc', 800, 800)
     markers = [23,24,25]
 
-    legend = TLegend(0.48,0.7,0.9,0.9)
+    legend = TLegend(0.50,0.7,0.85,0.9)
     legend.SetBorderSize(0)
     legend.SetFillColor(0)
     legend.SetFillStyle(0)
@@ -684,11 +688,14 @@ def drawH1tdrAcc(hs, snames, leg,
             h =  h__.Clone('h')
         h.SetTitle("")
         h.Divide(hd) 
-        h.GetXaxis().SetTitle('b_{H} generator p_{T} (GeV)')
-        h.GetYaxis().SetTitle('b_{H} acceptance')
+        h.GetXaxis().SetTitle('generator p_{T} (GeV)')
+        h.GetYaxis().SetTitle('acceptance')
        # h.GetYaxis().SetTitleSize(20)
        # h.GetYaxis().SetTitleFont(43)
-        h.GetYaxis().SetTitleOffset(1.40)
+        h.GetYaxis().SetLabelOffset(0.010)
+        h.GetYaxis().SetTitleOffset(1.45)
+        h.GetXaxis().SetLabelOffset(0.010)
+        h.GetXaxis().SetTitleOffset(1.45)
        # h.GetYaxis().SetLabelFont(43)
        # h.GetYaxis().SetLabelSize(18)
         h.SetMaximum(1.15)
@@ -766,7 +773,7 @@ def drawH1tdr(hlist1, snames1, leg1, hsOpt, residuals, norm, oDir, colors, dofil
     #     if ("csv" in hsOpt['hname'] or "cmva" in hsOpt['hname']): ymax = 0.8
         if i == 0: ymax = h.GetMaximum()*1.15
         h.SetMaximum(ymax)
-        if i ==0: h.Draw("HISTEsame")
+        if i ==0: h.Draw("HISTEsame") 
         else: h.Draw("HISTEsame")
 
     nev1 = 0
@@ -916,15 +923,15 @@ def drawCMStdr(text, onTop=False):
     latex.SetTextColor(1)
     latex.SetTextFont(42)
     latex.SetTextAlign(33)
-    latex.DrawLatex(0.90, 0.94, "14 TeV, 0 PU")
+    latex.DrawLatex(0.90, 0.94, "14 TeV")
     if not onTop: latex.SetTextAlign(11)
     latex.SetTextFont(62)
     latex.SetTextSize(0.03 if len(text)>0 else 0.035)
     if not onTop:
-        latex.DrawLatex(0.15, 0.855, "CMS Phase-2  "+text)
+        latex.DrawLatex(0.15, 0.855, "CMS Phase-2   "+text)
         latex.SetTextFont(52)
-        latex.SetTextSize(0.02)
-        latex.DrawLatex(0.15, 0.830, "Simulation Preliminary")
+        latex.SetTextSize(0.030)
+        latex.DrawLatex(0.15, 0.822, "Simulation Preliminary")
 
 def setLegend(doRight, doTop):
     leg = TLegend(0.55,0.70,0.90,0.90)

@@ -49,10 +49,20 @@ hist_opt = {
        'rebin' : 1,
        'xname' : "muons pfIso03",
        'xmin'  : 0.,
-       'xmax'  : 0.1,
+       'xmax'  : 0.3,
        'xlog'  :  0,
        'yname' : "",
        'ylog'  : "" },     
+
+   "h_mu_iso04" : {
+       'hname' : "h_mu_iso04",
+       'rebin' : 1,
+       'xname' : "muons pfIso04",
+       'xmin'  : 0.,
+       'xmax'  : 0.3,
+       'xlog'  :  0,
+       'yname' : "",
+       'ylog'  : "" },
 
    "h_mu0_pt" : {
        'hname' : "h_mu0_pt",
@@ -69,10 +79,20 @@ hist_opt = {
        'rebin' : 1,
        'xname' : "muon0 pfIso03",
        'xmin'  : 0.,
-       'xmax'  : 0.1,
+       'xmax'  : 0.20,
        'xlog'  :  0,
        'yname' : "",
        'ylog'  : "" },     
+
+   "h_mu0_iso04" : {
+       'hname' : "h_mu0_iso04",
+       'rebin' : 1,
+       'xname' : "muon0 pfIso04",
+       'xmin'  : 0.,
+       'xmax'  : 0.20,
+       'xlog'  :  0,
+       'yname' : "",
+       'ylog'  : "" },
 
    "h_all_ht" : {
        'hname' : "h_all_ht",
