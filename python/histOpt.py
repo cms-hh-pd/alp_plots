@@ -688,6 +688,16 @@ hist_opt = {
        'ymin'  : 0.,
        'ymax'  : 600. },
 
+   "h2_bdt" : {
+       'hname' : "h2_bdt",
+       'rebin' : 1,
+       'xname' : "bdt output",
+       'xmin'  : 0.,
+       'xmax'  : 1.,
+       'yname' : "bdt output",
+       'ymin'  : 0.,
+       'ymax'  : 1. },
+
 #bdt
    "h_bdt_allVar" : {
        'hname' : "h_bdt_allVar",

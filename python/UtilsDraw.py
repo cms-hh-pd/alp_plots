@@ -571,10 +571,15 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         hrat.GetXaxis().SetLabelFont(43)
         hrat.GetXaxis().SetLabelSize(20)
         hrat.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
-        if hrat.GetBinContent(1) == 0.: #sr only
-            hrat.GetYaxis().SetRangeUser(0.,3.0)
-        else:
-            hrat.GetYaxis().SetRangeUser(0.8,1.2)
+        ymax_ = 1.2 
+        ymin_ = 0.8
+        ymax = 1.
+        ymin = 1.
+        for ibin in range(1, hrat.GetNbinsX()+1):       
+            binc = hrat.GetBinContent(ibin) 
+            if ymax_ > binc > ymax: ymax = (binc + 0.05)
+            if ymin_ < binc < ymin: ymin = (binc - 0.05)
+        hrat.GetYaxis().SetRangeUser(ymin,ymax)
         hrat.GetYaxis().SetTitleSize(20)
         hrat.GetYaxis().SetTitleFont(43)
         hrat.GetYaxis().SetTitleOffset(1.40)
@@ -587,23 +592,24 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         hrat.GetXaxis().SetTitle(hsOpt['xname'])
         hrat.GetYaxis().SetTitle('Data/MC')
         hrat.Draw("E X0")
+        herr.SetFillColor(430)
         herr.Draw("E2same")
 
-        l0 = TLine(hsOpt['xmin'],1.4,hsOpt['xmax'],1.4);
-        l1 = TLine(hsOpt['xmin'],1.2,hsOpt['xmax'],1.2);
+        #l0 = TLine(hsOpt['xmin'],1.4,hsOpt['xmax'],1.4);
+        l1 = TLine(hsOpt['xmin'],1.1,hsOpt['xmax'],1.1);
         l2 = TLine(hsOpt['xmin'],1.,hsOpt['xmax'],1.);
-        l3 = TLine(hsOpt['xmin'],0.8,hsOpt['xmax'],0.8);
-        l4 = TLine(hsOpt['xmin'],0.6,hsOpt['xmax'],0.6);
-        l0.SetLineStyle(3)
+        l3 = TLine(hsOpt['xmin'],0.9,hsOpt['xmax'],0.9);
+        #l4 = TLine(hsOpt['xmin'],0.6,hsOpt['xmax'],0.6);
+        #l0.SetLineStyle(3)
         l1.SetLineStyle(3)
         l2.SetLineStyle(3)
         l3.SetLineStyle(3)
-        l4.SetLineStyle(3)
-        l0.Draw("same")
+        #l4.SetLineStyle(3)
+        #l0.Draw("same")
         l1.Draw("same")
         l2.Draw("same")
         l3.Draw("same")
-        l4.Draw("same")
+        #l4.Draw("same")
 
         c1.SaveAs(oDir+"/"+hsOpt['hname']+"_rat.pdf")
         c1.SaveAs(oDir+"/"+hsOpt['hname']+"_rat.png")            
@@ -624,6 +630,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
             n2 = h2.GetBinContent(i)
             e1 = h1.GetBinError(i)
             e2 = h2.GetBinError(i)
+            print  n1, n2, e1, e2
             if n1 and n2 and e1 and e2 : 
                 hres.SetBinContent(i,(n2-n1)/math.sqrt(e1*e1+e2*e2)) #debug v1
             #elif not checkbin: hres.SetBinContent(i,0) #to avoid error
@@ -673,7 +680,7 @@ def drawH1tdrAcc(hs, snames, leg,
     c1 = TCanvas("c1", 'acc', 800, 800)
     markers = [23,24,25]
 
-    legend = TLegend(0.50,0.7,0.85,0.9)
+    legend = TLegend(0.50,0.7,0.85,0.85)
     legend.SetBorderSize(0)
     legend.SetFillColor(0)
     legend.SetFillStyle(0)
@@ -849,18 +856,36 @@ def drawH1only(hlist1, snames1, legstack1, hsOpt, oDir, colors, dofill, rebin, h
 #-------------------------
 
 
-def drawH2(hs, hsOpt, sname, oDir):
+def fillH2(h,h1):
+    h2 = (TH2D)("h2_bdt","h2_bdt",h.GetNbinsX(),0.,1.,h.GetNbinsX(),0.,1.) 
+    for i in range(1,h.GetNbinsX()):
+        for j in range(1,h1.GetNbinsX()):
+         h2.SetBinContent(i, j, h.GetBinContent(i)+h1.GetBinContent(j))
+         #print h2.GetBinContent(i,j)
+    return h2
+
+def drawH2(hs, hs1, hsOpt, sname, rebin, oDir, legs):
     gStyle.SetOptStat(False)
     legend = setLegend(1,1)
-    for i, h2 in enumerate(hs):
-        name = hsOpt['hname'] + "_" + sname[i]
+
+    if len(hs1):
+        hs2 = []
+        for h in hs:
+            for h1 in hs1:
+                hs2.append(fillH2(h1,h))
+    else:
+        hs2 = hs
+
+    for i, h2 in enumerate(hs2):
+        name = hsOpt['hname'] # + "_" + sname[i]
         print name
         c2 = TCanvas(name, name, 800, 800)       #debug
-        h2.Rebin2D(hsOpt['rebin'], hsOpt['rebin'])
+        print h2.GetBinContent(10)
+        h2.Rebin2D(rebin, rebin)
         h2.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         h2.GetYaxis().SetRangeUser(hsOpt['ymin'],hsOpt['ymax'])
-        h2.GetXaxis().SetTitle(hsOpt['xname'])
-        h2.GetYaxis().SetTitle(hsOpt['yname'])
+        h2.GetXaxis().SetTitle(hsOpt['xname']+" "+str(legs[1]))
+        h2.GetYaxis().SetTitle(hsOpt['yname']+" "+str(legs[0]))
 
         h2.GetXaxis().SetLabelFont(43)
         h2.GetXaxis().SetLabelSize(20)
@@ -878,12 +903,12 @@ def drawH2(hs, hsOpt, sname, oDir):
         palette = h2.FindObject("palette")
         #palette.GetAxis().SetLabelSize(0.005); #debug
         #palette.GetAxis().SetTitleSize(0.005);
-        drawCMS(12.9, "")
+       # drawCMS(12.9, "")
         c2.Update() 
 
         c2.SaveAs(oDir+"/"+name+".pdf")
         c2.SaveAs(oDir+"/"+name+".png")            
-#        c2.SaveAs(oDir+"/"+name+".root")  
+        c2.SaveAs(oDir+"/"+name+".root")  
 
     return True
 #------------
@@ -928,10 +953,13 @@ def drawCMStdr(text, onTop=False):
     latex.SetTextFont(62)
     latex.SetTextSize(0.03 if len(text)>0 else 0.035)
     if not onTop:
-        latex.DrawLatex(0.15, 0.855, "CMS Phase-2   "+text)
+        latex.DrawLatex(0.15, 0.85, "CMS Phase-2   "+text)
         latex.SetTextFont(52)
         latex.SetTextSize(0.030)
-        latex.DrawLatex(0.15, 0.822, "Simulation Preliminary")
+        latex.DrawLatex(0.15, 0.820, "Simulation")
+        latex.SetTextFont(52);
+        latex.SetTextSize(0.030);
+        latex.DrawLatex(0.15, 0.780, "pp #rightarrow HH #rightarrow b#bar{b}b#bar{b}");
 
 def setLegend(doRight, doTop):
     leg = TLegend(0.55,0.70,0.90,0.90)

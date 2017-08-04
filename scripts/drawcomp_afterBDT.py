@@ -26,10 +26,10 @@ parser.add_argument("-b", "--bdt"
 parser.add_argument("-o", "--oDir"     , help="output directory"        , default="plots_moriond")
 parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)"    , type=int, default=-1)
 parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==fit)" , type=int, default=0)
-parser.add_argument("-n", "--doNorm"    , help="do not normalize"       , action='store_false')
+parser.add_argument("-n", "--doNorm"    , help="do normalize"  , action='store_true')
 parser.add_argument("-c", "--noCustomCol" , help="do not use custom colors"       , action='store_true')
 parser.add_argument("-l", "--list", help="hist list" , dest="hlist", type=int, default=1)
-parser.set_defaults(doNorm=True, noCustomCol=False, plotResidual=False)
+parser.set_defaults(doNorm=False, noCustomCol=False, plotResidual=False)
 args = parser.parse_args()
 
 iDir       = '../hh2bbbb_limit/' #'/lustre/cmswork/hh/alp_afterMVA/'
@@ -86,6 +86,7 @@ intLumi_fb = 1. # plots normalized to this
 weights = [[],[]]
 sf = [[],[]]
 getVar = False
+drawH2 = False
 
 which = args.whichPlots
 
@@ -150,12 +151,12 @@ elif which == 0:
     fractions = ['test','test']
     regions = ['','']
     legList = [["ggHH4b SM"], ["bkg (mixed data)"]]  # - test fract
-    colorList = [632, 430]
+    colorList = [[632], [430]]
     dofill = [True,True]
     sf = [[9901117.35673],[1.]]
     isMC = True
     oname = 'comp_sigBkg_afterBDT'
-    headerOpt = "    test fr." #{}".format()
+    headerOpt = "    test sample" #{}".format()
 
 elif which == 1:
     samples = [['sig'], ['bkg']]
@@ -239,29 +240,115 @@ elif which == 8:
     isMC = False
     oname = 'comp_'+samples[0]+samples[1]+'_afterBDT'
 
+#elif which == 9:
+#    samples = [['bkg'],['data']] #data always  second
+#    fractions = ['test','']
+#    regions = ['msbdt','msbdt'] 
+#    legList = [["bkg (mixed data)"], ["data"]]
+#    colorList = [430, 1]
+#    sf = [[1.],[1.]]
+#    dofill = [True,False]
+#    isMC = False
+#    oname = 'comp_bkgdata_afterBDT'
+#    headerOpt = " BDT[0.8-1] & H1-H2 mass blinded" #h1-h2 mass cut
+
 elif which == 9:
-    samples = [['bkg'],['data']] #data always  second
-    fractions = ['test','']
-    regions = ['msbdt','msbdt'] 
-    legList = [["bkg (mixed data)"], ["data"]]
-    colorList = [430, 1]
-    sf = [[1.],[1.]]
-    dofill = [True,False]
-    isMC = False
-    oname = 'comp_bkgdata_afterBDT'
-    headerOpt = " BDT[0.8-1] & H1-H2 mass blinded" #h1-h2 mass cut
+    samples = [['sig'],['bkg']] #data always  second
+    fractions = ['test','test']
+    regions = ['ms','ms'] 
+    legList = [["ggHH4b SM"], ["mixed data"]]
+    colorList = [[632], [430]]
+    sf = [[(33.53*0.5824*0.5824/(4172119.0*0.2))],[0.25]]
+    dofill = [True,True]
+    isMC = True
+    oname = 'comp_sigbkgms_afterBDT'
+    headerOpt = "  H mass CR - test sam."
 
 elif which == 10:
     samples = [['bkg'],['data']] #data always  second
-    fractions = ['test','']
+    fractions = ['train','']
     regions = ['ms','ms'] 
-    legList = [["bkg (mixed data)"], ["data"]]
-    colorList = [430, 1]
-    sf = [[1.],[1.]]
+    legList = [["mixed data"], ["data"]]
+    colorList = [[430], [1]]
+    sf = [[0.25],[1.]]
     dofill = [True,False]
     isMC = False
     oname = 'comp_bkgdata_afterBDT'
-    headerOpt = "    H1-H2 mass blinded" #
+    headerOpt = "  H mass CR - train.sam." #
+
+elif which == 101:
+    samples = [['BTagCSVRun2016-mixed-extreme2'],['data']] #data always  second
+    fractions = ['','']
+    regions = ['ms2','ms2'] 
+    legList = [["mixed data"], ["data"]]
+    colorList = [[430], [1]]
+    sf = [[0.25],[1.]]
+    dofill = [True,False]
+    isMC = False
+    oname = 'comp_bkgExtr2data_afterBDT'
+    headerOpt = "  H mass CR2 - extreme2 sam." #
+    #drawH2 = True
+
+elif which == 102:
+    samples = [['BTagCSVRun2016-mixed-test-htall'],['data']] #data always  second --11nn
+    fractions = ['','']
+    regions = ['ms','ms'] 
+    legList = [["mixed data"], ["data"]]
+    colorList = [[430], [1]]
+    sf = [[0.25],[1.]]
+    dofill = [True,False]
+    isMC = False
+    oname = 'comp_bkgHtalldata_afterBDT'
+    headerOpt = "  H mass CR. htall" #
+   # drawH2 = True
+
+elif which == 1002:
+    samples = [['BTagCSVRun2016-mixed-train-pt1234'],['BTagCSVRun2016-mixed-11']] #data always  second
+    fractions = ['','']
+    regions = ['ms','ms'] 
+    legList = [["mixed data - new"], ["mixed data"]]
+    colorList = [[430], [435]]
+    sf = [[1.],[1.]]
+    dofill = [True,True]
+    isMC = False
+    oname = 'comp_bkgNewbkg_afterBDT'
+    headerOpt = " H mass CR.  n-n 1-1" #
+
+elif which == 103:
+    samples = [['bkg'],['bkg']] #data always  second
+    fractions = ['test','appl']
+    regions = ['',''] 
+    legList = [["mixed data - test"], ["mixed data - appl"]]
+    colorList = [[430], [435]]
+    sf = [[0.25],[0.25]]
+    dofill = [True,True]
+    isMC = False
+    oname = 'comp_bkgTestbkg_afterBDT'
+    headerOpt = "  "
+
+elif which == 104:
+    samples = [['BTagCSVRun2016-11'],['BTagCSVRun2016-11']] #bkg
+    fractions = ['train','appl']
+    regions = ['ms','ms'] 
+    legList = [["mixed mixed data - train"], ["mixed mixed data - appl"]]
+    colorList = [[430], [435]]
+    sf = [[0.25],[0.25]]
+    dofill = [True,True]
+    isMC = False
+    oname = 'comp_mixedmixed_afterBDT'
+    headerOpt = "  from n-n 1-1"
+
+elif which == 105:
+    samples = [['BTagCSVRun2016-11'],['BTagCSVRun2016-mixed-11']]
+    fractions = ['appl','']
+    regions = ['ms','ms'] 
+    legList = [["mixed mixed data - appl"], ["mixed data"]]
+    colorList = [[430], [435]]
+    sf = [[0.25],[1.]]
+    dofill = [True,True]
+    isMC = False
+    oname = 'comp_mixedmixedbkg_afterBDT'
+    headerOpt = "  Hmass CR -- from n-n 1-1"
 
 #elif which == 10:
 #    samples = [['bkg'],['bkg']] #data always  second
@@ -439,6 +526,42 @@ elif which == 22: # -l 0 !!
     sf = [[0.000076],[(33.53*0.5824*0.5824/(4172119.0*0.2))]]
     oname = 'comp_tthsig_afterBDT'
     headerOpt = "    "
+
+elif which == 23: # -l 0 !!
+    samples = [['ZHToBBQQ'],['sig']] #data always  second
+    fractions = ['','test']
+    regions = ['',''] #    regions = ['cr','cr']
+    legList = [["ZH to QQBB"], ["HH4b SM"]]
+    colorList = [[398], [632]]
+    dofill = [True,True]
+    isMC = True
+    sf = [[0.0007665],[(33.53*0.5824*0.5824/(4172119.0*0.2))]]
+    oname = 'comp_zhsig_afterBDT'
+    headerOpt = "    "
+
+elif which == 24: # -l 0 !!
+    samples = [['TTTT'],['sig']] #data always  second
+    fractions = ['','test']
+    regions = ['',''] #    regions = ['cr','cr']
+    legList = [["TTTT"], ["HH4b SM"]]
+    colorList = [[413], [632]]
+    dofill = [True,True]
+    isMC = True
+    sf = [[1.],[(33.53*0.5824*0.5824/(4172119.0*0.2))]] ## update xs!!
+    oname = 'comp_ttttsig_afterBDT'
+    headerOpt = "    "
+
+elif which == 25: # -l 0 !!
+    samples = [['ttbb'],['sig']] #data always  second
+    fractions = ['','test']
+    regions = ['',''] #    regions = ['cr','cr']
+    legList = [["ttbb"], ["HH4b SM"]]
+    colorList = [[420], [632]]
+    dofill = [True,True]
+    isMC = True
+    sf = [[1.],[(33.53*0.5824*0.5824/(4172119.0*0.2))]] ## update xs!!
+    oname = 'comp_ttbbsig_afterBDT'
+    headerOpt = "    "
    
 else: 
     print "ERROR: wrong '-w' argument"
@@ -515,9 +638,11 @@ for h in histList:
     hs1 = UtilsDraw.getHistos_bdt(h, filename, plotDirs1, weights[0], sf[0])
     hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDirs2, weights[1], sf[1])
 
-    if getVar: # variance check
+    if drawH2:
+        UtilsDraw.drawH2(hs1, hs2, hist_opt["h2_bdt"], snames1, args.clrebin, oDir, legList)
+    elif getVar: # variance check
         UtilsDraw.drawBinVar(hs1, snames1, legList[0], hOpt, oDir, args.clrebin, headerOpt, isMC)
-    if getChi: # chi square
+    elif getChi: # chi square
         UtilsDraw.drawChiSquare(hs1, snames1, legList[0], hs2, hOpt, oDir, xbmin, headerOpt, isMC, labels)
     else: 
         if hs1 and hs2:
