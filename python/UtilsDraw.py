@@ -9,7 +9,7 @@ from rootpy.plotting import Hist, Hist2D
 
 from Analysis.alp_analysis.alpSamplesOptions  import sam_opt
 
-##
+
 # UTILS
 #################
 def getNames(samlist):
@@ -34,10 +34,8 @@ def getHistos_bdt(hist, filename, plotDirs, weights, sf):
     tf = TFile(filename)
     if not tf: 
         print "WARNING: files do not exist"  
-    #print 'aa'
     for i, Dir in enumerate(plotDirs):
         hname = hist+"_"+Dir            
-        #print hname
         if(tf.Get(Dir+"/"+hname)):
             print Dir
             print hname
@@ -51,8 +49,6 @@ def getHistos_bdt(hist, filename, plotDirs, weights, sf):
                     sf_ = sf[i]
             print w*sf_
             h = tf.Get(Dir+"/"+hname)
-            #print h.GetName()
-            #print h.Integral()
             h.Scale(w*sf_)
             print h.Integral()
             hlist.append(h)
@@ -92,7 +88,6 @@ def getHistos(hist, filelist, plotDir, lumi, normtolumi, weight, sf):
         w = 1.
         sf_ = 1.
         tf = TFile(f)
-       # print f
         if not tf: 
             print "WARNING: files do not exist"  
 
@@ -119,7 +114,6 @@ def getHistos(hist, filelist, plotDir, lumi, normtolumi, weight, sf):
         print norm    
         if(tf.Get(plotDir+"/"+hist)):
             h = tf.Get(plotDir+"/"+hist)
-            #print "h1Int ",  h.GetBinContent(1), h.GetBinError(1)
             h.Scale(norm)
             hlist.append(h)
         else:
@@ -244,33 +238,8 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill):
         herr.Add(h)
     return hs, herr, h_
 
-##
 # DRAWING FUNCTIONS
 #################
-def drawEffH(histos, leg, fld, snames1, oDir, colors):
-    gStyle.SetOptStat(False)
-    ceff = TCanvas("ceff", "eff", 800, 800)
-
-    for i, h in enumerate(histos):
-        if i == 0: continue
-        h.SetMarkerStyle(8)
-        h.SetMarkerSize(0.9)
-        #h.GetXaxis().SetRangeUser(0,1)
-        h.SetMinimum(0.)
-        h.GetXaxis().SetTitle(leg)
-        h.GetYaxis().SetTitle("acc x eff")
-        h.SetLineColor(colors[i])
-        h.SetLineStyle(1)
-        h.SetLineWidth(2)
-        if i==1 : h.Draw("HIST")
-        else: h.Draw("HISTsame")
-
-    ceff.Update()
-    ceff.SaveAs(oDir+"/"+"eff.pdf")
-    ceff.SaveAs(oDir+"/"+"eff.png")
-    ceff.SaveAs(oDir+"/"+leg+".root")
-#------------
-
 def drawChiSquare(hlist, snames, legstack, h2, hsOpt, oDir, xbmin, headerOpt, isMC, labels):  
     gStyle.SetOptStat(False)
     c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
@@ -298,7 +267,6 @@ def drawChiSquare(hlist, snames, legstack, h2, hsOpt, oDir, xbmin, headerOpt, is
             print b, x_data[b-xbmin] 
             if (x+x_data[b-xbmin]) > 0: chisq_[i] += pow((x_data[b-xbmin]-x),2)/(x+x_data[b-xbmin])
             else: 
-#                chisq_[i] +=-99.
                 print 'sample data bin {} : null bin content?'.format(b)       
 
     print "\n", n_sample  
@@ -310,12 +278,11 @@ def drawChiSquare(hlist, snames, legstack, h2, hsOpt, oDir, xbmin, headerOpt, is
 
     for i, h in enumerate(hlist):         
         hchi.SetBinContent(i+1, chisq_[i])
-#        hchi.SetBinError(j+1, dDiff)
+       #hchi.SetBinError(j+1, dDiff)
         print hchi.GetBinContent(i+1) #, hvar.GetBinError(j+1)       
 
     x_axis = hchi.GetXaxis()
     for b_n, label in enumerate(labels): 
-       # print b_n+1, label
         x_axis.SetBinLabel(b_n+1, label)        
 
     hchi.GetYaxis().SetTitle("chi2 data-mixed")
@@ -323,10 +290,9 @@ def drawChiSquare(hlist, snames, legstack, h2, hsOpt, oDir, xbmin, headerOpt, is
     drawCMS(35.9, headerOpt)
 
     c1.Update()    
-    c1.SaveAs(oDir+"/"+"bdtChisq_allnn.pdf") #allnn   5nn
-    c1.SaveAs(oDir+"/"+"bdtChisq_allnn.png")  #allnn    5nn    
-    c1.SaveAs(oDir+"/"+"bdtChisq_allnn.root")  #allnn  5nn      
-
+    c1.SaveAs(oDir+"/"+"bdtChisq_allnn.pdf")
+    c1.SaveAs(oDir+"/"+"bdtChisq_allnn.png")
+    c1.SaveAs(oDir+"/"+"bdtChisq_allnn.root")
 #------------
 
 def drawBinVar(hlist, snames, legstack, hsOpt, oDir, rebin, headerOpt, isMC):  
@@ -352,41 +318,36 @@ def drawBinVar(hlist, snames, legstack, hsOpt, oDir, rebin, headerOpt, isMC):
 
     for i, h in enumerate(hlist):         
         n_sample +=1
-        #h.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
-        #h.SetMinimum(0.)
         for b in range(1, nbins+1):
             x = h.GetBinContent(b)
             if b==nbins: print b, x
             x_[b-1] += x
             xsq_[b-1] += pow(x,2)
-            #print b, xs_mean[b-1], xs_sqmean[b-1]
-
     print "\n", n_sample
 
     for k in range(0, nbins):
         xs_mean.append(x_[k]/n_sample)
         xs_sqmean.append(xsq_[k]/n_sample)
-        #print k, xs_mean[k], xs_sqmean[k]
 
     for i, h in enumerate(hlist):         
         for b in range(1, nbins+1):
             x = h.GetBinContent(b)
-#            sum_err[b-1] +=  (pow(x,2) + pow(xs_mean[b-1],2) + 2*x*xs_mean[b-1])*x            
+           #sum_err[b-1] +=  (pow(x,2) + pow(xs_mean[b-1],2) + 2*x*xs_mean[b-1])*x            
             sum_err[b-1] += pow((2*x - 2*xs_mean[b-1] -1),2)*x
 
     for j, m in enumerate(xs_mean):
         var = (xs_sqmean[j] - pow(m,2))
-        #dVar = math.sqrt(4./pow(n_sample,2)*sum_err[j])
-        #dVar = 2*pow(var,2)/(n_sample-1)
-        #print var #, dVar
-        #print m, math.sqrt(m)
+       #dVar = math.sqrt(4./pow(n_sample,2)*sum_err[j])
+       #dVar = 2*pow(var,2)/(n_sample-1)
+       #print var #, dVar
+       #print m, math.sqrt(m)
 
-       # if x>0. : 
-           # r = var / m
-           # dRat = math.sqrt(pow(dVar/var,2)+pow(math.sqrt(m)/m,2))*r
+       #if x>0. : 
+       #r = var / m
+       #dRat = math.sqrt(pow(dVar/var,2)+pow(math.sqrt(m)/m,2))*r
         diff = var - m        
         dDiff = math.sqrt(1./pow(n_sample,2)*sum_err[j])
-       # else: 
+       #else: 
         #    print 'null mean - r set to zero'
          #   diff = 0.
           #  dDiff = 0.
@@ -395,8 +356,6 @@ def drawBinVar(hlist, snames, legstack, hsOpt, oDir, rebin, headerOpt, isMC):
         hvar.SetBinError(j+1, dDiff)
         print hvar.GetBinContent(j+1), hvar.GetBinError(j+1)       
 
-#    h.SetMarkerSize(0.6)
-#    h.SetMarkerColor(col)
     hvar.GetYaxis().SetTitle("mean-Variance")
     hvar.Draw("PE")
     legend = setLegend(1,1)
@@ -410,10 +369,9 @@ def drawBinVar(hlist, snames, legstack, hsOpt, oDir, rebin, headerOpt, isMC):
     l.SetLineStyle(3)
     l.Draw("same")
     c1.Update()    
-    c1.SaveAs(oDir+"/"+"bdtVar_nn.pdf") #allnn   5nn
-    c1.SaveAs(oDir+"/"+"bdtVar_nn.png")  #allnn    5nn    
-    c1.SaveAs(oDir+"/"+"bdtVar_nn.root")  #allnn  5nn      
-
+    c1.SaveAs(oDir+"/"+"bdtVar_nn.pdf")
+    c1.SaveAs(oDir+"/"+"bdtVar_nn.png")
+    c1.SaveAs(oDir+"/"+"bdtVar_nn.root")
 #------------
 
 def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residuals, norm, oDir, colors, dofill, rebin, headerOpt, isMC):#, ran1,ran2):  #debug
@@ -821,14 +779,10 @@ def drawH1tdrAcc(hs, snames, leg,
         h.Divide(hd) 
         h.GetXaxis().SetTitle('generator p_{T} (GeV)')
         h.GetYaxis().SetTitle('acceptance')
-       #h.GetYaxis().SetTitleSize(20)
-       #h.GetYaxis().SetTitleFont(43)
         h.GetYaxis().SetLabelOffset(0.010)
         h.GetYaxis().SetTitleOffset(1.45)
         h.GetXaxis().SetLabelOffset(0.010)
         h.GetXaxis().SetTitleOffset(1.45)
-       #h.GetYaxis().SetLabelFont(43)
-       #h.GetYaxis().SetLabelSize(18)
         h.SetMaximum(1.15)
         h.GetXaxis().SetRangeUser(0.,100.)
         h.SetMarkerStyle(markers[i-1])
@@ -979,7 +933,6 @@ def fillH2(h,h1):
     for i in range(1,h.GetNbinsX()):
         for j in range(1,h1.GetNbinsX()):
          h2.SetBinContent(i, j, h.GetBinContent(i)+h1.GetBinContent(j))
-         #print h2.GetBinContent(i,j)
     return h2
 
 def drawH2(hs, hs1, hsOpt, sname, rebin, oDir, legs):
@@ -995,9 +948,9 @@ def drawH2(hs, hs1, hsOpt, sname, rebin, oDir, legs):
         hs2 = hs
 
     for i, h2 in enumerate(hs2):
-        name = hsOpt['hname'] # + "_" + sname[i]
+        name = hsOpt['hname']
         print name
-        c2 = TCanvas(name, name, 800, 800)       #debug
+        c2 = TCanvas(name, name, 800, 800)
         print h2.GetBinContent(10)
         h2.Rebin2D(rebin, rebin)
         h2.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -1019,9 +972,6 @@ def drawH2(hs, hs1, hsOpt, sname, rebin, oDir, legs):
         h2.Draw("COLZ")
         c2.Update() 
         palette = h2.FindObject("palette")
-        #palette.GetAxis().SetLabelSize(0.005); #debug
-        #palette.GetAxis().SetTitleSize(0.005);
-       # drawCMS(12.9, "")
         c2.Update() 
 
         c2.SaveAs(oDir+"/"+name+".pdf")
@@ -1031,8 +981,6 @@ def drawH2(hs, hs1, hsOpt, sname, rebin, oDir, legs):
     return True
 #------------
 
-
-##
 # DRAWING TOOLS
 #################
 def plotH(hlist, h, herr, fill):
