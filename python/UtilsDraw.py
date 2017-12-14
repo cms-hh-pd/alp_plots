@@ -471,16 +471,18 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     else: drawCMS(35.9, headerOpt)
     legend = setLegend(1,1)
     legend.AddEntry(hlist2[len(hlist2)-1], legstack2[0]) #debug - one leg for second samplelist
-    if len(legstack1) > 1:
-        for n, leg in enumerate(legstack1):
-            if n < 4: continue #to skip qcd bins                6
-            legend.AddEntry(hlist1[n], leg)
-        legend.AddEntry(hlist1[0], legstack1[0])
-        legend.AddEntry(hlist1[len(hlist1)-2], legstack1[1]) #trg
-        legend.AddEntry(hlist1[len(hlist1)-1], legstack1[2]) #trg
-        legend.AddEntry(hlist1[len(hlist1)-1], legstack1[1]) #debug
-    else:
-        legend.AddEntry(hlist1[len(hlist1)-1], legstack1[0])
+    nskip = 0
+    match = False 
+    for n, sam in enumerate(snames1):
+        print sam, n, nskip
+        # to get one legend for all HT bins - to be implemented for other samples         
+        if sam.find("QCD")>=0 and match: 
+            nskip+=1 
+            continue
+        if len(legstack1) > n-nskip:
+            if sam.find("QCD")>=0: match = True
+            legend.AddEntry(hlist1[n], legstack1[n-nskip])            
+            print legstack1[n-nskip], snames1[n], n, nskip
     if len(hlist1)>1: legend.AddEntry(herr1, 'bkg. unc. (stat.only)')
     legend.Draw("same")
     #-------------
