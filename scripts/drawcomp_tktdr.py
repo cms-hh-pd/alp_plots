@@ -121,7 +121,7 @@ elif args.whichPlots == 2:
 elif args.whichPlots == 3:
     samlist1 = ['SM']
     optList1 = ["g_PU0_20.0_4.0_cmva"]
-    legList = [["b_{H} generator |#eta| < 2.5","b_{H} generator |#eta| < 3.0","b_{H} generator |#eta| < 4.0"]]
+    legList = [["generator |#eta| < 2.5","generator |#eta| < 3.0","generator |#eta| < 4.0"]]
     colorList = [2,4,1]
     doNormToLumi = [[False, False,False],[]]
     histList   = ["h_gjetspt", "h_gjetspt_eta0", "h_gjetspt_eta1", "h_gjetspt_eta2"]

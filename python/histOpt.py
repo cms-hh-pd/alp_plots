@@ -49,10 +49,20 @@ hist_opt = {
        'rebin' : 1,
        'xname' : "muons pfIso03",
        'xmin'  : 0.,
-       'xmax'  : 0.1,
+       'xmax'  : 0.3,
        'xlog'  :  0,
        'yname' : "",
        'ylog'  : "" },     
+
+   "h_mu_iso04" : {
+       'hname' : "h_mu_iso04",
+       'rebin' : 1,
+       'xname' : "muons pfIso04",
+       'xmin'  : 0.,
+       'xmax'  : 0.3,
+       'xlog'  :  0,
+       'yname' : "",
+       'ylog'  : "" },
 
    "h_mu0_pt" : {
        'hname' : "h_mu0_pt",
@@ -69,10 +79,20 @@ hist_opt = {
        'rebin' : 1,
        'xname' : "muon0 pfIso03",
        'xmin'  : 0.,
-       'xmax'  : 0.1,
+       'xmax'  : 0.20,
        'xlog'  :  0,
        'yname' : "",
        'ylog'  : "" },     
+
+   "h_mu0_iso04" : {
+       'hname' : "h_mu0_iso04",
+       'rebin' : 1,
+       'xname' : "muon0 pfIso04",
+       'xmin'  : 0.,
+       'xmax'  : 0.20,
+       'xlog'  :  0,
+       'yname' : "",
+       'ylog'  : "" },
 
    "h_all_ht" : {
        'hname' : "h_all_ht",
@@ -128,9 +148,9 @@ hist_opt = {
 
    "h_jets_csv" : {
        'hname' : "h_jets_csv",
-       'rebin' : 2, #1
+       'rebin' : 2,
        'xname' : "jets CSV",
-       'xmin'  : 0.,# 0.5 0.75
+       'xmin'  : 0.,
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -138,9 +158,9 @@ hist_opt = {
 
    "h_jet0_csv" : {
        'hname' : "h_jet0_csv",
-       'rebin' : 2, #1
+       'rebin' : 2,
        'xname' : "jet0 CSV",
-       'xmin'  : 0.,# 0.5 0.75 0.4
+       'xmin'  : 0.,
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -148,9 +168,9 @@ hist_opt = {
 
    "h_jet1_csv" : {
        'hname' : "h_jet1_csv",
-       'rebin' : 2, #4 1
+       'rebin' : 2,
        'xname' : "jet1 CSV",
-       'xmin'  : 0.,#0. 0.75 0.4
+       'xmin'  : 0.,
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -158,9 +178,9 @@ hist_opt = {
 
    "h_jet2_csv" : {
        'hname' : "h_jet2_csv",
-       'rebin' : 2, #1
+       'rebin' : 2,
        'xname' : "jet2 CSV",
-       'xmin'  : 0.,#0.75 0.4
+       'xmin'  : 0.,
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -168,9 +188,9 @@ hist_opt = {
 
    "h_jet3_csv" : {
        'hname' : "h_jet3_csv",
-       'rebin' : 2, #1
+       'rebin' : 2,
        'xname' : "jet3 CSV",
-       'xmin'  : 0.,#0.75 o.4
+       'xmin'  : 0.,
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -220,7 +240,7 @@ hist_opt = {
        'hname' : "h_jet3_cmva",
        'rebin' : 4, 
        'xname' : "jet3 CMVA",
-       'xmin'  : -1.,#0.1, #-1
+       'xmin'  : -1., #0.1,
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -231,7 +251,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jets pT [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 300.,#300.,
+       'xmax'  : 300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -241,7 +261,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 0 pT [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 300.,#300.,
+       'xmax'  : 400.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -251,7 +271,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 1 pT [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 300.,#300.,
+       'xmax'  : 400.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -261,7 +281,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 2 pT [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 300.,#300.,
+       'xmax'  : 400.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -271,7 +291,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 3 pT [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 300, #300.,
+       'xmax'  : 400,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -281,7 +301,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 0 pT (pt sorted)",
        'xmin'  : 0.,
-       'xmax'  : 300., #300.,
+       'xmax'  : 300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -291,7 +311,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 1 pT (pt sorted) [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 300., #300.,
+       'xmax'  : 300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -329,9 +349,9 @@ hist_opt = {
    "h_jet0_eta" : {
        'hname' : "h_jet0_eta",
        'rebin' : 1,
-       'xname' : "jet 0 |#eta|",
-       'xmin'  : 0.,
-       'xmax'  : 4.5,
+       'xname' : "jet 0 #eta",
+       'xmin'  : -3.5,
+       'xmax'  : 3.5,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -339,9 +359,9 @@ hist_opt = {
    "h_jet1_eta" : {
        'hname' : "h_jet1_eta",
        'rebin' : 1,
-       'xname' : "jet 1 |#eta|",
-       'xmin'  : 0.,
-       'xmax'  : 4.5,
+       'xname' : "jet 1 #eta",
+       'xmin'  : -3.5,
+       'xmax'  : 3.5,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -349,9 +369,9 @@ hist_opt = {
    "h_jet2_eta" : {
        'hname' : "h_jet2_eta",
        'rebin' : 1,
-       'xname' : "jet 2 |#eta|",
-       'xmin'  : 0.,
-       'xmax'  : 4.5,
+       'xname' : "jet 2 #eta",
+       'xmin'  : -3.5,
+       'xmax'  : 3.5,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -359,9 +379,9 @@ hist_opt = {
    "h_jet3_eta" : {
        'hname' : "h_jet3_eta",
        'rebin' : 1,
-       'xname' : "jet 3 |#eta|",
-       'xmin'  : 0.,
-       'xmax'  : 4.5,
+       'xname' : "jet 3 #eta",
+       'xmin'  : -3.5,
+       'xmax'  : 3.5,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -371,7 +391,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 0 pT (pt sorted) [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 900., #300.,
+       'xmax'  : 900.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -572,7 +592,7 @@ hist_opt = {
        'rebin' : 10,
        'xname' : "di-higgs candidate mass [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 1200.,
+       'xmax'  : 1500.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -668,6 +688,16 @@ hist_opt = {
        'ymin'  : 0.,
        'ymax'  : 600. },
 
+   "h2_bdt" : {
+       'hname' : "h2_bdt",
+       'rebin' : 1,
+       'xname' : "bdt output",
+       'xmin'  : 0.,
+       'xmax'  : 1.,
+       'yname' : "bdt output",
+       'ymin'  : 0.,
+       'ymax'  : 1. },
+
 #bdt
    "h_bdt_allVar" : {
        'hname' : "h_bdt_allVar",
@@ -726,7 +756,7 @@ hist_opt = {
        'hname' : "h_cmva3",
        'rebin' : 4, 
        'xname' : "3rd CMVA (cmva sorted)",
-       'xmin'  : 0.1,
+       'xmin'  : -1.,
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -736,7 +766,7 @@ hist_opt = {
        'hname' : "h_cmva4",
        'rebin' : 4, 
        'xname' : "4th CMVA (cmva sorted)",
-       'xmin'  : -1., #0.1, # 0.1,
+       'xmin'  : -1., #0.1,
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -777,7 +807,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "gen jets pT [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 400.,#300.,
+       'xmax'  : 400.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -787,7 +817,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 0 pT [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 300.,#300.,
+       'xmax'  : 300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -797,7 +827,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 1 pT [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 300.,#300.,
+       'xmax'  : 300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -807,7 +837,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 2 pT [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 300.,#300.,
+       'xmax'  : 300.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },
@@ -817,7 +847,7 @@ hist_opt = {
        'rebin' : 4,
        'xname' : "jet 3 pT [GeV]",
        'xmin'  : 0.,
-       'xmax'  : 300, #300.,
+       'xmax'  : 300,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "" },

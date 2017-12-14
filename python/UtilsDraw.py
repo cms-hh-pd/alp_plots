@@ -201,19 +201,13 @@ def getScale(hsOpt, hlist1, hlist2, skip1=-1, skip2=-1): #h2/h1
 def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, hl2):
 
     if color: col = color
-    else: col = sam_opt[snames[0]]['fillcolor']
+    else: col = sam_opt[snames[0]]['fillcolor'] #debug---
 
     herr = histos[0].Clone("hs_error")  
     herr.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
     herr.Reset()
     herr.Rebin(rebin)
     herr.GetXaxis().SetTitle(hsOpt['xname'])
-    herr.GetYaxis().SetTitle('Events') #hsOpt['yname']
-    herr.GetYaxis().SetTitleSize(20)
-    herr.GetYaxis().SetTitleFont(43)
-    herr.GetYaxis().SetTitleOffset(1.40)
-    herr.GetYaxis().SetLabelFont(43)
-    herr.GetYaxis().SetLabelSize(18)
     herr.SetFillStyle(3005)
     herr.SetFillColor(col)
     herr.SetLineColor(922)
@@ -224,7 +218,7 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, hl2):
 
     hs   = THStack("hs","")
     for i, h in enumerate(histos):         
-        if color: col = color
+        if color: col = color[i]
         else: col = sam_opt[snames[i]]['fillcolor']
         #print sam_opt[snames[i]]['sam_name']
 
@@ -237,10 +231,10 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, hl2):
         print h.Integral()
         if fill: 
             h.SetFillColorAlpha(col,0.2)
-            h.SetFillStyle(1) #samOpt['fillstyle']
+            h.SetFillStyle(1)
         if i==len(histos)-1 :
-            h.SetLineStyle(1) #samOpt['linestyle']
-            h.SetLineWidth(2)  #samOpt['linewidth']
+            h.SetLineStyle(1)
+            h.SetLineWidth(2)
             h.SetLineColor(col)
             if not fill: 
                 h.SetMarkerSize(0.6)
@@ -426,11 +420,11 @@ def drawBinVar(hlist, snames, legstack, hsOpt, oDir, rebin, headerOpt, isMC):
 
 #------------
 
-def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residuals, norm, oDir, colors, dofill, rebin, headerOpt, isMC):  
+def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residuals, norm, oDir, colors, dofill, rebin, headerOpt, isMC):#, ran1,ran2):  #debug
     gStyle.SetOptStat(False)
+    gStyle.SetOptTitle(0);
 
     c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
-   # c1.cd()
     if residuals==-1:
         pad1 = TPad("pad1", "pad1", 0, 0.3, 1, 1.0)
         pad1.SetBottomMargin(0.03) 
@@ -451,7 +445,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.15
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.15
     if isNevts:  print "h1Int ",  h1.GetBinContent(1), h1.GetBinError(1)
-#    if hsOpt['hname']=="h_jets_n":  print "h1Int ",  h1.Integral(), h1.GetBinError(1)
+    print 'h1bins', h1.GetNbinsX()
 
     if(norm): scale2 = getScale(hsOpt,hlist2, hlist2)
     else: scale2 = 1.
@@ -460,9 +454,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.15
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.15
     if isNevts:  print "h2Int ",  h2.GetBinContent(1), h2.GetBinError(1)
-#    if hsOpt['hname']=="h_jets_n":  print "h2Int ",  h2.Integral(), h2.GetBinError(1)
-
-    #print herr1.GetBinContent(1), herr1.GetBinError(1)
+    print 'h2bins', h2.GetNbinsX()
 
    #debug -- needed before drawing hs
     herr1.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -480,11 +472,12 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     legend = setLegend(1,1)
     legend.AddEntry(hlist2[len(hlist2)-1], legstack2[0]) #debug - one leg for second samplelist
     if len(legstack1) > 1:
-        #for n, leg in enumerate(legstack1):
-        #    legend.AddEntry(hlist1[n], leg)
+        for n, leg in enumerate(legstack1):
+            if n < 4: continue #to skip qcd bins                6
+            legend.AddEntry(hlist1[n], leg)
         legend.AddEntry(hlist1[0], legstack1[0])
-        #legend.AddEntry(hlist1[len(hlist1)-2], legstack1[1]) #trg
-        #legend.AddEntry(hlist1[len(hlist1)-1], legstack1[2]) #trg
+        legend.AddEntry(hlist1[len(hlist1)-2], legstack1[1]) #trg
+        legend.AddEntry(hlist1[len(hlist1)-1], legstack1[2]) #trg
         legend.AddEntry(hlist1[len(hlist1)-1], legstack1[1]) #debug
     else:
         legend.AddEntry(hlist1[len(hlist1)-1], legstack1[0])
@@ -495,16 +488,16 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if(ymax > 1000): TGaxis.SetMaxDigits(3)
     hs1.SetMaximum(ymax)
     herr1.SetMaximum(ymax)
-    hs1.Draw("HISTsame")
+    hs1.Draw("HISTsame") #Esame
     if len(hlist1)>1: herr1.Draw("E2same")
     else: herr1.Draw("Esame")
     hs2.SetMaximum(ymax)
     herr2.SetMaximum(ymax)
     if dofill[1]: hs2.Draw("HISTsame")
     else: hs2.Draw("Esame")
-    #if len(hlist2)>1: herr2.Draw("E2same")
+    if len(hlist2)>1: herr2.Draw("E2same")
     herr2.Draw("Esameaxis")
-#h1->Draw("sameaxis")
+#    h1->Draw("sameaxis")
 
     nev1 = 0
     nev2 = 0
@@ -529,17 +522,23 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     else:
         herr1.GetXaxis().SetLabelSize(0.)
 
-    if residuals==-1: # simple ratio -- data as h2!!!
+    if residuals==-3: # division
         c1.cd()
         pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.3)
         pad2.SetTopMargin(0.)
         pad2.SetBottomMargin(0.2)
         pad2.Draw()
         pad2.cd()
-        hrat = h2.Clone("h_rat")
-        hrat.Divide(h1)
-        # consider only data error in the ratio plot
+        hrat = h2.Clone("h_div")
+        hb = h2.Clone("h_bias")
+
+        for i in range(0, len(bias)):
+            hb.SetBinContent(i+1, bias[i])
+            print(hb.GetBinContent(i+1))
+
         for ibin in range(1, h2.GetNbinsX()+1):
+            hrat.SetBinContent(ibin, h1.GetBinContent(ibin)-h2.GetBinContent(ibin) )
+            print(hrat.GetBinContent(ibin))
             if(h2.GetBinContent(ibin)>0): 
                 hrat.SetBinError(ibin, h2.GetBinError(ibin)/h2.GetBinContent(ibin) )
             else: 
@@ -570,7 +569,19 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         hrat.GetXaxis().SetLabelFont(43)
         hrat.GetXaxis().SetLabelSize(20)
         hrat.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
-        hrat.GetYaxis().SetRangeUser(0.4,1.6)
+        minbin = hrat.GetXaxis().GetFirst()
+        maxbin = hrat.GetXaxis().GetLast()
+        #print minbin, maxbin        
+        ymax_ = 1000 #1.5 
+        ymax = 800.
+        ymin_ = 0.5
+        ymin = -200.
+
+#        ymax =ran1
+#        ymin =ran2
+
+       # print 'rb', rb      
+        hrat.GetYaxis().SetRangeUser(ymin,ymax)
         hrat.GetYaxis().SetTitleSize(20)
         hrat.GetYaxis().SetTitleFont(43)
         hrat.GetYaxis().SetTitleOffset(1.40)
@@ -581,25 +592,157 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         hrat.SetMarkerColor(1)
         hrat.SetLineColor(1)
         hrat.GetXaxis().SetTitle(hsOpt['xname'])
-        hrat.GetYaxis().SetTitle('Data/MC')
-        hrat.Draw("E X0")
-        herr.Draw("E2same")
+        hrat.GetYaxis().SetTitle('exp - obs')
 
+
+        c00 = TCanvas("c0", "", 800, 800)    
+        c00.cd()
+        hrat.Draw("X0")
+        hb.SetMarkerColor(2)
+        hb.SetMarkerSize(0.8)
+        hb.Draw("same X0")
+       # herr.SetFillColor(430)
+       # herr.Draw("E2same")
+        c00.SaveAs(oDir+"/"+hsOpt['hname']+"_div2.root")
+        c00.SaveAs(oDir+"/"+hsOpt['hname']+"_div2.png")
+
+        l = TLine(hsOpt['xmin'],1.5,hsOpt['xmax'],1.5);
         l0 = TLine(hsOpt['xmin'],1.4,hsOpt['xmax'],1.4);
-        l1 = TLine(hsOpt['xmin'],1.2,hsOpt['xmax'],1.2);
+        l00 = TLine(hsOpt['xmin'],1.3,hsOpt['xmax'],1.3);
+        l000 = TLine(hsOpt['xmin'],1.2,hsOpt['xmax'],1.2);
+        l1 = TLine(hsOpt['xmin'],1.1,hsOpt['xmax'],1.1);
         l2 = TLine(hsOpt['xmin'],1.,hsOpt['xmax'],1.);
-        l3 = TLine(hsOpt['xmin'],0.8,hsOpt['xmax'],0.8);
-        l4 = TLine(hsOpt['xmin'],0.6,hsOpt['xmax'],0.6);
+        l3 = TLine(hsOpt['xmin'],0.9,hsOpt['xmax'],0.9);
+        l4 = TLine(hsOpt['xmin'],0.8,hsOpt['xmax'],0.8);
+        l.SetLineStyle(3)
         l0.SetLineStyle(3)
+        l00.SetLineStyle(3)
+        l000.SetLineStyle(3)
         l1.SetLineStyle(3)
         l2.SetLineStyle(3)
         l3.SetLineStyle(3)
         l4.SetLineStyle(3)
-        l0.Draw("same")
-        l1.Draw("same")
+        #l.Draw("same")
+        #l0.Draw("same")
+        #l00.Draw("same")
+        #l000.Draw("same")
+        #l1.Draw("same")
         l2.Draw("same")
-        l3.Draw("same")
-        l4.Draw("same")
+        #if ymin<0.9: l3.Draw("same")
+        #if ymin<0.8: l4.Draw("same")
+
+        c1.SaveAs(oDir+"/"+hsOpt['hname']+"_div.pdf")
+        c1.SaveAs(oDir+"/"+hsOpt['hname']+"_div.png")            
+        c1.SaveAs(oDir+"/"+hsOpt['hname']+"_div.root") 
+        c1.Clear()
+
+    if residuals==-1: # simple ratio -- data as h2!!!
+        c1.cd()
+        pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.3)
+        pad2.SetTopMargin(0.)
+        pad2.SetBottomMargin(0.2)
+        pad2.Draw()
+        pad2.cd()
+        hrat = h2.Clone("h_rat")
+        hrat.Divide(h1)
+        # consider only data error in the ratio plot
+        for ibin in range(1, h2.GetNbinsX()+1):
+            print(h2.GetBinContent(ibin))
+            if(h2.GetBinContent(ibin)>0): 
+                hrat.SetBinError(ibin, h2.GetBinError(ibin)/h2.GetBinContent(ibin) )
+            else: 
+                hrat.SetBinError(ibin, 0.)
+
+        # MC uncertainy shadow plot
+        herr = herr1.Clone("h_err")
+        herr.Reset()
+        for ibin in range(1, herr1.GetNbinsX()+1):
+            if(herr1.GetBinContent(ibin)>0): 
+                herr.SetBinContent (ibin, 1.)
+                herr.SetBinError   (ibin, herr1.GetBinError(ibin)/herr1.GetBinContent(ibin))
+            else: 
+                herr.SetBinContent(ibin, 1.)
+                herr.SetBinError   (ibin, 0.)
+
+        #for i in range(1, hrat.GetXaxis().GetNbins()+1):
+        #    n1 = h1.GetBinContent(i)
+        #    n2 = h2.GetBinContent(i)
+        #    if n1 and n2 and e1 and e2 : 
+        #        hrat.SetBinContent(i,n2/n1)
+        # to chek just histos ratio:
+
+        hrat.SetTitle("")
+        hrat.GetXaxis().SetTitleSize(20)
+        hrat.GetXaxis().SetTitleFont(43)
+        hrat.GetXaxis().SetTitleOffset(4.)
+        hrat.GetXaxis().SetLabelFont(43)
+        hrat.GetXaxis().SetLabelSize(20)
+        hrat.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+        minbin = hrat.GetXaxis().GetFirst()
+        maxbin = hrat.GetXaxis().GetLast()
+        #print minbin, maxbin        
+        ymax_ = 1.5 #1.5 
+        ymax = 1.
+        ymin_ = 0.5 #0.5
+        ymin = 1.
+
+#        ymax =ran1
+#        ymin =ran2
+
+       # print 'rb', rb      
+        for ibin in range(minbin, maxbin+1):       
+            binc = hrat.GetBinContent(ibin) 
+            #print ibin, binc
+            if binc == 0. or (binc is None): 
+             continue
+            if binc*1.05 > ymax: 
+              ymax = binc*1.05
+     ##       if binc > ymax_:  
+     ##         ymax = ymax_
+            if binc*0.95 < ymin: 
+                ymin = binc*0.95
+ ##           if binc < ymin_:  
+   ##           ymin = ymin_
+        hrat.GetYaxis().SetRangeUser(ymin,ymax)
+        hrat.GetYaxis().SetTitleSize(20)
+        hrat.GetYaxis().SetTitleFont(43)
+        hrat.GetYaxis().SetTitleOffset(1.40)
+        hrat.GetYaxis().SetLabelFont(43)
+        hrat.GetYaxis().SetLabelSize(18)
+        hrat.SetMarkerStyle(8)
+        hrat.SetMarkerSize(0.8)
+        hrat.SetMarkerColor(1)
+        hrat.SetLineColor(1)
+        hrat.GetXaxis().SetTitle(hsOpt['xname'])
+        hrat.GetYaxis().SetTitle('data/bkg')
+        hrat.Draw("E X0")
+        herr.SetFillColor(430)
+        herr.Draw("E2same")
+
+        l = TLine(hsOpt['xmin'],1.5,hsOpt['xmax'],1.5);
+        l0 = TLine(hsOpt['xmin'],1.4,hsOpt['xmax'],1.4);
+        l00 = TLine(hsOpt['xmin'],1.3,hsOpt['xmax'],1.3);
+        l000 = TLine(hsOpt['xmin'],1.2,hsOpt['xmax'],1.2);
+        l1 = TLine(hsOpt['xmin'],1.1,hsOpt['xmax'],1.1);
+        l2 = TLine(hsOpt['xmin'],1.,hsOpt['xmax'],1.);
+        l3 = TLine(hsOpt['xmin'],0.9,hsOpt['xmax'],0.9);
+        l4 = TLine(hsOpt['xmin'],0.8,hsOpt['xmax'],0.8);
+        l.SetLineStyle(3)
+        l0.SetLineStyle(3)
+        l00.SetLineStyle(3)
+        l000.SetLineStyle(3)
+        l1.SetLineStyle(3)
+        l2.SetLineStyle(3)
+        l3.SetLineStyle(3)
+        l4.SetLineStyle(3)
+        #l.Draw("same")
+        #l0.Draw("same")
+        #l00.Draw("same")
+        #l000.Draw("same")
+        #l1.Draw("same")
+        l2.Draw("same")
+        #if ymin<0.9: l3.Draw("same")
+        #if ymin<0.8: l4.Draw("same")
 
         c1.SaveAs(oDir+"/"+hsOpt['hname']+"_rat.pdf")
         c1.SaveAs(oDir+"/"+hsOpt['hname']+"_rat.png")            
@@ -620,8 +763,9 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
             n2 = h2.GetBinContent(i)
             e1 = h1.GetBinError(i)
             e2 = h2.GetBinError(i)
-            if n1 and n2 and e1 and e2 : 
-                hres.SetBinContent(i,(n2-n1)/math.sqrt(e1*e1+e2*e2)) #debug v1
+            print  i, n1, n2, e1, e2
+            if n1 and e1: 
+                hres.SetBinContent(i,(n1-n2)/math.sqrt(e1*e1+e2*e2)) #debug v1
             #elif not checkbin: hres.SetBinContent(i,0) #to avoid error
                # hres.SetBinError(i,1)
                 err = (pow(n1,3) + 15*pow(n1,2)*n2+15*pow(n2,2)*n1 + pow(n2,3))/(4*pow((n1+n2),3))
@@ -646,13 +790,13 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
             gStyle.SetOptStat(111)
             gStyle.SetOptFit(1)
             res_a = []
-            for i in range(0, hres.GetXaxis().GetNbins()): #improve
-                if (not hres.IsBinOverflow(i)) and (math.fabs(hres.GetBinContent(i)) != 0):
-                    res_a.append(hres.GetBinContent(i))
-            res_pull = Hist(60, -6., 6, name = "h_res_pull")
+            for i in range(1, hres.GetXaxis().GetNbins()+1):                
+                if (hres.IsBinOverflow(i) and hres.GetBinContent(i) == 0): continue
+                else:  res_a.append(hres.GetBinContent(i))
+            res_pull = Hist(40, -5., 5, name = "h_res_pull")
             res_pull.GetXaxis().SetTitle("residuals (sigma units)")
             for v in res_a: res_pull.fill(v)
-            res_pull.Fit("gaus", "ILL")
+            res_pull.Fit("gaus", "LL")
             res_pull.Draw("E X0")
 
         c2.Update()    
@@ -669,7 +813,7 @@ def drawH1tdrAcc(hs, snames, leg,
     c1 = TCanvas("c1", 'acc', 800, 800)
     markers = [23,24,25]
 
-    legend = TLegend(0.48,0.7,0.9,0.9)
+    legend = TLegend(0.50,0.7,0.85,0.85)
     legend.SetBorderSize(0)
     legend.SetFillColor(0)
     legend.SetFillStyle(0)
@@ -684,11 +828,14 @@ def drawH1tdrAcc(hs, snames, leg,
             h =  h__.Clone('h')
         h.SetTitle("")
         h.Divide(hd) 
-        h.GetXaxis().SetTitle('b_{H} generator p_{T} (GeV)')
-        h.GetYaxis().SetTitle('b_{H} acceptance')
+        h.GetXaxis().SetTitle('generator p_{T} (GeV)')
+        h.GetYaxis().SetTitle('acceptance')
        # h.GetYaxis().SetTitleSize(20)
        # h.GetYaxis().SetTitleFont(43)
-        h.GetYaxis().SetTitleOffset(1.40)
+        h.GetYaxis().SetLabelOffset(0.010)
+        h.GetYaxis().SetTitleOffset(1.45)
+        h.GetXaxis().SetLabelOffset(0.010)
+        h.GetXaxis().SetTitleOffset(1.45)
        # h.GetYaxis().SetLabelFont(43)
        # h.GetYaxis().SetLabelSize(18)
         h.SetMaximum(1.15)
@@ -766,7 +913,7 @@ def drawH1tdr(hlist1, snames1, leg1, hsOpt, residuals, norm, oDir, colors, dofil
     #     if ("csv" in hsOpt['hname'] or "cmva" in hsOpt['hname']): ymax = 0.8
         if i == 0: ymax = h.GetMaximum()*1.15
         h.SetMaximum(ymax)
-        if i ==0: h.Draw("HISTEsame")
+        if i ==0: h.Draw("HISTEsame") 
         else: h.Draw("HISTEsame")
 
     nev1 = 0
@@ -842,18 +989,36 @@ def drawH1only(hlist1, snames1, legstack1, hsOpt, oDir, colors, dofill, rebin, h
 #-------------------------
 
 
-def drawH2(hs, hsOpt, sname, oDir):
+def fillH2(h,h1):
+    h2 = (TH2D)("h2_bdt","h2_bdt",h.GetNbinsX(),0.,1.,h.GetNbinsX(),0.,1.) 
+    for i in range(1,h.GetNbinsX()):
+        for j in range(1,h1.GetNbinsX()):
+         h2.SetBinContent(i, j, h.GetBinContent(i)+h1.GetBinContent(j))
+         #print h2.GetBinContent(i,j)
+    return h2
+
+def drawH2(hs, hs1, hsOpt, sname, rebin, oDir, legs):
     gStyle.SetOptStat(False)
     legend = setLegend(1,1)
-    for i, h2 in enumerate(hs):
-        name = hsOpt['hname'] + "_" + sname[i]
+
+    if len(hs1):
+        hs2 = []
+        for h in hs:
+            for h1 in hs1:
+                hs2.append(fillH2(h1,h))
+    else:
+        hs2 = hs
+
+    for i, h2 in enumerate(hs2):
+        name = hsOpt['hname'] # + "_" + sname[i]
         print name
         c2 = TCanvas(name, name, 800, 800)       #debug
-        h2.Rebin2D(hsOpt['rebin'], hsOpt['rebin'])
+        print h2.GetBinContent(10)
+        h2.Rebin2D(rebin, rebin)
         h2.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         h2.GetYaxis().SetRangeUser(hsOpt['ymin'],hsOpt['ymax'])
-        h2.GetXaxis().SetTitle(hsOpt['xname'])
-        h2.GetYaxis().SetTitle(hsOpt['yname'])
+        h2.GetXaxis().SetTitle(hsOpt['xname']+" "+str(legs[1]))
+        h2.GetYaxis().SetTitle(hsOpt['yname']+" "+str(legs[0]))
 
         h2.GetXaxis().SetLabelFont(43)
         h2.GetXaxis().SetLabelSize(20)
@@ -871,12 +1036,12 @@ def drawH2(hs, hsOpt, sname, oDir):
         palette = h2.FindObject("palette")
         #palette.GetAxis().SetLabelSize(0.005); #debug
         #palette.GetAxis().SetTitleSize(0.005);
-        drawCMS(12.9, "")
+       # drawCMS(12.9, "")
         c2.Update() 
 
         c2.SaveAs(oDir+"/"+name+".pdf")
         c2.SaveAs(oDir+"/"+name+".png")            
-#        c2.SaveAs(oDir+"/"+name+".root")  
+        c2.SaveAs(oDir+"/"+name+".root")  
 
     return True
 #------------
@@ -916,15 +1081,18 @@ def drawCMStdr(text, onTop=False):
     latex.SetTextColor(1)
     latex.SetTextFont(42)
     latex.SetTextAlign(33)
-    latex.DrawLatex(0.90, 0.94, "14 TeV, 0 PU")
+    latex.DrawLatex(0.90, 0.94, "14 TeV")
     if not onTop: latex.SetTextAlign(11)
     latex.SetTextFont(62)
     latex.SetTextSize(0.03 if len(text)>0 else 0.035)
     if not onTop:
-        latex.DrawLatex(0.15, 0.855, "CMS Phase-2  "+text)
+        latex.DrawLatex(0.15, 0.85, "CMS Phase-2   "+text)
         latex.SetTextFont(52)
-        latex.SetTextSize(0.02)
-        latex.DrawLatex(0.15, 0.830, "Simulation Preliminary")
+        latex.SetTextSize(0.030)
+        latex.DrawLatex(0.15, 0.820, "Simulation. Preliminary")
+        latex.SetTextFont(52);
+        latex.SetTextSize(0.030);
+        latex.DrawLatex(0.15, 0.780, "pp #rightarrow HH #rightarrow b#bar{b}b#bar{b}");
 
 def setLegend(doRight, doTop):
     leg = TLegend(0.55,0.70,0.90,0.90)
