@@ -348,7 +348,7 @@ hist_opt = {
 
    "h_jet0_eta" : {
        'hname' : "h_jet0_eta",
-       'rebin' : 1,
+       'rebin' : 2,
        'xname' : "jet 0 #eta",
        'xmin'  : -3.5,
        'xmax'  : 3.5,
@@ -358,7 +358,7 @@ hist_opt = {
 
    "h_jet1_eta" : {
        'hname' : "h_jet1_eta",
-       'rebin' : 1,
+       'rebin' : 2,
        'xname' : "jet 1 #eta",
        'xmin'  : -3.5,
        'xmax'  : 3.5,
@@ -368,7 +368,7 @@ hist_opt = {
 
    "h_jet2_eta" : {
        'hname' : "h_jet2_eta",
-       'rebin' : 1,
+       'rebin' : 2,
        'xname' : "jet 2 #eta",
        'xmin'  : -3.5,
        'xmax'  : 3.5,
@@ -378,7 +378,7 @@ hist_opt = {
 
    "h_jet3_eta" : {
        'hname' : "h_jet3_eta",
-       'rebin' : 1,
+       'rebin' : 2,
        'xname' : "jet 3 #eta",
        'xmin'  : -3.5,
        'xmax'  : 3.5,

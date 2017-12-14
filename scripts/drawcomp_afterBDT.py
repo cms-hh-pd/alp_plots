@@ -25,17 +25,18 @@ parser.add_argument("-b", "--bdt", help="bdt version, equal to input file name (
 parser.add_argument("-o", "--oDir", help="output directory", default="plots")
 parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==pulls)", type=int, default=0)
 parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)", type=int, default=-1)
-parser.add_argument("-n", "--doNorm", help="do normalize", action='store_true')
+parser.add_argument("-n", "--doNorm", help="do normalize ", action='store_true')
 parser.add_argument("-c", "--defaultCol", help="to use default colors", action='store_true')
-parser.add_argument("-l", "--list", help="hist list", dest="hlist", type=int, default=1)
-parser.add_argument("--lumi", help="int lumi to normalize to", dest="lumi", type=float, default=35.9*0.96) #0.96 trg eff for MC
+parser.add_argument("-l", "--list", help="hist list", dest="hlist", type=int, default=0)
+parser.add_argument("--lumi", help="int lumi to normalize to", dest="lumi", type=float, default=35.9)
 parser.set_defaults(doNorm=False, defaultCol=False)
 args = parser.parse_args()
 
 iDir       = '../hh2bbbb_limit/'
 filename = iDir+"/"+args.bdt+".root"
 headerOpt = args.bdt
-intLumi_fb = args.lumi # plots normalized to this
+intLumi_fb = args.lumi
+trg_eff = 0.96
 which = args.whichPlots
 getChi = False
 getVar = False

@@ -70,7 +70,29 @@ elif args.hlist == 2:
 histList2  = ['h_H0_H1_mass'] #2D histos
 
 # ---------------
-if args.whichPlots == 0:
+if args.whichPlots == -2:
+    samlist1 = ['BM7']
+    samlist2 = []
+    optList = ["def_cmva",]
+    legList = [["HH4b BM7"],]
+    colorList = [[635],]
+    doNormToLumi = [True,]
+    dofill = [True,]
+    isMC = False
+    oname = "BM7_preBDT"
+
+elif args.whichPlots == -1:
+    samlist1 = ['BM2']
+    samlist2 = ['SM']
+    optList = ["def_cmva","def_cmva"]
+    legList = [["HH4b BM2"], ["HH4b SM"]]
+    colorList = [[635], [632]]
+    doNormToLumi = [True, True]
+    dofill = [True,True]
+    isMC = True
+    oname = "comp_smBm2_preBDT"
+
+elif args.whichPlots == 0:
     samlist1 = ['SM'] ## only SM (Pangea not reweighted after alp_analysis)
     samlist2 = ['Data_train']
     optList = ["def_cmva","def_cmva_mixed"]
@@ -83,6 +105,19 @@ if args.whichPlots == 0:
 
 elif args.whichPlots == 1:
     optList = ['def_cmva','def_cmva']
+    samlist1 = ['qcd_m']
+    samlist2 = []
+    legList = [['QCD HT>200'],]
+    colorList = []    
+    weights = [[29.599755,6.338876,0.509821,0.089584,0.046491,0.005935,0.002410],]
+    sf = [[1.0282,1.0282,1.0282,1.0282,1.0282,1.0282,1.0282],[]] # from check with mixed data
+    doNormToLumi = [True, True]  
+    dofill = [True,]
+    isMC = True
+    oname = "QCD_preBDT"
+
+elif args.whichPlots == 2:
+    optList = ['def_cmva','def_cmva']
     samlist1 = ['qcd_m500']
     samlist2 = ['TT']
     legList = [['QCD HT>500'], ['TT']]
@@ -93,7 +128,7 @@ elif args.whichPlots == 1:
     isMC = True
     oname = "comp_qcdtt_preBDT"
 
-elif args.whichPlots == 2:
+elif args.whichPlots == 3:
     optList = ['def_cmva','def_cmva']
     samlist1 = ['TT','qcd_m']
     samlist2 = ['SM']
@@ -106,7 +141,7 @@ elif args.whichPlots == 2:
     isMC = True
     oname = "comp_qcdttSig_preBDT"
 
-elif args.whichPlots == 3:
+elif args.whichPlots == 4:
     optList = ['def_cmva','def_cmva']
     samlist1 = ['qcd_m']
     samlist2 = ['qcd_b']
@@ -169,12 +204,13 @@ for sname in snames1:
 files2 = []
 for sname in snames2:
     files2.append(iDir+optList[1]+"/"+sname+".root")
-#print files2
 
 #----------------------------------
 for h in histList:    
-    hs1 = UtilsDraw.getHistos(h, files1, plotDir, intLumi_fb, doNormToLumi[0], weights[0], sf[0])
-    hs2 = UtilsDraw.getHistos(h, files2, plotDir, intLumi_fb, doNormToLumi[1], weights[1], sf[1])
+    hs1 = []
+    hs2 = []
+    if files1: hs1 = UtilsDraw.getHistos(h, files1, plotDir, intLumi_fb, doNormToLumi[0], weights[0], sf[0])
+    if files2: hs2 = UtilsDraw.getHistos(h, files2, plotDir, intLumi_fb, doNormToLumi[1], weights[1], sf[1])
     hOpt = hist_opt[h]
 
     if hs1 and hs2:

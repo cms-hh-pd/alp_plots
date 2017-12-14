@@ -64,21 +64,17 @@ def getHistos_bdt(hist, filename, plotDirs, weights, sf):
 
 def getHistos_tdr(hist, filelist, plotDir, lumi, normtolumi, weight):
     hlist = []    
-    for i, f in enumerate(filelist):  #debug - not efficient to loop on file
+    for i, f in enumerate(filelist):
         w = 1.
         tf = TFile(f)
-        #print tf
         if not tf: 
             print "WARNING: files do not exist"  
 
         if weight[i]>=0:
    	    w = weight[i]
 
-        #print w
         if(tf.Get(plotDir+"/"+hist)):
             h = tf.Get(plotDir+"/"+hist)
-            # print plotDir
-            #print "h1Int ",  h.GetBinContent(1), h.GetBinError(1)
             h.Scale(w)
             hlist.append(h)
             print h.Integral()
@@ -198,10 +194,10 @@ def getScale(hsOpt, hlist1, hlist2, skip1=-1, skip2=-1): #h2/h1
     return scale
 #------------
 
-def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, hl2):
+def getStackH(histos, hsOpt, rebin, snames, color, scale, fill):
 
-    if color: col = color
-    else: col = sam_opt[snames[0]]['fillcolor'] #debug---
+    if color: col = color[0]
+    else: col = sam_opt[snames[0]]['fillcolor']
 
     herr = histos[0].Clone("hs_error")  
     herr.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -441,7 +437,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if(norm): scale1 = getScale(hsOpt,hlist1, hlist2)
     else: scale1 = 1.
     print "scale1", scale1
-    hs1, herr1, h1 =  getStackH(hlist1, hsOpt, rb, snames1, colors[0], scale1, dofill[0], hlist2)
+    hs1, herr1, h1 =  getStackH(hlist1, hsOpt, rb, snames1, colors[0], scale1, dofill[0])
     if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.15
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.15
     if isNevts:  print "h1Int ",  h1.GetBinContent(1), h1.GetBinError(1)
@@ -450,7 +446,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if(norm): scale2 = getScale(hsOpt,hlist2, hlist2)
     else: scale2 = 1.
     print "scale2", scale2
-    hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, snames2, colors[1], scale2, dofill[1], hlist2)
+    hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, snames2, colors[1], scale2, dofill[1])
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.15
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.15
     if isNevts:  print "h2Int ",  h2.GetBinContent(1), h2.GetBinError(1)
@@ -474,7 +470,6 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     nskip = 0
     match = False 
     for n, sam in enumerate(snames1):
-        print sam, n, nskip
         # to get one legend for all HT bins - to be implemented for other samples         
         if sam.find("QCD")>=0 and match: 
             nskip+=1 
@@ -482,7 +477,6 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         if len(legstack1) > n-nskip:
             if sam.find("QCD")>=0: match = True
             legend.AddEntry(hlist1[n], legstack1[n-nskip])            
-            print legstack1[n-nskip], snames1[n], n, nskip
     if len(hlist1)>1: legend.AddEntry(herr1, 'bkg. unc. (stat.only)')
     legend.Draw("same")
     #-------------
@@ -490,16 +484,11 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if(ymax > 1000): TGaxis.SetMaxDigits(3)
     hs1.SetMaximum(ymax)
     herr1.SetMaximum(ymax)
-    hs1.Draw("HISTsame") #Esame
-    if len(hlist1)>1: herr1.Draw("E2same")
-    else: herr1.Draw("Esame")
+    plotH(hlist1, hs1, herr1, dofill[0])
     hs2.SetMaximum(ymax)
     herr2.SetMaximum(ymax)
-    if dofill[1]: hs2.Draw("HISTsame")
-    else: hs2.Draw("Esame")
-    if len(hlist2)>1: herr2.Draw("E2same")
+    plotH(hlist2, hs2, herr2, dofill[1])
     herr2.Draw("Esameaxis")
-#    h1->Draw("sameaxis")
 
     nev1 = 0
     nev2 = 0
@@ -520,7 +509,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         c1.Update()    
         c1.SaveAs(oDir+"/"+hsOpt['hname']+".pdf")
         c1.SaveAs(oDir+"/"+hsOpt['hname']+".png")            
-        c1.SaveAs(oDir+"/"+hsOpt['hname']+".root") 
+        #c1.SaveAs(oDir+"/"+hsOpt['hname']+".root") 
     else:
         herr1.GetXaxis().SetLabelSize(0.)
 
@@ -635,7 +624,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
 
         c1.SaveAs(oDir+"/"+hsOpt['hname']+"_div.pdf")
         c1.SaveAs(oDir+"/"+hsOpt['hname']+"_div.png")            
-        c1.SaveAs(oDir+"/"+hsOpt['hname']+"_div.root") 
+        #c1.SaveAs(oDir+"/"+hsOpt['hname']+"_div.root") 
         c1.Clear()
 
     if residuals==-1: # simple ratio -- data as h2!!!
@@ -804,7 +793,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         c2.Update()    
         c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.pdf")
         c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.png")            
-        c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.root")   
+        #c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.root")   
 
     return [nev1,nev1err,nev2,nev2err]
 #-----------
@@ -832,14 +821,14 @@ def drawH1tdrAcc(hs, snames, leg,
         h.Divide(hd) 
         h.GetXaxis().SetTitle('generator p_{T} (GeV)')
         h.GetYaxis().SetTitle('acceptance')
-       # h.GetYaxis().SetTitleSize(20)
-       # h.GetYaxis().SetTitleFont(43)
+       #h.GetYaxis().SetTitleSize(20)
+       #h.GetYaxis().SetTitleFont(43)
         h.GetYaxis().SetLabelOffset(0.010)
         h.GetYaxis().SetTitleOffset(1.45)
         h.GetXaxis().SetLabelOffset(0.010)
         h.GetXaxis().SetTitleOffset(1.45)
-       # h.GetYaxis().SetLabelFont(43)
-       # h.GetYaxis().SetLabelSize(18)
+       #h.GetYaxis().SetLabelFont(43)
+       #h.GetYaxis().SetLabelSize(18)
         h.SetMaximum(1.15)
         h.GetXaxis().SetRangeUser(0.,100.)
         h.SetMarkerStyle(markers[i-1])
@@ -852,9 +841,7 @@ def drawH1tdrAcc(hs, snames, leg,
             drawCMStdr(headerOpt)
 
         h.Draw("PE same") #draw first twice
-
     legend.Draw("same")
-
     c1.Update()
     c1.SaveAs(oDir+"/acc.pdf")
     c1.SaveAs(oDir+"/acc.png")
@@ -868,8 +855,7 @@ def drawH1tdr(hlist1, snames1, leg1, hsOpt, residuals, norm, oDir, colors, dofil
     else: rb =  hsOpt['rebin']
 
     ymax = 0.
-    nh1 = hlist1[0].Integral()
-#    for i, h in enumerate(hlist1):         
+    nh1 = hlist1[0].Integral()  
 
     herr = hlist1[0].Clone("hs_error")  
     herr.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -897,9 +883,7 @@ def drawH1tdr(hlist1, snames1, leg1, hsOpt, residuals, norm, oDir, colors, dofil
     scale = 1.
     for i, h in enumerate(hlist1):         
         if(norm): scale = nh1/h.Integral()
-        #print scale
         col = colors[i]
-        #print hsOpt['xmin'], hsOpt['xmax']
         h.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         h.SetMinimum(0.)
         h.Scale(scale)
@@ -908,11 +892,10 @@ def drawH1tdr(hlist1, snames1, leg1, hsOpt, residuals, norm, oDir, colors, dofil
         h.SetMarkerSize(0.)
         if dofill[i]: 
             h.SetFillColorAlpha(col,0.1)
-            h.SetFillStyle(1) #samOpt['fillstyle']
+            h.SetFillStyle(1)
         else:     
             h.SetLineWidth(1)         
             h.SetLineColorAlpha(col,0.)
-    #     if ("csv" in hsOpt['hname'] or "cmva" in hsOpt['hname']): ymax = 0.8
         if i == 0: ymax = h.GetMaximum()*1.15
         h.SetMaximum(ymax)
         if i ==0: h.Draw("HISTEsame") 
@@ -926,15 +909,15 @@ def drawH1tdr(hlist1, snames1, leg1, hsOpt, residuals, norm, oDir, colors, dofil
     c1.Update()    
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".pdf")
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".png")            
-#    c1.SaveAs(oDir+"/"+hsOpt['hname']+".root") 
+   #c1.SaveAs(oDir+"/"+hsOpt['hname']+".root") 
 
     return [nev1,nev1err,nev2,nev2err]
 #------------
 
 
-
 def drawH1only(hlist1, snames1, legstack1, hsOpt, oDir, colors, dofill, rebin, headerOpt, isMC):
     gStyle.SetOptStat(False)
+    gStyle.SetOptTitle(0);
     c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
 
     if rebin > 0: rb = rebin
@@ -942,7 +925,6 @@ def drawH1only(hlist1, snames1, legstack1, hsOpt, oDir, colors, dofill, rebin, h
 
     ymax = 0.
     hs1, herr1, h1 =  getStackH(hlist1, hsOpt, rb, snames1, colors[0], 1., dofill[0])
-
     ymax = hs1.GetMaximum()*1.15
 
    #debug -- needed before drawing hs
@@ -962,20 +944,21 @@ def drawH1only(hlist1, snames1, legstack1, hsOpt, oDir, colors, dofill, rebin, h
     if isMC: drawCMS(-1, headerOpt)
     else: drawCMS(35.9, headerOpt)
     legend = setLegend(1,1)
-    if len(legstack1) > 1:
-        #for n, leg in enumerate(legstack1):
-        #    legend.AddEntry(hlist1[n], leg)
-        legend.AddEntry(hlist1[0], legstack1[0])
-        legend.AddEntry(hlist1[len(hlist1)-1], legstack1[1])
-    else:
-        legend.AddEntry(hlist1[len(hlist1)-1], legstack1[0])
+    nskip = 0
+    match = False
+    for n, sam in enumerate(snames1):
+        # to get one legend for all HT bins - to be implemented for other samples         
+        if sam.find("QCD")>=0 and match: 
+            nskip+=1 
+            continue
+        if len(legstack1) > n-nskip:
+            if sam.find("QCD")>=0: match = True
+            legend.AddEntry(hlist1[n], legstack1[n-nskip])            
+    if len(hlist1)>1: legend.AddEntry(herr1, 'bkg. unc. (stat.only)')
     legend.Draw("same")
     #-------------
 
-    hs1.Draw("HISTsame")
-    if len(hlist1)>1: herr1.Draw("E2same")
-    else: herr1.Draw("Esame")
-
+    plotH(hlist1, hs1, herr1, dofill[0])
     nev1 = 0
     nev1err = 0
     if hsOpt['hname']=='h_nevts': 
@@ -985,7 +968,7 @@ def drawH1only(hlist1, snames1, legstack1, hsOpt, oDir, colors, dofill, rebin, h
     c1.Update()    
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".pdf")
     c1.SaveAs(oDir+"/"+hsOpt['hname']+".png")            
-#    c1.SaveAs(oDir+"/"+hsOpt['hname']+".root") 
+   #c1.SaveAs(oDir+"/"+hsOpt['hname']+".root") 
 
     return [nev1,nev1err]
 #-------------------------
@@ -1052,6 +1035,18 @@ def drawH2(hs, hs1, hsOpt, sname, rebin, oDir, legs):
 ##
 # DRAWING TOOLS
 #################
+def plotH(hlist, h, herr, fill):
+    if fill:         
+        if len(hlist)>1: 
+            h.Draw("HISTsame")
+            herr.Draw("E2same")
+        else: h.Draw("HISTEsame")
+    else:
+        if len(hlist)>1: 
+            h.Draw("HISTsame")   
+            herr.Draw("E2same") 
+        else: h.Draw("Esame")    
+
 def drawCMS(lumi, text, onTop=False ):
     latex = TLatex()
     latex.SetNDC()

@@ -17,18 +17,22 @@ gROOT.SetBatch(True)
 # parsing parameters
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument("-w", "--whichPlots", help="which plots to be produced", type=int, default='-1')
+parser.add_argument("-w", "--whichPlots", help="which plots to be produced", type=int, default='0')
 parser.add_argument("-n", "--doNorm"   , help="normalize to data"       , action='store_true')
 parser.add_argument("-p", "--plotDir"  , help="root file subfolder in which histos are", default="trg_Iso") #trg_IsoAndJet
-parser.add_argument("-c", "--customCol", help="use custom colors"       , action='store_true')
+parser.add_argument("-c", "--defaultCol", help="to use default colors", action='store_true')
 parser.add_argument("-o", "--oDir"     , help="output directory"        , default="output/")
 parser.add_argument("-l", "--list", help="hist list" , dest="hlist", type=int, default=1)
-parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==fit)" , type=int, default=0)
-parser.set_defaults(doNorm=False, customCol=False)
+parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==pulls)" , type=int, default=0)
+parser.set_defaults(doNorm=False, defaultCol=False)
 args = parser.parse_args()
 
 iDir       = '/lustre/cmswork/hh/alp_moriond_base/'
 oDir = args.oDir
+intLumi_fb = 35.9
+weights = [[],[]]
+sf = [[],[]]
+header = ""
 
 if args.hlist == 0:
     histList   = ['h_nevts']
@@ -37,15 +41,10 @@ elif args.hlist == 1:
                   'h_jet0_pt', 'h_jet1_pt', 'h_jet2_pt', 'h_jet3_pt', 'h_jets_ht', 
                   'h_jet0_csv', 'h_jet1_csv', 'h_jet2_csv', 'h_jet3_csv',
                   'h_jet0_cmva', 'h_jet1_cmva', 'h_jet2_cmva', 'h_jet3_cmva',
-                  'h_all_ht', 'h_met_pt', 'h_mu0_pt', 'h_mu0_iso04', 'h_mu0_iso03', 'h_mu_n', 'h_mu_pt', 'h_mu_iso04', 'h_mu_iso03','h_nevts']
+                  'h_all_ht', 'h_met_pt', 'h_mu0_pt', 'h_mu0_iso04', 'h_mu0_iso03', 
+                  'h_mu_n', 'h_mu_pt', 'h_mu_iso04',         'h_mu_iso03','h_nevts']
 
-intLumi_fb = 35.9 # plots normalized to this
-weights = [[],[]]
-sf = [[],[]]
-header = ""
 # ---------------
-
-# sig vs bkg
 if args.whichPlots == -2:
     optList = ["trgeff_2cmva_2l","trgeff_2cmva_2l"] #2 leptons
     plotDir = 'trg_Iso'
@@ -152,7 +151,7 @@ elif args.whichPlots == 5:
 
 oDir += "/"+oname
 
-if not args.customCol: colors = [0,0]
+if args.defaultCol: colors = [0,0]
 else: colors = colorList
 
 print "HISTS FROM FOLDER {}".format(plotDir) 
@@ -171,7 +170,7 @@ snames1 = []
 for s in samlist1:
     if not s in samlists: 
         if not s in samples: 
-            snames1.append(s)    #debug
+            snames1.append(s)
         else:
             snames1.append(samples[s]['sam_name'])    
     else: 
@@ -181,7 +180,7 @@ snames2 = []
 for s in samlist2:
     if not s in samlists: 
         if not s in samples: 
-            snames2.append(s)    #debug
+            snames2.append(s)
         else:
             snames2.append(samples[s]['sam_name'])
     else: 
