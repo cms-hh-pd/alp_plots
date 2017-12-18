@@ -33,7 +33,7 @@ def getHistos_bdt(hist, filename, plotDirs, weights, sf):
     hlist = [] 
     tf = TFile(filename)
     if not tf: 
-        print "WARNING: files do not exist"  
+        print "## WARNING: files do not exist"  
     for i, Dir in enumerate(plotDirs):
         hname = hist+"_"+Dir            
         if(tf.Get(Dir+"/"+hname)):
@@ -53,7 +53,7 @@ def getHistos_bdt(hist, filename, plotDirs, weights, sf):
             print h.Integral()
             hlist.append(h)
         else:
-            print "WARNING: hist {} not found in {}".format(hist,tf)
+            print "## WARNING: hist {} not found in {}".format(hist,tf)
 
     return hlist
 #------------
@@ -64,7 +64,7 @@ def getHistos_tdr(hist, filelist, plotDir, lumi, normtolumi, weight):
         w = 1.
         tf = TFile(f)
         if not tf: 
-            print "WARNING: files do not exist"  
+            print "## WARNING: files do not exist"  
 
         if weight[i]>=0:
    	    w = weight[i]
@@ -75,7 +75,7 @@ def getHistos_tdr(hist, filelist, plotDir, lumi, normtolumi, weight):
             hlist.append(h)
             print h.Integral()
         else:
-            print "WARNING: hist {} not found in {}".format(hist,tf)
+            print "## WARNING: hist {} not found in {}".format(hist,tf)
 
     return hlist
 #------------
@@ -89,7 +89,7 @@ def getHistos(hist, filelist, plotDir, lumi, normtolumi, weight, sf):
         sf_ = 1.
         tf = TFile(f)
         if not tf: 
-            print "WARNING: files do not exist"  
+            print "## WARNING: files do not exist"  
 
         if "Run" in f:   #data
             if not "mixed" in f:
@@ -98,26 +98,27 @@ def getHistos(hist, filelist, plotDir, lumi, normtolumi, weight, sf):
             if len(weight)>0:
                 if weight[i]>=0:
                     w = weight[i]
-            else:
-                if not "mixed" in f: #only for MC
-                    if(tf.Get("h_w_oneInvFb")):
-                        h = tf.Get("h_w_oneInvFb")
-                        w = h.GetBinContent(1)
-                    else:
-                        print "WARNING: 'h_w_oneInvFb' not found in {}".format(tf)
+            # h_w_oneInvFb plot is not maintained - commented out for the time being
+            #else:
+                #if not "mixed" in f: #only for MC
+                    #if(tf.Get("h_w_oneInvFb")):
+                    #    h = tf.Get("h_w_oneInvFb")
+                    #    w = h.GetBinContent(1)
+                    #else:
+                    #    print "WARNING: 'h_w_oneInvFb' not found in {}".format(tf)
             if len(sf)>0:
                 if sf[i]>=0:
                     sf_ = sf[i]
             if normtolumi: norm = w*lumi*sf_
             else: norm = w*sf_
 
-        print norm    
+        print "scale: {}".format(norm)
         if(tf.Get(plotDir+"/"+hist)):
             h = tf.Get(plotDir+"/"+hist)
             h.Scale(norm)
             hlist.append(h)
         else:
-            print "WARNING: hist {} not found in {}".format(hist,tf)
+            print "## WARNING: hist {} not found in {}".format(hist,tf)
 
     return hlist
 #------------
@@ -218,7 +219,7 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill):
         h.Rebin(rebin)
         h.SetMarkerStyle(8)
         h.SetMarkerSize(0.)
-        print h.Integral()
+        print "h[{}]: {}".format(i, h.Integral())
         if fill: 
             h.SetFillColorAlpha(col,0.2)
             h.SetFillStyle(1)
@@ -453,15 +454,10 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     nev1err = 0
     nev2err = 0
     if isNevts: 
-#    if hsOpt['hname']=='h_jets_n': 
         nev1 = herr1.GetBinContent(1)
         nev2 = herr2.GetBinContent(1)
         nev1err = herr1.GetBinError(1)
         nev2err = herr2.GetBinError(1)
-    #nev1 = herr1.Integral()
-    #nev2 = herr2.Integral()
-    #nev1err = herr1.Integral()
-    #nev2err = herr2.Integral()
 
     if not residuals==-1:
         c1.Update()    
@@ -613,13 +609,6 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
                 herr.SetBinContent(ibin, 1.)
                 herr.SetBinError   (ibin, 0.)
 
-        #for i in range(1, hrat.GetXaxis().GetNbins()+1):
-        #    n1 = h1.GetBinContent(i)
-        #    n2 = h2.GetBinContent(i)
-        #    if n1 and n2 and e1 and e2 : 
-        #        hrat.SetBinContent(i,n2/n1)
-        # to chek just histos ratio:
-
         hrat.SetTitle("")
         hrat.GetXaxis().SetTitleSize(20)
         hrat.GetXaxis().SetTitleFont(43)
@@ -629,29 +618,22 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         hrat.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         minbin = hrat.GetXaxis().GetFirst()
         maxbin = hrat.GetXaxis().GetLast()
-        #print minbin, maxbin        
-        ymax_ = 1.5 #1.5 
+        ymax_ = 1.5
         ymax = 1.
-        ymin_ = 0.5 #0.5
+        ymin_ = 0.5
         ymin = 1.
-
-#        ymax =ran1
-#        ymin =ran2
-
-       # print 'rb', rb      
+       #ymax =ran1
+       #ymin =ran2
+     
         for ibin in range(minbin, maxbin+1):       
             binc = hrat.GetBinContent(ibin) 
-            #print ibin, binc
             if binc == 0. or (binc is None): 
-             continue
+                continue
             if binc*1.05 > ymax: 
-              ymax = binc*1.05
-     ##       if binc > ymax_:  
-     ##         ymax = ymax_
+                ymax = binc*1.05
             if binc*0.95 < ymin: 
                 ymin = binc*0.95
- ##           if binc < ymin_:  
-   ##           ymin = ymin_
+
         hrat.GetYaxis().SetRangeUser(ymin,ymax)
         hrat.GetYaxis().SetTitleSize(20)
         hrat.GetYaxis().SetTitleFont(43)
@@ -705,7 +687,6 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         else:
             c2 = TCanvas("c2", "res"+hsOpt['hname'], 800, 400)
         hres = h2.Clone("h_res")
-      #  hres = h2.Reset()
         checkbin = False
         for i in range(1, hres.GetXaxis().GetNbins()+1):
             n1 = h1.GetBinContent(i)
@@ -715,14 +696,8 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
             print  i, n1, n2, e1, e2
             if n1 and e1: 
                 hres.SetBinContent(i,(n1-n2)/math.sqrt(e1*e1+e2*e2)) #debug v1
-            #elif not checkbin: hres.SetBinContent(i,0) #to avoid error
-               # hres.SetBinError(i,1)
                 err = (pow(n1,3) + 15*pow(n1,2)*n2+15*pow(n2,2)*n1 + pow(n2,3))/(4*pow((n1+n2),3))
                 hres.SetBinError(i, err)
-     # to chek just histos ratio:
-     #  hres = Hist(10,0,1, name="")
-     #  hres = hdiff.Clone("h_residual")
-     #  hres.Divide(h1)
 
         hres.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         hres.SetMarkerStyle(8)

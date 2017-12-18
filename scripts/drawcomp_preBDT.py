@@ -20,7 +20,7 @@ gROOT.SetBatch(True)
 # parsing parameters
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument("-w", "--whichPlots", help="which plots to be produced", type=int, default='0')
+parser.add_argument("-w", "--whichPlots", help="which plots to be produced", type=int, default='3')
 parser.add_argument("-n", "--doNorm", help="normalize to data", action='store_true')
 parser.add_argument("-p", "--plotDir", help="subfolder of the root file that contains histos", default="pair")
 parser.add_argument("-c", "--defaultCol", help="to use default colors", action='store_true')
@@ -31,7 +31,7 @@ parser.add_argument("--lumi", help="int lumi to normalize to", dest="lumi", type
 parser.set_defaults(doNorm=False, defaultCol=False)
 args = parser.parse_args()
 
-iDir       = '/lustre/cmswork/hh/alp_moriond_base/def_cmva_Jan17/'
+iDir       = '/lustre/cmswork/hh/alp_moriond_base/'
 oDir = args.oDir +"/"
 intLumi_fb = args.lumi
 trg_eff = 0.96
@@ -110,7 +110,6 @@ elif args.whichPlots == 1:
     legList = [['QCD HT>200'],]
     colorList = []    
     weights = [[29.599755,6.338876,0.509821,0.089584,0.046491,0.005935,0.002410],]
-    sf = [[1.0282,1.0282,1.0282,1.0282,1.0282,1.0282,1.0282],[]] # from check with mixed data
     doNormToLumi = [True, True]  
     dofill = [True,]
     isMC = True
@@ -135,7 +134,6 @@ elif args.whichPlots == 3:
     legList = [['TT','QCD'], ['ggHH4b SM (1000x)']]
     colorList = []
     weights = [[0.010760,29.599755,6.338876,0.511526,0.149046,0.078782,0.009964,0.004075],[0.03771]]
-    sf = [[1.,1.0282,1.0282,1.0282,1.0282,1.0282,1.0282,1.0282],[]] # from check with mixed data
     doNormToLumi = [True, True]
     dofill = [True,False]
     isMC = True
@@ -157,13 +155,16 @@ elif args.whichPlots == 4:
     oname = "comp_qcdqcdb_preBDT"
 
 else: 
-    print "ERROR: wrong '-w' argument"
+    print "## ERROR: wrong '-w' argument"
     exit()
 
 oDir += oname
 
 if args.defaultCol: colors = [[],[]]
 else: colors = colorList
+
+for n, w in enumerate(weights):
+    if len(w)==0: print "## WARNING: weight[{}] is empty".format(n)
 
 if not args.plotDir:     
     exit()
