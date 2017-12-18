@@ -29,7 +29,7 @@ def getRelErr(a,erra,b,errb):
     return math.sqrt(math.pow(erra/a,2)+math.pow(errb/b,2))
 #------------
 
-def getHistos_bdt(hist, filename, plotDirs, weights, sf):
+def getHistos_bdt(hist, filename, plotDirs, lumi, normtolumi, weights, sf):
     hlist = [] 
     tf = TFile(filename)
     if not tf: 
@@ -37,8 +37,7 @@ def getHistos_bdt(hist, filename, plotDirs, weights, sf):
     for i, Dir in enumerate(plotDirs):
         hname = hist+"_"+Dir            
         if(tf.Get(Dir+"/"+hname)):
-            print Dir
-            print hname
+            norm = 1
             w = 1.
             sf_ = 1.
             if len(weights)>0:
@@ -47,10 +46,12 @@ def getHistos_bdt(hist, filename, plotDirs, weights, sf):
             if len(sf)>0:
                 if sf[i]>=0:
                     sf_ = sf[i]
-            print w*sf_
+
+            if normtolumi: norm = w*lumi*sf_
+            else: norm = w*sf_
+            print "scale[{}]: {}".format(i, norm)
             h = tf.Get(Dir+"/"+hname)
-            h.Scale(w*sf_)
-            print h.Integral()
+            h.Scale(norm)
             hlist.append(h)
         else:
             print "## WARNING: hist {} not found in {}".format(hist,tf)
@@ -111,8 +112,7 @@ def getHistos(hist, filelist, plotDir, lumi, normtolumi, weight, sf):
                     sf_ = sf[i]
             if normtolumi: norm = w*lumi*sf_
             else: norm = w*sf_
-
-        print "scale: {}".format(norm)
+        print "scale[{}]: {}".format(i, norm)
         if(tf.Get(plotDir+"/"+hist)):
             h = tf.Get(plotDir+"/"+hist)
             h.Scale(norm)
@@ -175,7 +175,7 @@ def getScale(hsOpt, hlist1, hlist2, skip1=-1, skip2=-1): #h2/h1
             print 'skip', hsSkip
             continue 
         hsInt += h.Integral()
-        print h.Integral()
+        #print h.Integral()
     for i, h in enumerate(hlist2): 
         if isinstance(h,int):
            norm = h
@@ -185,7 +185,7 @@ def getScale(hsOpt, hlist1, hlist2, skip1=-1, skip2=-1): #h2/h1
         else: norm += h.Integral()
     if  hsInt: scale = norm/(hsInt+hsSkip)
     else: scale = 1.
-    print hsInt
+    #print hsInt
     return scale
 #------------
 
@@ -393,23 +393,22 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if hsOpt['hname']=="h_nevts": isNevts=True
     ymax = 0.
 
-    if(norm): scale1 = getScale(hsOpt,hlist1, hlist2)
+    if(norm): 
+        scale1 = getScale(hsOpt,hlist1, hlist2)
+        print "sc_to_norm1: ",scale1
     else: scale1 = 1.
-    print "scale1", scale1
     hs1, herr1, h1 =  getStackH(hlist1, hsOpt, rb, snames1, colors[0], scale1, dofill[0])
     if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.15
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.15
     if isNevts:  print "h1Int ",  h1.GetBinContent(1), h1.GetBinError(1)
-    print 'h1bins', h1.GetNbinsX()
 
     if(norm): scale2 = getScale(hsOpt,hlist2, hlist2)
     else: scale2 = 1.
-    print "scale2", scale2
+    if scale2 != 1.: print "sc_to_norm2: ",scale2
     hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, snames2, colors[1], scale2, dofill[1])
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.15
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.15
     if isNevts:  print "h2Int ",  h2.GetBinContent(1), h2.GetBinError(1)
-    print 'h2bins', h2.GetNbinsX()
 
    #debug -- needed before drawing hs
     herr1.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])

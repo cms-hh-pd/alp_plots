@@ -41,6 +41,7 @@ which = args.whichPlots
 getChi = False
 getVar = False
 drawH2 = False
+doNormToLumi = [False, False]
 weights = [[],[]]
 sf = [[],[]]
 
@@ -62,7 +63,6 @@ elif args.hlist == 2:
     histList   = [
                   'h_csv3','h_csv4',
                   'h_H1_csthst2_a', 'h_H1_dr','h_H1_dphi','h_H0H1_dr',
-
                  ]
 
 histList2  = ["DiJets[0].mass()-DiJets[1].mass()", "CSV_Jet2-CSV_Jet3", "CMVA_Jet2-CMVA_Jet3",] # -- not maintained
@@ -133,7 +133,8 @@ elif which == 0:
     legList = [["ggHH4b SM"], ["bkg (mixed data)"]]
     colorList = [[632], [430]]
     dofill = [True,True]
-    sf = [[11.8756],[0.25]] #(33.53*0.5824*0.5824/(4172119.0*0.2))
+    weights = [[1.],[1.]] #(33.53*0.5824*0.5824/(4172119.0*0.2))
+    sf = [[1.],[0.25]]
     isMC = True
     oname = 'comp_sigBkg_afterBDT'
     headerOpt = "    appl samples" #{}".format()
@@ -145,7 +146,8 @@ elif which == 1:
     legList = [["ggHH4b BM12"], ["bkg (mixed data)"]]
     colorList = [[632], [430]]
     dofill = [True,True]
-    sf = [[1.],[0.25]] #(33.53*0.5824*0.5824/(4172119.0*0.2)) , 3.968109
+    weights = [[1.],[1.]]
+    sf = [[1.],[0.25]]
     isMC = True
     oname = 'comp_sigBkg_afterBDT'
     headerOpt = "    train samples" #{}".format()
@@ -157,7 +159,8 @@ elif which == 2:
     legList = [["ggHH4b SM"], ["bkg (mixed data)"]]
     colorList = [[632], [430]]
     dofill = [True,True]
-    sf = [[11.99561921],[0.25]] #(33.53*0.5824*0.5824/(4172119.0*0.2))
+    weights = [[1.],[1.]]
+    sf = [[1.],[0.25]]
     isMC = True
     oname = 'comp_sigBkg_afterBDT'
     headerOpt = "    test samples" #{}".format()
@@ -589,6 +592,7 @@ elif which == 20: # -l 0 !!
     legList = [["ggHbb"], ["HH4b SM"]]
     colorList = [[602], [632]]
     dofill = [True,True]
+
     isMC = True
     sf = [[0.002879],[(33.53*0.5824*0.5824/(4172119.0*0.2))]] 
     oname = 'comp_gghsig_afterBDT'
@@ -677,6 +681,18 @@ elif which == 27: # -l 0 !!
     isMC = True
     sf = [[0.01077*35.9*0.96],[1.]] ## update xs!!
     oname = 'comp_ttbkg_afterBDT'
+    headerOpt = "    "
+
+elif which == 2007: # -l 0 !!
+    samples = [['ttHbb','TT'],['bkg']] #data always  second
+    fractions = ['','appl']
+    regions = ['',''] #    regions = ['cr','cr']
+    legList = [["ttHbb","tt"], ["mixed data"]]
+    colorList = [[419,425], [430]]
+    dofill = [True,True]
+    isMC = True
+    sf = [[0.00007621*35.9*0.96, 0.01077*35.9*0.96], [0.25]] ## update xs!!
+    oname = 'comp_tthttbkg_afterBDT'
     headerOpt = "    "
 
 elif which == 207: # -l 0 !!
@@ -842,6 +858,9 @@ else:
 if args.defaultCol: colors = [0,0]
 else: colors = colorList
 
+for n, w in enumerate(weights):
+    if len(w)==0: print "## WARNING: weight[{}] is empty".format(n)
+
 snames1 = []
 for s in samples[0]:
     if not s in samlists: 
@@ -888,7 +907,6 @@ for sam in snames2:
     else: plotDirs2.append(sam)
 print "HISTS FROM FOLDER {}".format(plotDirs2) 
 
-
 oDir = args.oDir
 oDir += "/"+args.bdt
 if not os.path.exists(oDir): os.mkdir(oDir)
@@ -909,8 +927,8 @@ for n, h in enumerate(histList):
     hOpt = hist_opt[h]
     if h == 'classifier': 
         h+='-'+args.bdt
-    hs1 = UtilsDraw.getHistos_bdt(h, filename, plotDirs1, weights[0], sf[0])
-    hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDirs2, weights[1], sf[1])
+    hs1 = UtilsDraw.getHistos_bdt(h, filename, plotDirs1, intLumi_fb, doNormToLumi[0], weights[0], sf[0])
+    hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDirs2, intLumi_fb, doNormToLumi[1], weights[1], sf[1])
 
     if drawH2:
         UtilsDraw.drawH2(hs1, hs2, hist_opt["h2_bdt"], snames1, args.clrebin, oDir, legList)
