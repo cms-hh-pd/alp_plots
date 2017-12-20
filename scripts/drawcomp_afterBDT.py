@@ -190,11 +190,25 @@ elif which == 5:
     regions = ['ms','ms']
     legList = [["mixed data"], ["data"]]
     colorList = [[430], [1]]
-    sf = [[0.25],[1.]]
+    sf = [[1.],[1.*4.]]
     dofill = [True,False]
     isMC = False
     oname = 'comp_bkgdata_afterBDT'
     headerOpt = "   mass CR. appl sample"
+
+elif which == 500:
+    samples = [['bkg'],['data']] #data always  second
+    fractions = ['appl','']
+    regions = ['ttbdt','ttbdt']
+    legList = [["mixed data"], ["data"]]
+    colorList = [[430], [1]]
+    sf = [[1.],[1.*4.]]
+    dofill = [True,False]
+    isMC = False
+    oname = 'comp_bkgdata_afterBDT'
+    headerOpt = "   ttBDT<0.3  appl sample"
+
+
 
 elif which == 6:
     samples = [['bkg'],['bkg']]
@@ -261,6 +275,19 @@ elif which == 10:
     isMC = False
     oname = 'comp_bkgdata_afterBDT'
     headerOpt = "  H mass CR - appl.sam." #
+
+elif which == 1000:
+    samples = [['BTagCSVRun2016_clf-mixed-appl'],['BTagCSVRun2016_clf_']] #data always  second
+    fractions = ['','']
+    regions = ['',''] 
+    legList = [["mixed data - QCD only"], ["data - QCD only"]]
+    colorList = [[430], [1]]
+    sf = [[1.*2.468],[4.*2.468]] #bias correction is normalized to bkg appl
+    dofill = [True,False]
+    isMC = False
+    oname = 'comp_bkgdata_clf_afterBDT'
+    headerOpt = "  H mass CR - appl.sam." #
+
 
 elif which == 101:
     samples = [['BTagCSVRun2016-mixed-extreme2'],['data']] #data always  second
@@ -703,7 +730,7 @@ elif which == 207: # -l 0 !!
     colorList = [[603], [430]]
     dofill = [True,True]
     isMC = True
-    sf = [[0.01077*35.9*0.96],[0.01077*35.9*0.96]]
+    sf = [[0.01077*35.9*0.96*4],[0.01077*35.9*0.96*4]]
     oname = 'tt-tt-fix-00'
     headerOpt = "   "
 
