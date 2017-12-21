@@ -410,6 +410,11 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.15
     if isNevts:  print "h2Int ",  h2.GetBinContent(1), h2.GetBinError(1)
 
+    if len(hlist1) == 1 and len(hlist2) == 1:
+        print("KS: ", hlist1[0].KolmogorovTest(hlist2[0]))
+        print("Chi2: ", hlist1[0].Chi2Test(hlist2[0], "UU NORM"))
+    else:
+        print("Not doing KS test, stacks as input")
    #debug -- needed before drawing hs
     herr1.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
     herr1.SetMinimum(0.)
@@ -478,11 +483,11 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
 
         for i in range(0, len(bias)):
             hb.SetBinContent(i+1, bias[i])
-            print(hb.GetBinContent(i+1))
+            #print(hb.GetBinContent(i+1))
 
         for ibin in range(1, h2.GetNbinsX()+1):
             hrat.SetBinContent(ibin, h1.GetBinContent(ibin)-h2.GetBinContent(ibin) )
-            print(hrat.GetBinContent(ibin))
+            #print(hrat.GetBinContent(ibin))
             if(h2.GetBinContent(ibin)>0): 
                 hrat.SetBinError(ibin, h2.GetBinError(ibin)/h2.GetBinContent(ibin) )
             else: 
@@ -591,7 +596,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         hrat.Divide(h1)
         # consider only data error in the ratio plot
         for ibin in range(1, h2.GetNbinsX()+1):
-            print(h2.GetBinContent(ibin))
+            #print(h2.GetBinContent(ibin))
             if(h2.GetBinContent(ibin)>0): 
                 hrat.SetBinError(ibin, h2.GetBinError(ibin)/h2.GetBinContent(ibin) )
             else: 
@@ -689,7 +694,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
             n2 = h2.GetBinContent(i)
             e1 = h1.GetBinError(i)
             e2 = h2.GetBinError(i)
-            print  i, n1, n2, e1, e2
+            #print  i, n1, n2, e1, e2
             if n1 :#and e1: 
                 hres.SetBinContent(i,(n1-n2)) # order is correct!! bkg - truth
                 #err = (pow(n1,3) + 15*pow(n1,2)*n2+15*pow(n2,2)*n1 + pow(n2,3))/(4*pow((n1+n2),3))
@@ -789,7 +794,10 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         for i in range(1, hbias.GetXaxis().GetNbins()+1):
              hbias.SetBinContent(i,bias_corr[i-1])
              hbias.SetBinError(i, 0.001) #fake error
-             print bias_corr[i-1]
+             #print bias_corr[i-1]
+
+        #Normalize to bias
+        #hres.Scale(hbias.Integral() / hres.Integral())        
 
         ymax = 2000.
         ymin = -1.
@@ -800,6 +808,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         hres.GetYaxis().SetRangeUser(ymin,ymax)
         hbias.GetYaxis().SetRangeUser(ymin,ymax)
 
+        print "res", hres.Integral(), "bias", hbias.Integral()
         hbias.SetMarkerColor(2)
         hbias.SetLineColor(2)
         hbias.Draw("E X0")
