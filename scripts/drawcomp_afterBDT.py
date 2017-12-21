@@ -899,6 +899,29 @@ elif which == 138:
     isMC = True
     oname = 'comp_ttBkg_afterBDT'
     headerOpt = "test"
+elif which == 490:
+    samples = [['bkg'], ['bkg']]
+    fractions = ['appl','appl_ttbdt']
+    regions = ['','']
+    weights = [[1],[1]]
+    legList = [["bkg (mixed data) appl"], ["bkg (mixed data) appl tt bdt cut"]]
+    colorList = [[604], [430]]
+    dofill = [True,True]
+    isMC = True
+    oname = 'comp_ttbdt_bkgdiff_afterBDT'
+    headerOpt = ""
+elif which == 491:
+    samples = [['data'], ['data']]
+    fractions = ['','ttbdt']
+    regions = ['','']
+    weights = [[1],[1]]
+    legList = [["data"], ["data ttbdt cut"]]
+    colorList = [[604], [430]]
+    dofill = [True,True]
+    isMC = True
+    oname = 'comp_ttbdt_datadiff_afterBDT'
+    headerOpt = ""
+
 elif which == 500: # -l 0 !!
     samples = [['sig'],['sig']] #data always  second
     fractions = ['appl','appl_ttbdt']
@@ -912,18 +935,49 @@ elif which == 500: # -l 0 !!
     headerOpt = "    "
 elif which == 501:
     samples = [['bkg'], ['data']]
-    fractions = ['test_ttbdt','ttbdt']
+    fractions = ['appl_ttbdt','ttbdt']
     regions = ['','']
-    weights = [[0.010760],[]]
-    legList = [["bkg (mixed data)"], ["data"]]
+    weights = [[1],[4]]
+    legList = [["bkg (mixed data) appl"], ["data"]]
     colorList = [604, 430]
     dofill = [True,True]
     isMC = True
-    oname = 'comp_ttbdt_bkg_data_afterBDT'
-    headerOpt = "test"
-    #getChi = True
-    xbmin = 0
-    labels = ["", ""]
+    oname = 'comp_ttbdt_bkgappl_data_afterBDT'
+    headerOpt = "ttbar veto"
+elif which == 502:
+    samples = [['bkg'], ['data']]
+    fractions = ['appl_ttbdt','ttbdt']
+    regions = ['','']
+    weights = [[1*739516.0/304186.0],[4*739516.0/304186.0]]
+    legList = [["bkg (mixed data) appl"], ["data"]]
+    colorList = [604, 430]
+    dofill = [True,True]
+    isMC = True
+    oname = 'comp_ttbdt_bkgappl_data_afterBDT'
+    headerOpt = "ttbar veto"
+elif which == 511:
+    samples = [['bkg'], ['data']]
+    fractions = ['appl','']
+    regions = ['msttbdt','msttbdt']
+    weights = [[1],[4]]
+    legList = [["bkg (mixed data) appl"], ["data"]]
+    colorList = [604, 430]
+    dofill = [True,True]
+    isMC = True
+    oname = 'comp_ttbdt_bkgappl_data_afterBDT'
+    headerOpt = "ttbar veto"
+
+elif which == 583:
+    samples = [['bkg'], ['data']]
+    fractions = ['appl','']
+    regions = ['','']
+    weights = [[1],[4]]
+    legList = [["bkg (mixed data) appl"], ["data"]]
+    colorList = [604, 430]
+    dofill = [True,True]
+    isMC = True
+    oname = 'comp_bkgappl_data_afterBDT'
+    headerOpt = ""
 else: 
     print "ERROR: wrong '-w' argument"
     exit()
@@ -985,8 +1039,10 @@ oDir = args.oDir
 oDir += "/"+args.bdt
 if not os.path.exists(oDir): os.mkdir(oDir)
 oDir += "/"+oname
-if args.doNorm: oDir = oDir+"_norm/"
-else: oDir = oDir+"/"
+if args.doNorm: oDir = oDir+"_norm"
+if args.clrebin > 1: 
+    oDir += "_rebin_" + str(args.clrebin)
+oDir = oDir+"/"
 if not os.path.exists(oDir): os.mkdir(oDir)
 oDir += option #keep the second sample options
 if not os.path.exists(oDir): os.mkdir(oDir)
