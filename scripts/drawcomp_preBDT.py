@@ -154,6 +154,50 @@ elif args.whichPlots == 4:
     isMC = True
     oname = "comp_qcdqcdb_preBDT"
 
+elif args.whichPlots == 5:
+    samlist1 = ['ttH'] ## only SM (Pangea not reweighted after alp_analysis)
+    samlist2 = ['Data']
+    optList = ["def_cmva","def_cmva_mixed"]
+    legList = [["ttH"], ["bkg (mixed data)"]]
+    colorList = [[632], [430]]
+    doNormToLumi = [True, False] ###
+    dofill = [True,False]
+    isMC = False
+    oname = "comp_ttHBkg_preBDT"
+
+elif args.whichPlots == 6:
+    samlist1 = ['ttH'] ## only SM (Pangea not reweighted after alp_analysis)
+    samlist2 = ['SM']
+    optList = ["def_cmva","def_cmva"]
+    legList = [["ttH"], ["SM signal"]]
+    colorList = [[632], [430]]
+    doNormToLumi = [True, False] ###
+    dofill = [True,False]
+    isMC = False
+    oname = "comp_ttH_signal_preBDT"
+
+elif args.whichPlots == 7:
+    samlist1 = ['TT'] ## only SM (Pangea not reweighted after alp_analysis)
+    samlist2 = ['Data']
+    optList = ["def_cmva","def_cmva_mixed"]
+    legList = [["ttbar"], ["bkg (mixed data)"]]
+    colorList = [[632], [430]]
+    doNormToLumi = [True, False] ###
+    dofill = [True,False]
+    isMC = False
+    oname = "comp_ttbar_bkg_preBDT"
+
+elif args.whichPlots == 8:
+    samlist1 = ['TT'] ## only SM (Pangea not reweighted after alp_analysis)
+    samlist2 = ['ttH']
+    optList = ["def_cmva","def_cmva"]
+    legList = [["ttbar"], ["ttH"]]
+    colorList = [[632], [430]]
+    doNormToLumi = [True, False] ###
+    dofill = [True,False]
+    isMC = False
+    oname = "comp_ttbar_ttH_preBDT"
+
 else: 
     print "## ERROR: wrong '-w' argument"
     exit()

@@ -877,6 +877,53 @@ elif which == 302: # -l 0 !!
     sf = [[0.002879*35.9*0.96*4, 0.000720*35.9*0.96*4, 0.0007665*35.9*0.96*4, 0.00007621*35.9*0.96*4, 0.01077*35.9*0.96*4],[0.002879*35.9*0.96*4, 0.000720*35.9*0.96*4, 0.0007665*35.9*0.96*4, 0.00007621*35.9*0.96*4, 0.01077*35.9*0.96*4]]
     oname = 'comp_minBkgminBkg11_afterBDT'
     headerOpt = "    "  
+elif which == 137:
+    samples = [['sig'], ['bkg']]
+    fractions = ['train','train']
+    regions = ['','']
+    weights = [[0.010760],[]]
+    legList = [['tt'], ["bkg (mixed data)"]]
+    colorList = [604, 430]
+    dofill = [True,True]
+    isMC = True
+    oname = 'comp_ttBkg_afterBDT'
+    headerOpt = "train"
+elif which == 138:
+    samples = [['sig'], ['bkg']]
+    fractions = ['test','test']
+    regions = ['','']
+    weights = [[0.010760],[]]
+    legList = [['tt'], ["bkg (mixed data)"]]
+    colorList = [604, 430]
+    dofill = [True,True]
+    isMC = True
+    oname = 'comp_ttBkg_afterBDT'
+    headerOpt = "test"
+elif which == 500: # -l 0 !!
+    samples = [['sig'],['sig']] #data always  second
+    fractions = ['appl','appl_ttbdt']
+    regions = ['',''] #    regions = ['cr','cr']
+    legList = [["SM"], ["HH4b SM ttbdt cut"]]
+    colorList = [[434], [632]]
+    dofill = [True,True]
+    isMC = True
+    sf = [[(33.53*0.5824*0.5824/(4172119.0*0.2))],[(33.53*0.5824*0.5824/(4172119.0*0.2))]]
+    oname = 'comp_sig_ttbdt_afterBDT'
+    headerOpt = "    "
+elif which == 501:
+    samples = [['bkg'], ['data']]
+    fractions = ['test_ttbdt','ttbdt']
+    regions = ['','']
+    weights = [[0.010760],[]]
+    legList = [["bkg (mixed data)"], ["data"]]
+    colorList = [604, 430]
+    dofill = [True,True]
+    isMC = True
+    oname = 'comp_ttbdt_bkg_data_afterBDT'
+    headerOpt = "test"
+    #getChi = True
+    xbmin = 0
+    labels = ["", ""]
 else: 
     print "ERROR: wrong '-w' argument"
     exit()
