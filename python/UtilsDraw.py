@@ -375,7 +375,7 @@ def drawBinVar(hlist, snames, legstack, hsOpt, oDir, rebin, headerOpt, isMC):
     c1.SaveAs(oDir+"/"+"bdtVar_nn.root")
 #------------
 
-def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residuals, norm, oDir, colors, dofill, rebin, headerOpt, isMC):#, ran1,ran2):  #debug
+def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residuals, norm, oDir, colors, dofill, rebin, headerOpt, isMC):
     gStyle.SetOptStat(False)
     gStyle.SetOptTitle(0);
 
@@ -410,6 +410,11 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.15
     if isNevts:  print "h2Int ",  h2.GetBinContent(1), h2.GetBinError(1)
 
+    if len(hlist1) == 1 and len(hlist2) == 1:
+        print("KS: ", hlist1[0].KolmogorovTest(hlist2[0]))
+        print("Chi2: ", hlist1[0].Chi2Test(hlist2[0], "UU NORM"))
+    else:
+        print("Not doing KS test, stacks as input")
    #debug -- needed before drawing hs
     herr1.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
     herr1.SetMinimum(0.)
@@ -466,7 +471,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     else:
         herr1.GetXaxis().SetLabelSize(0.)
 
-    if residuals==-3: # division
+    if residuals==-3: # division --- utility not clear...
         c1.cd()
         pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.3)
         pad2.SetTopMargin(0.)
@@ -478,11 +483,11 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
 
         for i in range(0, len(bias)):
             hb.SetBinContent(i+1, bias[i])
-            print(hb.GetBinContent(i+1))
+            #print(hb.GetBinContent(i+1))
 
         for ibin in range(1, h2.GetNbinsX()+1):
             hrat.SetBinContent(ibin, h1.GetBinContent(ibin)-h2.GetBinContent(ibin) )
-            print(hrat.GetBinContent(ibin))
+            #print(hrat.GetBinContent(ibin))
             if(h2.GetBinContent(ibin)>0): 
                 hrat.SetBinError(ibin, h2.GetBinError(ibin)/h2.GetBinContent(ibin) )
             else: 
@@ -499,13 +504,6 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
                 herr.SetBinContent(ibin, 1.)
                 herr.SetBinError   (ibin, 0.)
 
-        #for i in range(1, hrat.GetXaxis().GetNbins()+1):
-        #    n1 = h1.GetBinContent(i)
-        #    n2 = h2.GetBinContent(i)
-        #    if n1 and n2 and e1 and e2 : 
-        #        hrat.SetBinContent(i,n2/n1)
-        # to chek just histos ratio:
-
         hrat.SetTitle("")
         hrat.GetXaxis().SetTitleSize(20)
         hrat.GetXaxis().SetTitleFont(43)
@@ -520,9 +518,6 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         ymax = 800.
         ymin_ = 0.5
         ymin = -200.
-
-#        ymax =ran1
-#        ymin =ran2
 
        # print 'rb', rb      
         hrat.GetYaxis().SetRangeUser(ymin,ymax)
@@ -545,8 +540,6 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         hb.SetMarkerColor(2)
         hb.SetMarkerSize(0.8)
         hb.Draw("same X0")
-       # herr.SetFillColor(430)
-       # herr.Draw("E2same")
         c00.SaveAs(oDir+"/"+hsOpt['hname']+"_div2.root")
         c00.SaveAs(oDir+"/"+hsOpt['hname']+"_div2.png")
 
@@ -566,14 +559,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         l2.SetLineStyle(3)
         l3.SetLineStyle(3)
         l4.SetLineStyle(3)
-        #l.Draw("same")
-        #l0.Draw("same")
-        #l00.Draw("same")
-        #l000.Draw("same")
-        #l1.Draw("same")
         l2.Draw("same")
-        #if ymin<0.9: l3.Draw("same")
-        #if ymin<0.8: l4.Draw("same")
 
         c1.SaveAs(oDir+"/"+hsOpt['hname']+"_div.pdf")
         c1.SaveAs(oDir+"/"+hsOpt['hname']+"_div.png")            
@@ -591,7 +577,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         hrat.Divide(h1)
         # consider only data error in the ratio plot
         for ibin in range(1, h2.GetNbinsX()+1):
-            print(h2.GetBinContent(ibin))
+            #print(h2.GetBinContent(ibin))
             if(h2.GetBinContent(ibin)>0): 
                 hrat.SetBinError(ibin, h2.GetBinError(ibin)/h2.GetBinContent(ibin) )
             else: 
@@ -621,9 +607,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         ymax = 1.
         ymin_ = 0.5
         ymin = 1.
-       #ymax =ran1
-       #ymin =ran2
-     
+    
         for ibin in range(minbin, maxbin+1):       
             binc = hrat.GetBinContent(ibin) 
             if binc == 0. or (binc is None): 
@@ -678,7 +662,142 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         c1.SaveAs(oDir+"/"+hsOpt['hname']+"_rat.png")            
         c1.Clear()
 
-    elif residuals >=1: # data as h2!!!
+
+    elif residuals ==10:  # to get comparison of hres with default bias
+        c3 = TCanvas("c3", "comp_res"+hsOpt['hname'], 800, 400)
+        hres = h2.Clone("h_res")        
+        
+        checkbin = False
+        for i in range(1, hres.GetXaxis().GetNbins()+1):
+            n1 = h1.GetBinContent(i)
+            n2 = h2.GetBinContent(i)
+            e1 = h1.GetBinError(i)
+            e2 = h2.GetBinError(i)
+            #print  i, n1, n2, e1, e2
+            if n1 :#and e1: 
+                hres.SetBinContent(i,(n1-n2)) # order is correct!! bkg - truth
+                #err = (pow(n1,3) + 15*pow(n1,2)*n2+15*pow(n2,2)*n1 + pow(n2,3))/(4*pow((n1+n2),3))
+                hres.SetBinError(i, math.sqrt(pow(e1,2)+pow(e2,2)))
+        hres.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+        hres.SetMarkerStyle(8)
+        hres.SetMarkerSize(0.8)
+        hres.SetMarkerColor(1)
+        hres.SetLineColor(1)
+        hres.GetXaxis().SetTitle(hsOpt['xname'])
+        hres.GetYaxis().SetTitle('Nexp - Nobs')
+
+        # debug - bad implementation
+        # values taken from: /lustre/cmswork/hh/alp_mva/bias/bias_correction_20171018_bigset_unscaled.json 
+        hbias = hres.Clone("h_bias")
+        bias_corr = [
+         602.8333333333358, 
+         320.54166666666424, 
+         170.41666666666424, 
+         161.79166666666788, 
+         277.3333333333321, 
+         136.5, 
+         113.54166666666788, 
+         194.16666666666788, 
+         105.79166666666788, 
+         43.16666666666788, 
+         87.91666666666788, 
+         101.54166666666788, 
+         73.20833333333212, 
+         81.66666666666788, 
+         65.20833333333394, 
+         -34.625, 
+         -11.75, 
+         -3.1666666666660603, 
+         -9.41666666666606, 
+         -41.70833333333394, 
+         -7.75, 
+         -18.70833333333394, 
+         -51.41666666666606, 
+         -41.66666666666606, 
+         -36.70833333333394, 
+         -47.91666666666606, 
+         -19.29166666666606, 
+         -11.375, 
+         -26.29166666666606, 
+         -81.45833333333394, 
+         -59.45833333333394, 
+         -51.375, 
+         -49.83333333333303, 
+         -13.5, 
+         -15.33333333333303, 
+         -42.83333333333303, 
+         -73.66666666666697, 
+         -20.16666666666697, 
+         -79.0, 
+         -48.29166666666697, 
+         -66.54166666666697, 
+         -53.79166666666697, 
+         -36.41666666666697, 
+         -67.375, 
+         -82.75, 
+         -56.625, 
+         -51.41666666666697, 
+         -81.33333333333303, 
+         -53.08333333333303, 
+         -60.16666666666697, 
+         -66.66666666666652, 
+         -59.208333333333485, 
+         -62.708333333333485, 
+         -62.791666666666515, 
+         -63.416666666666515, 
+         -41.041666666666515, 
+         -46.416666666666515, 
+         -59.0, 
+         -42.375, 
+         -41.833333333333485, 
+         -54.25, 
+         -23.25, 
+         -19.416666666666515, 
+         -34.791666666666515, 
+         -39.458333333333485, 
+         -22.041666666666515, 
+         -38.833333333333485, 
+         -29.541666666666742, 
+         -46.375, 
+         -21.416666666666742, 
+         -11.875, 
+         -18.125, 
+         -8.583333333333258, 
+         -11.583333333333258, 
+         -14.291666666666742, 
+         -31.041666666666742, 
+         -22.083333333333258, 
+         -10.666666666666742, 
+         -22.75, 
+         -9.25
+        ]         
+        for i in range(1, hbias.GetXaxis().GetNbins()+1):
+             hbias.SetBinContent(i,bias_corr[i-1])
+             hbias.SetBinError(i, 0.001) #fake error
+             #print bias_corr[i-1]
+
+        #Normalize to bias
+        #hres.Scale(hbias.Integral() / hres.Integral())        
+
+        ymax = 2000.
+        ymin = -1.
+        #if hbias.GetMaximum() > ymax: ymax = hbias.GetMaximum()*1.15
+        #if hres.GetMaximum() > ymax: ymax = hres.GetMaximum()*1.15
+        if hbias.GetMinimum() < ymin: ymin = hbias.GetMinimum()*1.15
+        if hres.GetMinimum() < ymin: ymin = hres.GetMinimum()*1.15
+        hres.GetYaxis().SetRangeUser(ymin,ymax)
+        hbias.GetYaxis().SetRangeUser(ymin,ymax)
+
+        print "res", hres.Integral(), "bias", hbias.Integral()
+        hbias.SetMarkerColor(2)
+        hbias.SetLineColor(2)
+        hbias.Draw("E X0")
+        hres.Draw("E X0 same")
+        c3.SaveAs(oDir+"/"+hsOpt['hname']+"_resc.pdf")
+        c3.SaveAs(oDir+"/"+hsOpt['hname']+"_resc.png")            
+        c3.SaveAs(oDir+"/"+hsOpt['hname']+"_resc.root")            
+
+    elif residuals >=1: # to get residuals and pulls -- data as h2!!!
         if residuals==2:
             c2 = TCanvas("c2", "res"+hsOpt['hname'], 800, 800)    
             c2.Divide(1,2)
@@ -694,7 +813,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
             e2 = h2.GetBinError(i)
             print  i, n1, n2, e1, e2
             if n1 and e1: 
-                hres.SetBinContent(i,(n1-n2)/math.sqrt(e1*e1+e2*e2)) #debug v1
+                hres.SetBinContent(i,(n1-n2)/math.sqrt(e1*e1+e2*e2)) #sign is fine!!!!!!!!
                 err = (pow(n1,3) + 15*pow(n1,2)*n2+15*pow(n2,2)*n1 + pow(n2,3))/(4*pow((n1+n2),3))
                 hres.SetBinError(i, err)
 
