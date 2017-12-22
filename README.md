@@ -17,6 +17,7 @@ General idea:
      - the two histograms can be made by stack of multiple histograms.
      - colors, legends, binning can be costumized
      - default weights (PU, BTag, ...) must have been applied already to input histograms.
+     - get residuals, pulls, ratio
                  
 Scripts:
  - drawcomp_afterBDT -> to plot ditributions from classifier report output, e.g.
@@ -34,3 +35,17 @@ Scripts:
  - drawcomp_trgEff -> to plot ditributions for trigger efficiency study (not maintained)
 
  - drawcomp_tktdr -> to plot ditributions for phase2 tracker TDR (not maintained)
+
+Plot option structure:
+if which == NN:
+    samples = [['aa','bb'], ['cc']] -> two vector of samples. Stack TH1 if more than 1. Data always in the second argument.
+    fractions = ['','test'] -> specify if train, test or appl
+    regions = ['',''] -> specify which CR (btag, ms, ttbdt, ... ). see https://gitlab.cern.ch/cms-hh-pd/hh2bbbb_limit/blob/master/python/data_manager.py#L444 
+    weights = [[1.,4.],[2.]] -> usually to normalize to a L_int=1fb-1
+    sf = [[],[]] -> additional weight 
+    legList = [['aa','qcd HT>200'], ["cc"]] -> legend (if QCD, one is autmatically taken)
+    colorList = [[604,300]], [430]] -> specify color if you do not want to use the default from https://github.com/cms-hh-pd/alp_analysis/blob/master/python/alpSamplesOptions.py
+    dofill = [True,True] -> to fill the histos
+    isMC = True -> just to change canvas header
+    oname = 'comp_qcdttBkg_afterBDT' -> out file name
+    headerOpt = " aaaaa " -> additional text printed close to 'CMS'
