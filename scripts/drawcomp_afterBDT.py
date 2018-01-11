@@ -70,7 +70,7 @@ elif args.hlist == 2:
 histList2  = ["DiJets[0].mass()-DiJets[1].mass()", "CSV_Jet2-CSV_Jet3", "CMVA_Jet2-CMVA_Jet3",] # -- not maintained
 
 ###############
-elif which == -2:
+if which == -2:
     samples = [['HHTo4B_SM'], ['sig']]
     fractions = ['','train']
     regions = ['','']
