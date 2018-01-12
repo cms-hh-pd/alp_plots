@@ -70,7 +70,7 @@ elif args.hlist == 2:
 histList2  = ["DiJets[0].mass()-DiJets[1].mass()", "CSV_Jet2-CSV_Jet3", "CMVA_Jet2-CMVA_Jet3",] # -- not maintained
 
 ###############
-elif which == -2:
+if which == -2:
     samples = [['HHTo4B_SM'], ['sig']]
     fractions = ['','train']
     regions = ['','']
@@ -365,6 +365,18 @@ elif which == 2071:
     dofill = [True,True]
     isMC = True
     sf = [[0.01077*35.9*0.96],[0.01077*35.9*0.96*4]]
+    oname = 'tt-tt-fix-appl'
+    headerOpt = "   "
+
+elif which == 2072: 
+    samples = [['TT'],['TT-fix-appl']]
+    fractions = ['','']
+    regions = ['','']
+    legList = [["TT"], ["mixed data as TT (appl)"]]
+    colorList = [[603], [430]]
+    dofill = [True,True]
+    isMC = True
+    sf = [[0.01077*35.9*0.96*4],[0.01077*35.9*0.96]]
     oname = 'tt-tt-fix-appl'
     headerOpt = "   "
 

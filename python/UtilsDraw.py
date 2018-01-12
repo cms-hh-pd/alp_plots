@@ -3,8 +3,10 @@ import os
 import math
 from glob import glob
 
+import numpy as np
 # ROOT imports
 from ROOT import TChain, TPad, TH1D, TH2D, TFile, vector, TCanvas, TLatex, TLine, TLegend, THStack, gStyle, TGaxis
+import ROOT
 from rootpy.plotting import Hist, Hist2D
 
 from Analysis.alp_analysis.alpSamplesOptions  import sam_opt
@@ -54,7 +56,7 @@ def getHistos_bdt(hist, filename, plotDirs, lumi, normtolumi, weights, sf):
             h.Scale(norm)
             hlist.append(h)
         else:
-            print "## WARNING: hist {} not found in {}".format(hist,tf)
+            print "## WARNING: hist {} not found in {}".format(Dir+"/"+hname,tf)
 
     return hlist
 #------------
@@ -663,10 +665,15 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         c1.Clear()
 
 
-    elif residuals ==10:  # to get comparison of hres with default bias
-        c3 = TCanvas("c3", "comp_res"+hsOpt['hname'], 800, 400)
+    elif residuals == 10:  # to get comparison of hres with default bias
+        c3 = TCanvas("c3", "comp_res"+hsOpt['hname'], 1000, 1000)
+        pad1 = TPad("pad1", "pad1", 0, 0.3, 1, 1.0)
+        pad1.SetBottomMargin(0.0) 
+        pad1.Draw()             
+        pad1.cd()
+        #c3.Divide(1,2)
+        #c3.cd(1)        
         hres = h2.Clone("h_res")        
-        
         checkbin = False
         for i in range(1, hres.GetXaxis().GetNbins()+1):
             n1 = h1.GetBinContent(i)
@@ -675,7 +682,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
             e2 = h2.GetBinError(i)
             #print  i, n1, n2, e1, e2
             if n1 :#and e1: 
-                hres.SetBinContent(i,(n1-n2)) # order is correct!! bkg - truth
+                hres.SetBinContent(i,(n2-n1)) # order is correct!! bkg - truth
                 #err = (pow(n1,3) + 15*pow(n1,2)*n2+15*pow(n2,2)*n1 + pow(n2,3))/(4*pow((n1+n2),3))
                 hres.SetBinError(i, math.sqrt(pow(e1,2)+pow(e2,2)))
         hres.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -684,115 +691,139 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         hres.SetMarkerColor(1)
         hres.SetLineColor(1)
         hres.GetXaxis().SetTitle(hsOpt['xname'])
-        hres.GetYaxis().SetTitle('Nexp - Nobs')
+        hres.GetYaxis().SetTitle('Events')
 
-        # debug - bad implementation
-        # values taken from: /lustre/cmswork/hh/alp_mva/bias/bias_correction_20171018_bigset_unscaled.json 
+        bkg_bias_fname = "/lustre/cmswork/hh/alp_mva/bias/bias_correction_20171018_bigset_unscaled.json"
+        with open(bkg_bias_fname,"r") as bkg_bias_file:
+            json_dict = json.load(bkg_bias_file)
+            print ("using bias file: ", bkg_bias_file)
+
+        #print("bias_corr", json_dict['bias_corr'])
+        #for n, s_bin in enumerate(filt_hists['bkg_hem_mix']):
         hbias = hres.Clone("h_bias")
-        bias_corr = [
-         602.8333333333358, 
-         320.54166666666424, 
-         170.41666666666424, 
-         161.79166666666788, 
-         277.3333333333321, 
-         136.5, 
-         113.54166666666788, 
-         194.16666666666788, 
-         105.79166666666788, 
-         43.16666666666788, 
-         87.91666666666788, 
-         101.54166666666788, 
-         73.20833333333212, 
-         81.66666666666788, 
-         65.20833333333394, 
-         -34.625, 
-         -11.75, 
-         -3.1666666666660603, 
-         -9.41666666666606, 
-         -41.70833333333394, 
-         -7.75, 
-         -18.70833333333394, 
-         -51.41666666666606, 
-         -41.66666666666606, 
-         -36.70833333333394, 
-         -47.91666666666606, 
-         -19.29166666666606, 
-         -11.375, 
-         -26.29166666666606, 
-         -81.45833333333394, 
-         -59.45833333333394, 
-         -51.375, 
-         -49.83333333333303, 
-         -13.5, 
-         -15.33333333333303, 
-         -42.83333333333303, 
-         -73.66666666666697, 
-         -20.16666666666697, 
-         -79.0, 
-         -48.29166666666697, 
-         -66.54166666666697, 
-         -53.79166666666697, 
-         -36.41666666666697, 
-         -67.375, 
-         -82.75, 
-         -56.625, 
-         -51.41666666666697, 
-         -81.33333333333303, 
-         -53.08333333333303, 
-         -60.16666666666697, 
-         -66.66666666666652, 
-         -59.208333333333485, 
-         -62.708333333333485, 
-         -62.791666666666515, 
-         -63.416666666666515, 
-         -41.041666666666515, 
-         -46.416666666666515, 
-         -59.0, 
-         -42.375, 
-         -41.833333333333485, 
-         -54.25, 
-         -23.25, 
-         -19.416666666666515, 
-         -34.791666666666515, 
-         -39.458333333333485, 
-         -22.041666666666515, 
-         -38.833333333333485, 
-         -29.541666666666742, 
-         -46.375, 
-         -21.416666666666742, 
-         -11.875, 
-         -18.125, 
-         -8.583333333333258, 
-         -11.583333333333258, 
-         -14.291666666666742, 
-         -31.041666666666742, 
-         -22.083333333333258, 
-         -10.666666666666742, 
-         -22.75, 
-         -9.25
-        ]         
-        for i in range(1, hbias.GetXaxis().GetNbins()+1):
-             hbias.SetBinContent(i,bias_corr[i-1])
-             hbias.SetBinError(i, 0.001) #fake error
-             #print bias_corr[i-1]
+        for n in range(len(json_dict['bias_corr'])):
+                #if not s_bin.overflow:
+                #value = s_bin.value
 
-        #Normalize to bias
-        #hres.Scale(hbias.Integral() / hres.Integral())        
+                bias = json_dict['bias_corr'][n]
+                var = json_dict['var'][n]
+                bias_unc = json_dict['bias_corr_unc_bs'][n]
+                bias_unc_stat = json_dict['bias_corr_unc_stat'][n]
+                
+                #bkg_pred_initial = value
+                #print n, n-1+skip_bins
+                #print bkg_pred_initial
+                #new_bkg_pred = bkg_pred_initial - bias #do not rescale (good for 4 times data)
+                #print new_bkg_pred
+                #if var > np.sqrt(bkg_pred_initial):
+                new_bkg_pred_stat = var
+                #else:
+                #  new_bkg_pred_stat = np.sqrt(bkg_pred_initial)
+                #print new_bkg_pred_stat
+                                
+                new_bkg_pred_tot_unc = np.sqrt(new_bkg_pred_stat**2 + bias_unc**2 + bias_unc_stat**2)
 
-        ymax = 2000.
-        ymin = -1.
-        #if hbias.GetMaximum() > ymax: ymax = hbias.GetMaximum()*1.15
-        #if hres.GetMaximum() > ymax: ymax = hres.GetMaximum()*1.15
+                #value = new_bkg_pred
+                    
+
+                #filt_hists['bkg_hem_mix'][n].value = value
+                #filt_hists['bkg_hem_mix'][n].error = unc
+                hbias.SetBinContent(n+1, bias)
+                hbias.SetBinError(n+1, new_bkg_pred_tot_unc)
+
+        """for n, s_bin in enumerate(filt_hists['bkg_hem_mix']):
+            if not s_bin.overflow:
+                value = s_bin.value
+                unc = s_bin.error
+                if dm.swapped:
+                    s_name = "CMS_hh_bbbb_bkg_hem_mix_bin_swapped{}".format(n)
+                else:    
+                    s_name = "CMS_hh_bbbb_bkg_hem_mix_bin_{}".format(n)
+                name_up = "bkg_hem_mix_" + s_name + "Up" 
+                name_dw = "bkg_hem_mix_" + s_name + "Down" 
+
+                filt_hists[name_up] = filt_hists['bkg_hem_mix'].Clone(name_up)
+                filt_hists[name_dw] = filt_hists['bkg_hem_mix'].Clone(name_dw)
+                filt_hists[name_up][n].value = value + unc
+                filt_hists[name_dw][n].value = value - unc
+                #scale after setting bin errors
+                filt_hists[name_up].Scale(bkg_scale)
+                filt_hists[name_dw].Scale(bkg_scale)"""
+
+        ymax = 650.
+        ymin = -200.
+        if hbias.GetMaximum() > ymax: ymax = hbias.GetMaximum()*1.15
+        if hres.GetMaximum() > ymax: ymax = hres.GetMaximum()*1.15
         if hbias.GetMinimum() < ymin: ymin = hbias.GetMinimum()*1.15
         if hres.GetMinimum() < ymin: ymin = hres.GetMinimum()*1.15
         hres.GetYaxis().SetRangeUser(ymin,ymax)
         hbias.GetYaxis().SetRangeUser(ymin,ymax)
 
         print "res", hres.Integral(), "bias", hbias.Integral()
-        hbias.SetMarkerColor(2)
+        hbias.SetMarkerColor(ROOT.kRed)
         hbias.SetLineColor(2)
         hbias.Draw("E X0")
         hres.Draw("E X0 same")
+
+        legend = setLegend(1,1)
+        legend.AddEntry(hres, "tt mixed - tt MC", "p")
+        legend.AddEntry(hbias, "Bias", "p")
+        legend.Draw("same")
+
+        #Residual panel
+        c3.cd()
+        pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.3)
+        pad2.SetTopMargin(0.)
+        pad2.SetBottomMargin(0.2)
+        pad2.Draw()
+        pad2.cd()
+
+        hresidual = hres.Clone("h_residual")
+        hresidual.Add(hbias, -1)
+        # consider only data error in the ratio plot
+        for ibin in range(1, hresidual.GetNbinsX()+1):
+            #print "A", ibin, hresidual.GetBinContent(ibin), hres.GetBinContent(ibin), hbias.GetBinContent(ibin)
+            hresidual.SetBinContent(ibin, hresidual.GetBinContent(ibin) / math.sqrt(hres.GetBinError(ibin)**2 + hbias.GetBinError(ibin)**2) )
+            hresidual.SetBinError(ibin, 0.01)
+            #print ibin, hresidual.GetBinContent(ibin), hres.GetBinError(ibin), hbias.GetBinError(ibin)
+            #if(h2.GetBinContent(ibin)>0): 
+            #    #hrat.SetBinError(ibin, h2.GetBinError(ibin)/h2.GetBinContent(ibin) )
+            #else: 
+            #    hrat.SetBinError(ibin, 0.)"""
+
+        # MC uncertainy shadow plot
+        herr = herr1.Clone("h_err")
+        herr.Reset()
+        for ibin in range(1, herr1.GetNbinsX()+1):
+                herr.SetBinContent (ibin, 0.)
+                herr.SetBinError   (ibin, 1.)
+
+        hresidual.SetTitle("")
+        hresidual.GetXaxis().SetTitleSize(20)
+        hresidual.GetXaxis().SetTitleFont(43)
+        hresidual.GetXaxis().SetTitleOffset(4.)
+        hresidual.GetXaxis().SetLabelFont(43)
+        hresidual.GetXaxis().SetLabelSize(20)
+        hresidual.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+
+        hresidual.GetYaxis().SetRangeUser(-2.25,2.)
+        hresidual.GetYaxis().SetTitleSize(20)
+        hresidual.GetYaxis().SetTitleFont(43)
+        hresidual.GetYaxis().SetTitleOffset(1.40)
+        hresidual.GetYaxis().SetLabelFont(43)
+        hresidual.GetYaxis().SetLabelSize(18)
+        hresidual.SetMarkerStyle(8)
+        hresidual.SetMarkerSize(0.8)
+        hresidual.SetMarkerColor(1)
+        hresidual.SetLineColor(1)
+        hresidual.GetXaxis().SetTitle("BDT output")
+        hresidual.GetYaxis().SetTitle('difference in #sigma units')
+        hresidual.Draw("E1 X0")
+        herr.GetXaxis().SetTitle("")
+        herr.SetFillColor(430)
+        herr.Draw("E2same")
+
+        
         c3.SaveAs(oDir+"/"+hsOpt['hname']+"_resc.pdf")
         c3.SaveAs(oDir+"/"+hsOpt['hname']+"_resc.png")            
         c3.SaveAs(oDir+"/"+hsOpt['hname']+"_resc.root")            
@@ -816,6 +847,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
                 hres.SetBinContent(i,(n1-n2)/math.sqrt(e1*e1+e2*e2)) #sign is fine!!!!!!!!
                 err = (pow(n1,3) + 15*pow(n1,2)*n2+15*pow(n2,2)*n1 + pow(n2,3))/(4*pow((n1+n2),3))
                 hres.SetBinError(i, err)
+
 
         hres.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         hres.SetMarkerStyle(8)
