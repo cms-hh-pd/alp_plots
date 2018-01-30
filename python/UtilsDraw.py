@@ -196,17 +196,23 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = N
     if color: col = color[0]
     else: col = sam_opt[snames[0]]['fillcolor']
 
-    """if not postfit_file == None:
+    if postfit_file:
         myfile = TFile.Open(postfit_file)
-        fit = "postfit"
-        for i in range(len(histos)):
-            if snames[i] == "bkg":
-                histos[i] = myfile.Get("hh_bbbb_%s" % fit).Get("TotalBkg")
-            elif snames[i] == "sig":
-                histos[i] = myfile.Get("hh_bbbb_%s" % fit).Get("TotalSig")
+        fit = "postfit"        
+        bak = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_background")
+        sig = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_signal")
+        for ibin in range(1, sig.GetNbinsX()+1):
+            #To avoid histos going out of scope later            
+            for i in range(len(histos)):
+                if snames[i] == "bkg":
+                    histos[i].SetBinContent(ibin, bak.GetBinContent(ibin))
+                    histos[i].SetBinError(ibin, bak.GetBinError(ibin))
+                elif snames[i] == "sig":
+                    histos[i].SetBinContent(ibin, sig.GetBinContent(ibin))
+                    histos[i].SetBinError(ibin, sig.GetBinError(ibin))
         scale = 1
-       """ 
-    herr = histos[0].Clone("hs_error")  
+       
+    herr = histos[0].Clone("hs_error")
     herr.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
     herr.Reset()
     herr.Rebin(rebin)
@@ -1466,22 +1472,6 @@ def drawPostFitH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt,
 
 #def getHistosPostFit(histos, hsOpt, rebin, snames, color, scale, fill):
 def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = None):
-    #In case postfit file given, load results from there
-    if postfit_file:
-        #histos = {}
-        myfile = TFile.Open(postfit_file)
-        bak = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_background")
-        sig = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_signal")
-        for ibin in range(1, histos["sig"].GetNbinsX()+1):
-            #To avoid histos going out of scope later
-            histos["sig"].SetBinContent(ibin, sig.GetBinContent(ibin))
-            histos["sig"].SetBinError(ibin, sig.GetBinError(ibin))
-            histos["bkg"].SetBinContent(ibin, bak.GetBinContent(ibin))
-            histos["bkg"].SetBinError(ibin, bak.GetBinError(ibin))
-        #histos["bkg"] = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_background")
-        #histos["sig"] = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_signal")
-        #Is an TGraphAsymmErrors, not a histogram
-        #histos["data"] = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("data")
     
     print hsOpt
     h_data_bkg = histos["data"].Clone("data-bkg")

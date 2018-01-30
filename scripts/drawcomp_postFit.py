@@ -157,6 +157,7 @@ def draw_postfit(args, fit_results, postfit_file):
       else: 
           if hs1 and hs2:
               print "PF", pf_file
+              print h
               n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], 
                            hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt, isMC, fit_results, pf_file)
 
