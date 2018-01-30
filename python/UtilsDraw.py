@@ -191,11 +191,21 @@ def getScale(hsOpt, hlist1, hlist2, skip1=-1, skip2=-1): #h2/h1
     return scale
 #------------
 
-def getStackH(histos, hsOpt, rebin, snames, color, scale, fill):
+def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = None):
 
     if color: col = color[0]
     else: col = sam_opt[snames[0]]['fillcolor']
 
+    """if not postfit_file == None:
+        myfile = TFile.Open(postfit_file)
+        fit = "postfit"
+        for i in range(len(histos)):
+            if snames[i] == "bkg":
+                histos[i] = myfile.Get("hh_bbbb_%s" % fit).Get("TotalBkg")
+            elif snames[i] == "sig":
+                histos[i] = myfile.Get("hh_bbbb_%s" % fit).Get("TotalSig")
+        scale = 1
+       """ 
     herr = histos[0].Clone("hs_error")  
     herr.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
     herr.Reset()
@@ -400,7 +410,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         scale1 = getScale(hsOpt,hlist1, hlist2)
         print "sc_to_norm1: ",scale1
     else: scale1 = 1.
-    hs1, herr1, h1 =  getStackH(hlist1, hsOpt, rb, snames1, colors[0], scale1, dofill[0])
+    hs1, herr1, h1 =  getStackH(hlist1, hsOpt, rb, snames1, colors[0], scale1, dofill[0], postfit_file)
     if hs1.GetMaximum() > ymax: ymax = hs1.GetMaximum()*1.15
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.15
     if isNevts:  print "h1Int ",  h1.GetBinContent(1), h1.GetBinError(1)
@@ -682,9 +692,9 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         histos["data"] = hlist2[0]
         histos["sig"] = hlist1[1]
         histos["bkg"] = hlist1[0]
-        
+        #print histos
         (h_data_bkg, h_sig, h_err) = getHistosPostFit(histos, hsOpt, snames1, colors, fit_results, postfit_file)
-        
+        #print h_data_bkg.Integral(), h_sig.Integral(), h_err.Integral()
         """hrat = h2.Clone("h_rat")
         hrat.Divide(h1)
         # consider only data error in the ratio plot
@@ -703,6 +713,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         h_data_bkg.GetXaxis().SetLabelFont(43)
         h_data_bkg.GetXaxis().SetLabelSize(20)
         h_data_bkg.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+        #h_data_bkg.GetYaxis().SetRangeUser(-20,20)
         minbin = h_data_bkg.GetXaxis().GetFirst()
         maxbin = h_data_bkg.GetXaxis().GetLast()
         """ymax_ = 1.5
@@ -1457,12 +1468,20 @@ def drawPostFitH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt,
 def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = None):
     #In case postfit file given, load results from there
     if postfit_file:
-        fit = "postfit"
-        histos = {}
+        #histos = {}
         myfile = TFile.Open(postfit_file)
-        histos["bkg"] = myfile.Get("hh_bbbb_%s" % fit).Get("TotalBkg")
-        histos["sig"] = myfile.Get("hh_bbbb_%s" % fit).Get("TotalSig")
-        histos["data"] = myfile.Get("hh_bbbb_%s" % fit).Get("data_obs")
+        bak = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_background")
+        sig = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_signal")
+        for ibin in range(1, histos["sig"].GetNbinsX()+1):
+            #To avoid histos going out of scope later
+            histos["sig"].SetBinContent(ibin, sig.GetBinContent(ibin))
+            histos["sig"].SetBinError(ibin, sig.GetBinError(ibin))
+            histos["bkg"].SetBinContent(ibin, bak.GetBinContent(ibin))
+            histos["bkg"].SetBinError(ibin, bak.GetBinError(ibin))
+        #histos["bkg"] = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_background")
+        #histos["sig"] = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_signal")
+        #Is an TGraphAsymmErrors, not a histogram
+        #histos["data"] = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("data")
     
     print hsOpt
     h_data_bkg = histos["data"].Clone("data-bkg")
@@ -1470,7 +1489,8 @@ def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = N
 
     for ibin in range(1, h_data_bkg.GetNbinsX()+1):
         #print h_data_bkg.GetBinError(ibin), histos["bkg"].GetBinError(ibin), histos["bkg"].GetBinError(ibin)/histos["bkg"].GetBinContent(ibin)
-        print h_data_bkg.GetBinError(ibin), histos["bkg"].GetBinError(ibin), histos["data"].GetBinError(ibin)
+        #print h_data_bkg.GetBinError(ibin), histos["bkg"].GetBinError(ibin), histos["data"].GetBinError(ibin), histos["sig"].GetBinError(ibin), histos["sig"].GetBinContent(ibin)
+        pass
 
     h_sig = histos["sig"].Clone("signal")
     h_err = histos["sig"].Clone("error_bar")    
@@ -1484,7 +1504,7 @@ def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = N
     #herr.Rebin(rebin)
     h_err.GetXaxis().SetTitle(hsOpt['xname'])
     h_err.SetFillStyle(3005)
-    h_err.SetFillColor(col)
+    h_err.SetFillColor(sam_opt["sig"]['fillcolor'])
     h_err.SetLineColor(922)
     h_err.SetLineWidth(0)         
     h_err.SetMarkerSize(0)
@@ -1495,6 +1515,8 @@ def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = N
     h_sig.SetLineStyle(1)
     h_sig.SetLineWidth(2)
     h_sig.SetLineColor(sam_opt["sig"]['linecolor'])
+    
+    h_data_bkg.SetMarkerColor(ROOT.kGray)
     
     """for i, h in enumerate(histos):         
         if color: col = color[i]
@@ -1534,9 +1556,10 @@ def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = N
             h_err.SetBinError(ibin, math.sqrt((err * h_err.GetBinContent(ibin))**2 + h_data_bkg.GetBinError(ibin)**2) )
     else:
         for ibin in range(1, h_err.GetNbinsX()+1):
-            #print ibin, err, h_err.GetBinContent(ibin), err * h_err.GetBinContent(ibin), h_err.GetBinError(ibin)
-            h_err.SetBinError(ibin, math.sqrt(h_sig.GetBinContent(ibin)**2 + h_data_bkg.GetBinError(ibin)**2) )
-    
+            print ibin, err, h_err.GetBinContent(ibin), err * h_err.GetBinContent(ibin), h_err.GetBinError(ibin)
+            h_err.SetBinError(ibin, math.sqrt(h_sig.GetBinError(ibin)**2 + h_data_bkg.GetBinError(ibin)**2) )
+            print ibin, h_err.GetBinContent(ibin), h_err.GetBinError(ibin)
+            
     return h_data_bkg, h_sig, h_err
 
 

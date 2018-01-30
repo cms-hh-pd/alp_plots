@@ -15,7 +15,7 @@ from Analysis.alp_analysis.alpSamples import samples
 from Analysis.alp_plots.histOpt import hist_opt
 import Analysis.alp_plots.UtilsDraw as UtilsDraw
 
-TH1F.AddDirectory(0)
+
 
 # parsing parameters
 import argparse
@@ -203,15 +203,16 @@ def read_fit_results(infile):
   
 if __name__ == "__main__":
   ROOT.gROOT.SetBatch(True)
+  TH1F.AddDirectory(0)
   parser = argparse.ArgumentParser()
   args = parse_args(parser)
   
   fit_file = "/lustre/cmswork/atiko/Hbb/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/unblind_25_01_bdt_0_2/fit/mlfit.root"
   fit_results = read_fit_results(fit_file)
 
-  postfit_file = "/lustre/cmswork/atiko/Hbb/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/unblind_25_01_bdt_0_2/fit/output_postfit.root"
+  #postfit_file = "/lustre/cmswork/atiko/Hbb/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/unblind_25_01_bdt_0_2/fit/output_postfit.root"
 
-  draw_postfit(args, fit_results, postfit_file)
+  draw_postfit(args, fit_results, fit_file)
   
 
 
