@@ -736,7 +736,7 @@ hist_opt = {
        'hname' : "classifier",
        'rebin' : 1,
        'xname' : "BDT output",
-       'xmin'  : 0.,
+       'xmin'  : 0.2,
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",

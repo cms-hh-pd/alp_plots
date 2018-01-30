@@ -132,6 +132,18 @@ elif which == 2:
     oname = 'comp_sigBkg_afterBDT'
     headerOpt = "    test sample"
 
+elif which == -10:
+    samples = [['bkg', 'sig'],['data']] #data always  second
+    fractions = ['appl','']
+    regions = ['','']
+    legList = [["mixed data", "ggHH4b SM"], ["data"]]
+    colorList = [[430, 632], [1]]
+    sf = [[1., 4.],[4.]]
+    dofill = [True,False]
+    isMC = True
+    oname = 'comp_bkgdata_afterBDT'
+    headerOpt = "appl sample" #btag CR
+
 elif which == 5:
     samples = [['bkg'],['data']] #data always  second
     fractions = ['appl','']
@@ -143,6 +155,18 @@ elif which == 5:
     isMC = False
     oname = 'comp_bkgdata_afterBDT'
     headerOpt = "   mass CR, appl sample" #btag CR
+
+elif which == 6:
+    samples = [['bkg'],['data']] #data always  second
+    fractions = ['appl','']
+    regions = ['','']
+    legList = [["mixed data"], ["data"]]
+    colorList = [[430], [1]]
+    sf = [[0.25],[1.]]
+    dofill = [True,False]
+    isMC = False
+    oname = 'comp_bkgdata_afterBDT'
+    headerOpt = "   appl sample" #btag CR
 
 elif which == 500: #!!only with btag root file!!
     samples = [['bkg'],['data']] #data always  second
