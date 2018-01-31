@@ -430,6 +430,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     print "int", h1.Integral(), h2.Integral()
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.15
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.15
+    if "ymax" in hsOpt: ymax = hsOpt["ymax"]
     if isNevts:  print "h2Int ",  h2.GetBinContent(1), h2.GetBinError(1)
 
     if len(hlist1) == 1 and len(hlist2) == 1:
@@ -742,13 +743,14 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         h_data_bkg.GetYaxis().SetTitleOffset(1.40)
         h_data_bkg.GetYaxis().SetLabelFont(43)
         h_data_bkg.GetYaxis().SetLabelSize(18)
-        h_data_bkg.SetMarkerStyle(8)
-        h_data_bkg.SetMarkerSize(0.8)
+        #h_data_bkg.SetMarkerStyle(33)
+        h_data_bkg.SetMarkerStyle(20)
+        h_data_bkg.SetMarkerSize(0.7)
         h_data_bkg.SetMarkerColor(1)
         h_data_bkg.SetLineColor(1)
         h_data_bkg.GetXaxis().SetTitle(hsOpt['xname'])
         #h_data_bkg.GetYaxis().SetTitle('data/bkg')
-        h_data_bkg.Draw("E X0")
+        h_data_bkg.Draw("e3 x0")
         
         h_sig.Draw("hist same")
         
@@ -780,6 +782,20 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         #if ymin<0.9: l3.Draw("same")
         #if ymin<0.8: l4.Draw("same")
         """
+        
+        leg_coords = 0.7,0.78,0.9,1.0
+        if "legpos" in hsOpt:
+            if hsOpt["legpos"] == "left":
+                leg_coords = 0.1,0.78,0.3,1.0
+            if hsOpt["legpos"] == "middle":
+                leg_coords = 0.4,0.78,0.6,1.0            
+        leg = TLegend(*leg_coords)
+        leg.SetTextSize(0.05)
+        leg.AddEntry(h_data_bkg, "Data - fitted background", "p")
+        leg.AddEntry(h_sig, "HH4b fitted")
+        leg.AddEntry(h_err, "Total uncertainty")
+        leg.Draw("same")
+        
         c1.SaveAs(oDir+"/"+hsOpt['hname']+"_rat.pdf")
         c1.SaveAs(oDir+"/"+hsOpt['hname']+"_rat.png")            
         c1.Clear()
@@ -1505,8 +1521,6 @@ def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = N
     h_sig.SetLineStyle(1)
     h_sig.SetLineWidth(2)
     h_sig.SetLineColor(sam_opt["sig"]['linecolor'])
-    
-    h_data_bkg.SetMarkerColor(ROOT.kGray)
     
     """for i, h in enumerate(histos):         
         if color: col = color[i]

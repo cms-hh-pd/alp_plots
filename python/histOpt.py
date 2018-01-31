@@ -354,7 +354,9 @@ hist_opt = {
        'xmax'  : 2.5,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 7000,
+       'legpos': "left" },
 
    "h_jet1_eta" : {
        'hname' : "h_jet1_eta",
@@ -364,7 +366,9 @@ hist_opt = {
        'xmax'  : 2.5,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 7000,
+       'legpos': "left" },
 
    "h_jet2_eta" : {
        'hname' : "h_jet2_eta",
@@ -374,7 +378,9 @@ hist_opt = {
        'xmax'  : 2.5,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 7000,
+       'legpos': "left" },
 
    "h_jet3_eta" : {
        'hname' : "h_jet3_eta",
@@ -384,7 +390,9 @@ hist_opt = {
        'xmax'  : 2.5,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 7000,
+       'legpos': "left" },
 
    "h_jet0pt_pt" : {
        'hname' : "h_jet0pt_pt",
@@ -465,7 +473,8 @@ hist_opt = {
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 5500 },
 
    "h_H0_csthst1_a" : {
        'hname' : "h_H0_csthst1_a",
@@ -475,7 +484,8 @@ hist_opt = {
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 5500 },
 
    "h_H1_csthst2_a" : {
        'hname' : "h_H1_csthst2_a",
@@ -485,7 +495,8 @@ hist_opt = {
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 5500 },
 
    "h_H1_csthst3_a" : {
        'hname' : "h_H1_csthst3_a",
@@ -495,7 +506,8 @@ hist_opt = {
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 5500 },
 
    "h_H0_dr" : {
        'hname' : "h_H0_dr",
@@ -505,7 +517,8 @@ hist_opt = {
        'xmax'  : 5.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 9000 },
 
    "h_H1_dr" : {
        'hname' : "h_H1_dr",
@@ -515,7 +528,8 @@ hist_opt = {
        'xmax'  : 5.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 6500 },
 
    "h_H0_deta_a" : {
        'hname' : "h_H0_deta_a",
@@ -545,7 +559,8 @@ hist_opt = {
        'xmax'  : 4.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos': "middle" },
 
    "h_H1_dphi_a" : {
        'hname' : "h_H1_dphi_a",
@@ -565,7 +580,9 @@ hist_opt = {
        'xmax'  : 3.2,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 4500,
+       'legpos': "middle"},
 
    "h_H1_dphi" : {
        'hname' : "h_H1_dphi",
@@ -575,7 +592,9 @@ hist_opt = {
        'xmax'  : 3.2,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 4500,
+       'legpos': "left" },
 
    "h_X_mass" : {
        'hname' : "h_X_mass",
@@ -625,7 +644,8 @@ hist_opt = {
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 6200 },
 
    "h_H0H1_csthst1_a" : {
        'hname' : "h_H0H1_csthst1_a",
@@ -635,7 +655,8 @@ hist_opt = {
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 6200 },
 
    "h_H0H1_dr" : {
        'hname' : "h_H0H1_dr",
@@ -645,7 +666,8 @@ hist_opt = {
        'xmax'  : 6.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 6000 },
 
    "h_H0H1_deta_a" : {
        'hname' : "h_H0H1_deta_a",
@@ -769,7 +791,8 @@ hist_opt = {
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos': "left" },
 
    "h_cmva4" : {
        'hname' : "h_cmva4",
@@ -779,7 +802,8 @@ hist_opt = {
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos': "left" },
 
    "h_csv3" : {
        'hname' : "h_csv3",
@@ -879,7 +903,8 @@ hist_opt = {
        'xmax'  : 4.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 7000 },
 
    "h_gjet1_eta" : {
        'hname' : "h_gjet1_eta",
@@ -889,7 +914,8 @@ hist_opt = {
        'xmax'  : 4.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 7000 },
 
    "h_gjet2_eta" : {
        'hname' : "h_gjet2_eta",
@@ -899,7 +925,8 @@ hist_opt = {
        'xmax'  : 4.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 7000 },
 
    "h_gjet3_eta" : {
        'hname' : "h_gjet3_eta",
@@ -909,7 +936,8 @@ hist_opt = {
        'xmax'  : 4.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'ymax'  : 7000 },
 
 
   

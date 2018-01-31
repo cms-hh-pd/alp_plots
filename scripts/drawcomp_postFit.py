@@ -72,7 +72,7 @@ def draw_postfit(args, fit_results, postfit_file):
   sf = [[bkg_scale_factor, sig_scale_factor],[1.]]
   #sf = [[sig_scale_factor, bkg_scale_factor],[1.]]
   dofill = [True,False]
-  isMC = True
+  isMC = False
   oname = 'comp_bkgdata_postfit'
   headerOpt = "" #appl sample" #btag CR
 
