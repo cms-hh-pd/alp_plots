@@ -711,7 +711,7 @@ for n, h in enumerate(histList):
     else: 
         if hs1 and hs2:
             n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], 
-                         hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt, isMC)
+                         hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt, isMC, bm = int(args.bdt.split("-")[2][2:]))
         #if n2: 
         #   print "### n1/n2 numEvents: {} +- {} ###".format(n1/n2, UtilsDraw.getRelErr(n1,n1err,n2,n2err)*n1/n2) 
         #   print "### n1: {} +- {} ###".format(n1,n1err) 

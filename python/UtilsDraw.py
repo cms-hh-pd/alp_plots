@@ -8,7 +8,7 @@ import numpy as np
 from ROOT import TChain, TPad, TH1D, TH2D, TFile, vector, TCanvas, TLatex, TLine, TLegend, THStack, gStyle, TGaxis
 import ROOT
 from rootpy.plotting import Hist, Hist2D
-
+from array import array
 from Analysis.alp_analysis.alpSamplesOptions  import sam_opt
 
 
@@ -33,7 +33,9 @@ def getRelErr(a,erra,b,errb):
 
 def getHistos_bdt(hist, filename, plotDirs, lumi, normtolumi, weights, sf):
     hlist = [] 
+    
     tf = TFile(filename)
+    #tf = TFile("../hh2bbbb_limit//20171120-160644-bm0.root")
     if not tf: 
         print "## WARNING: files do not exist"  
     for i, Dir in enumerate(plotDirs):
@@ -191,6 +193,7 @@ def getScale(hsOpt, hlist1, hlist2, skip1=-1, skip2=-1): #h2/h1
     return scale
 #------------
 
+
 def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = None):
 
     if color: col = color[0]
@@ -201,6 +204,14 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = N
         fit = "postfit"        
         bak = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_background")
         sig = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_signal")
+        data = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("data")
+        
+        if snames[0] == "data":
+            for i in range(0,66):
+                x, y = array('d', [0]), array('d', [0])
+                data.GetPoint(i, x, y)
+            histos[0].SetBinContent(0, 0)
+            histos[0].SetBinError(0, 0)
         for ibin in range(1, sig.GetNbinsX()+1):
             #To avoid histos going out of scope later            
             for i in range(len(histos)):
@@ -210,8 +221,15 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = N
                 elif snames[i] == "sig":
                     histos[i].SetBinContent(ibin, sig.GetBinContent(ibin))
                     histos[i].SetBinError(ibin, sig.GetBinError(ibin))
+                elif snames[i] == "data":
+                    x, y = array('d', [0]), array('d', [0])
+                    data.GetPoint(ibin-1, x, y)
+                    histos[i].SetBinContent(ibin, y[0])
+                    histos[i].SetBinError(ibin, data.GetErrorY(ibin))
         scale = 1
-       
+    
+    
+    
     herr = histos[0].Clone("hs_error")
     herr.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
     herr.Reset()
@@ -255,6 +273,16 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = N
         else: h_.Add(h)
         hs.Add(h)
         herr.Add(h)
+        
+    if "sig" in snames:
+        i = snames.index("sig")
+        sig100 = histos[i].Clone("sig x5")
+        sig100.Scale(5)
+        sig100.SetLineStyle(2)
+        sig100.SetFillStyle(0)
+        histos.append(sig100)
+        
+        
     return hs, herr, h_
 
 # DRAWING FUNCTIONS
@@ -393,13 +421,13 @@ def drawBinVar(hlist, snames, legstack, hsOpt, oDir, rebin, headerOpt, isMC):
     c1.SaveAs(oDir+"/"+"bdtVar_nn.root")
 #------------
 
-def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residuals, norm, oDir, colors, dofill, rebin, headerOpt, isMC, fit_results = None, postfit_file = None):
+def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residuals, norm, oDir, colors, dofill, rebin, headerOpt, isMC, fit_results = None, postfit_file = None, bm = 0):
     gStyle.SetOptStat(False)
     gStyle.SetOptTitle(0);
-
+    print "x range: ", hsOpt['xmin'],hsOpt['xmax']
     c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
     if residuals == -1 or residuals == -2:
-        pad1 = TPad("pad1", "pad1", 0, 0.3, 1, 1.0)
+        pad1 = TPad("pad1", "pad1", 0, 0.4, 1, 1.0)
         pad1.SetBottomMargin(0.03) 
         pad1.Draw()             
         pad1.cd()
@@ -421,23 +449,36 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     if herr1.GetMaximum() > ymax: ymax = herr1.GetMaximum()*1.15
     if isNevts:  print "h1Int ",  h1.GetBinContent(1), h1.GetBinError(1)
 
-    if(norm): scale2 = getScale(hsOpt,hlist2, hlist2)
+    if(norm): 
+        scale2 = getScale(hsOpt,hlist2, hlist2)
+        print "sc_to_norm2: ",scale2
     else: scale2 = 1.
     if scale2 != 1.: print "sc_to_norm2: ",scale2
-    hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, snames2, colors[1], scale2, dofill[1])
-    for asd in hlist1:
-        print asd.Integral()
-    print "int", h1.Integral(), h2.Integral()
+    hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, snames2, colors[1], scale2, dofill[1], postfit_file)
+    print "12", hlist1, hlist2
+    #for asd in hlist1:
+    #    print asd.Integral()
+    #print "int", h1.Integral(), h2.Integral()
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.15
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.15
     if "ymax" in hsOpt: ymax = hsOpt["ymax"]
     if isNevts:  print "h2Int ",  h2.GetBinContent(1), h2.GetBinError(1)
 
     if len(hlist1) == 1 and len(hlist2) == 1:
-        print("KS: ", hlist1[0].KolmogorovTest(hlist2[0]))
+        ks = hlist1[0].KolmogorovTest(hlist2[0])
+        print("KS: ", ks)
         print("Chi2: ", hlist1[0].Chi2Test(hlist2[0], "UU NORM"))
     else:
-        print("Not doing KS test, stacks as input")
+        kol1 = hlist1[0].Clone()
+        kol2 = hlist2[0].Clone()
+        maxn = len(hlist1)
+        if "sig" in snames1: maxn -= 1
+        for ihist in range(1, maxn):
+            kol1.Add(hlist1[ihist])
+        for ihist in range(1, len(hlist2)):
+            kol2.Add(hlist2[ihist])
+        ks = kol1.KolmogorovTest(kol2, "NX")
+        print("KS: ", ks)        
    #debug -- needed before drawing hs
     herr1.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
     herr1.SetMinimum(0.)
@@ -447,12 +488,18 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         herr1.SetFillColor(922)
     else: herr1.Draw("E")
    #--
-
     #Legend & headers
     if isMC: drawCMS(-1, headerOpt)
     else: drawCMS(35.9, headerOpt)
     legend = setLegend(1,1)
     legend.AddEntry(hlist2[len(hlist2)-1], legstack2[0]) #debug - one leg for second samplelist
+    latex = TLatex()
+    latex.SetNDC()
+    latex.SetTextSize(0.035)
+    latex.SetTextColor(1)
+    latex.SetTextFont(42)
+    latex.SetTextAlign(33)   
+    latex.DrawLatex(0.5, 0.88, "KS p-val: %.3f" % ks)
     nskip = 0
     match = False 
     for n, sam in enumerate(snames1):
@@ -476,6 +523,8 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     plotH(hlist2, hs2, herr2, dofill[1])
     herr2.Draw("Esameaxis")
 
+    #hlist1[-1].Draw("same hist")
+
     nev1 = 0
     nev2 = 0
     nev1err = 0
@@ -496,7 +545,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
 
     if residuals==-3: # division --- utility not clear...
         c1.cd()
-        pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.3)
+        pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.4)
         pad2.SetTopMargin(0.)
         pad2.SetBottomMargin(0.2)
         pad2.Draw()
@@ -688,7 +737,7 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
 
     elif residuals == -2: # plot data - fitted (sig+bkg) in residual plot
         c1.cd()
-        pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.3)
+        pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.4)
         pad2.SetTopMargin(0.)
         pad2.SetBottomMargin(0.2)
         pad2.Draw()
@@ -736,8 +785,10 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
                 ymax = binc*1.05
             if binc*0.95 < ymin: 
                 ymin = binc*0.95"""
+        y_max = max(h_data_bkg.GetMaximum(), hlist1[-1].GetMaximum())*1.15
+        y_min = min(h_data_bkg.GetMinimum(), hlist1[-1].GetMinimum())*1.5
 
-        #hrat.GetYaxis().SetRangeUser(ymin,ymax)
+        h_data_bkg.GetYaxis().SetRangeUser(y_min,y_max)
         h_data_bkg.GetYaxis().SetTitleSize(20)
         h_data_bkg.GetYaxis().SetTitleFont(43)
         h_data_bkg.GetYaxis().SetTitleOffset(1.40)
@@ -751,12 +802,15 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         h_data_bkg.GetXaxis().SetTitle(hsOpt['xname'])
         #h_data_bkg.GetYaxis().SetTitle('data/bkg')
         h_data_bkg.Draw("e3 x0")
+        hlist1[-1].Draw("hist same")
         
         h_sig.Draw("hist same")
         
         h_err.SetFillColor(632)
         h_err.Draw("E2same")
-
+        h_data_bkg.Draw("same e3 x0")
+        
+        
         """l = TLine(hsOpt['xmin'],1.5,hsOpt['xmax'],1.5);
         l0 = TLine(hsOpt['xmin'],1.4,hsOpt['xmax'],1.4);
         l00 = TLine(hsOpt['xmin'],1.3,hsOpt['xmax'],1.3);
@@ -783,16 +837,19 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         #if ymin<0.8: l4.Draw("same")
         """
         
-        leg_coords = 0.7,0.78,0.9,1.0
+        leg_coords = 0.65,0.2,0.9,0.4
         if "legpos" in hsOpt:
-            if hsOpt["legpos"] == "left":
-                leg_coords = 0.1,0.78,0.3,1.0
-            if hsOpt["legpos"] == "middle":
-                leg_coords = 0.4,0.78,0.6,1.0            
+            if hsOpt["legpos"] == "top":
+                leg_coords = 0.65,0.78,0.9,1.
+            elif hsOpt["legpos"] == "left" or hsOpt["legpos"] == "topleft":
+                leg_coords = 0.1,0.78,0.35,1.
+            elif hsOpt["legpos"] == "middle":
+                leg_coords = 0.47,0.0,0.63,0.25
         leg = TLegend(*leg_coords)
         leg.SetTextSize(0.05)
         leg.AddEntry(h_data_bkg, "Data - fitted background", "p")
         leg.AddEntry(h_sig, "HH4b fitted")
+        leg.AddEntry(hlist1[-1], "HH4b fitted x5")
         leg.AddEntry(h_err, "Total uncertainty")
         leg.Draw("same")
         
@@ -1007,6 +1064,11 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
             for v in res_a: res_pull.fill(v)
             res_pull.Fit("gaus", "LL")
             res_pull.Draw("E X0")
+            text = "BM%d" % bm
+            text = text.replace("BM0", "SM").replace("BM13", "Box")
+            latex.DrawLatex(0.18, 0.88, text)
+            latex.SetTextFont(52)
+            latex.SetTextSize(0.04)
 
         c2.Update()    
         c2.SaveAs(oDir+"/"+hsOpt['hname']+"_res.pdf")
@@ -1560,9 +1622,9 @@ def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = N
             h_err.SetBinError(ibin, math.sqrt((err * h_err.GetBinContent(ibin))**2 + h_data_bkg.GetBinError(ibin)**2) )
     else:
         for ibin in range(1, h_err.GetNbinsX()+1):
-            print ibin, err, h_err.GetBinContent(ibin), err * h_err.GetBinContent(ibin), h_err.GetBinError(ibin)
+            #print ibin, err, h_err.GetBinContent(ibin), err * h_err.GetBinContent(ibin), h_err.GetBinError(ibin)
             h_err.SetBinError(ibin, math.sqrt(h_sig.GetBinError(ibin)**2 + h_data_bkg.GetBinError(ibin)**2) )
-            print ibin, h_err.GetBinContent(ibin), h_err.GetBinError(ibin)
+            #print ibin, h_err.GetBinContent(ibin), h_err.GetBinError(ibin)
             
     return h_data_bkg, h_sig, h_err
 

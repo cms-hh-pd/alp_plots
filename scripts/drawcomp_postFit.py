@@ -23,7 +23,7 @@ import argparse
 
 
 
-def draw_postfit(args, fit_results, postfit_file):
+def draw_postfit(args, fit_results, postfit_file, bm):
   which = args.whichPlots
   iDir       = '../hh2bbbb_limit/'
   filename = iDir+"/"+args.bdt+".root"
@@ -65,7 +65,12 @@ def draw_postfit(args, fit_results, postfit_file):
   #samples = [['sig', 'bkg'],['data']] #data always  second
   fractions = ['','']
   regions = ['appl','']
-  legList = [["mixed data", "HH4b SM"], ["data"]]
+  if bm == 0:
+    legList = [["mixed data", "HH4b SM"], ["data"]]
+  elif bm == 13:
+    legList = [["mixed data", "HH4b Box"], ["data"]]
+  else:
+    legList = [["mixed data", "HH4b BM%d" % bm], ["data"]]
   #legList = [["HH4b SM", "mixed data"], ["data"]]
   colorList = [[430, 632], [1]]
   #colorList = [[632, 430], [1]]
@@ -74,7 +79,7 @@ def draw_postfit(args, fit_results, postfit_file):
   dofill = [True,False]
   isMC = False
   oname = 'comp_bkgdata_postfit'
-  headerOpt = "" #appl sample" #btag CR
+  headerOpt = ""#"test sample" #btag CR
 
   if args.defaultCol: colors = [0,0]
   else: colors = colorList
@@ -145,6 +150,10 @@ def draw_postfit(args, fit_results, postfit_file):
       if h == 'classifier': 
           h+='-'+args.bdt
           pf_file = postfit_file
+      hs1 = None
+      hs2 = None
+      #if args.hlist > 0:
+      print filename
       hs1 = UtilsDraw.getHistos_bdt(h, filename, plotDirs1, intLumi_fb, doNormToLumi[0], weights[0], sf[0])
       hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDirs2, intLumi_fb, doNormToLumi[1], weights[1], sf[1])
 
@@ -208,12 +217,16 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   args = parse_args(parser)
   
-  fit_file = "/lustre/cmswork/atiko/Hbb/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/unblind_25_01_bdt_0_2/fit/mlfit.root"
+  bdt = args.bdt
+  
+  bm = int(args.bdt.split("-")[2][2:])  
+  fit_file = "/lustre/cmswork/atiko/Hbb/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/unblind_29_01_bdt_0_2/BM%d/mlfit.root" % bm
+  
   fit_results = read_fit_results(fit_file)
 
   #postfit_file = "/lustre/cmswork/atiko/Hbb/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/unblind_25_01_bdt_0_2/fit/output_postfit.root"
-
-  draw_postfit(args, fit_results, fit_file)
+  #args.bdt = bdt.replace("bm0", "bm"+str(bm))
+  draw_postfit(args, fit_results, fit_file, bm)
   
 
 
