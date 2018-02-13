@@ -244,7 +244,9 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = N
     herr.SetMinimum(0.)
 
     hs   = THStack("hs","")
-    for i, h in enumerate(histos):         
+    for i, h in enumerate(histos):
+	print histos
+	print i, color
         if color: col = color[i]
         else: col = sam_opt[snames[i]]['fillcolor']
         #print sam_opt[snames[i]]['sam_name']
@@ -455,15 +457,10 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
     else: scale2 = 1.
     if scale2 != 1.: print "sc_to_norm2: ",scale2
     hs2, herr2, h2 =  getStackH(hlist2, hsOpt, rb, snames2, colors[1], scale2, dofill[1], postfit_file)
-    print "12", hlist1, hlist2
-    #for asd in hlist1:
-    #    print asd.Integral()
-    #print "int", h1.Integral(), h2.Integral()
     if hs2.GetMaximum() > ymax: ymax = hs2.GetMaximum()*1.15
     if herr2.GetMaximum() > ymax: ymax = herr2.GetMaximum()*1.15
     if "ymax" in hsOpt: ymax = hsOpt["ymax"]
     if isNevts:  print "h2Int ",  h2.GetBinContent(1), h2.GetBinError(1)
-
     if len(hlist1) == 1 and len(hlist2) == 1:
         ks = hlist1[0].KolmogorovTest(hlist2[0])
         print("KS: ", ks)
@@ -474,10 +471,18 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         maxn = len(hlist1)
         if "sig" in snames1: maxn -= 1
         for ihist in range(1, maxn):
+            #for i in range(1, kol1.GetNbinsX()+1):
+            #    print ihist, i, hlist1[ihist].GetBinContent(i), kol1.GetBinContent(i)
             kol1.Add(hlist1[ihist])
+        negBin = False
+        for i in range(1, kol1.GetNbinsX()+1):
+            if kol1.GetBinContent(i) < 0:
+                negBin = True
         for ihist in range(1, len(hlist2)):
             kol2.Add(hlist2[ihist])
-        ks = kol1.KolmogorovTest(kol2, "NX")
+        ks = 0.        
+        if not negBin:
+            ks = kol1.KolmogorovTest(kol2, "NX")
         print("KS: ", ks)        
    #debug -- needed before drawing hs
     herr1.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -785,8 +790,8 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
                 ymax = binc*1.05
             if binc*0.95 < ymin: 
                 ymin = binc*0.95"""
-        y_max = max(h_data_bkg.GetMaximum(), hlist1[-1].GetMaximum())*1.15
-        y_min = min(h_data_bkg.GetMinimum(), hlist1[-1].GetMinimum())*1.5
+        y_max = max(h_data_bkg.GetMaximum(), hlist1[-1].GetMaximum(), h_err.GetMaximum())*1.25
+        y_min = min(h_data_bkg.GetMinimum(), hlist1[-1].GetMinimum(), h_err.GetMinimum())*1.25
 
         h_data_bkg.GetYaxis().SetRangeUser(y_min,y_max)
         h_data_bkg.GetYaxis().SetTitleSize(20)
@@ -810,32 +815,6 @@ def drawH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt, residu
         h_err.Draw("E2same")
         h_data_bkg.Draw("same e3 x0")
         
-        
-        """l = TLine(hsOpt['xmin'],1.5,hsOpt['xmax'],1.5);
-        l0 = TLine(hsOpt['xmin'],1.4,hsOpt['xmax'],1.4);
-        l00 = TLine(hsOpt['xmin'],1.3,hsOpt['xmax'],1.3);
-        l000 = TLine(hsOpt['xmin'],1.2,hsOpt['xmax'],1.2);
-        l1 = TLine(hsOpt['xmin'],1.1,hsOpt['xmax'],1.1);
-        l2 = TLine(hsOpt['xmin'],1.,hsOpt['xmax'],1.);
-        l3 = TLine(hsOpt['xmin'],0.9,hsOpt['xmax'],0.9);
-        l4 = TLine(hsOpt['xmin'],0.8,hsOpt['xmax'],0.8);
-        l.SetLineStyle(3)
-        l0.SetLineStyle(3)
-        l00.SetLineStyle(3)
-        l000.SetLineStyle(3)
-        l1.SetLineStyle(3)
-        l2.SetLineStyle(3)
-        l3.SetLineStyle(3)
-        l4.SetLineStyle(3)
-        #l.Draw("same")
-        #l0.Draw("same")
-        #l00.Draw("same")
-        #l000.Draw("same")
-        #l1.Draw("same")
-        l2.Draw("same")
-        #if ymin<0.9: l3.Draw("same")
-        #if ymin<0.8: l4.Draw("same")
-        """
         
         leg_coords = 0.65,0.2,0.9,0.4
         if "legpos" in hsOpt:

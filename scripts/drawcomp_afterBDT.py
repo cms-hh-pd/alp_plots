@@ -45,6 +45,12 @@ doNormToLumi = [False, False]
 weights = [[],[]]
 sf = [[],[]]
 
+bm = int(args.bdt.split("-")[2][2:]) 
+
+bkg_scale_factor = 0.25
+sig_scale_factor = args.lumi * trg_eff / (4172119.0 * 0.2)
+
+
 if args.hlist == -1:
     histList   = [ 'clf-tt', 'classifier']
 elif args.hlist == 0:
@@ -154,7 +160,7 @@ elif which == 5:
     dofill = [True,False]
     isMC = False
     oname = 'comp_bkgdata_afterBDT'
-    headerOpt = "   mass CR, appl sample" #btag CR
+    headerOpt = "   mass CR"#, appl sample" #btag CR
 
 elif which == 6:
     samples = [['bkg'],['data']] #data always  second
@@ -166,7 +172,41 @@ elif which == 6:
     dofill = [True,False]
     isMC = False
     oname = 'comp_bkgdata_afterBDT'
-    headerOpt = "   appl sample" #btag CR
+    headerOpt = "" #btag CR
+
+elif which == 61:
+    samples = [['bkg', 'sig'],['data']] #data always  second
+    fractions = ['test','']
+    regions = ['ms','ms']
+    if bm == 0:
+      legList = [["mixed data", "HH4b SM"], ["data"]]
+    elif bm == 13:
+      legList = [["mixed data", "HH4b Box"], ["data"]]
+    else:
+      legList = [["mixed data", "HH4b BM%d" % bm], ["data"]]
+    colorList = [[430], [1]]
+    sf = [[bkg_scale_factor, sig_scale_factor],[1.]]
+    dofill = [True,False]
+    isMC = False
+    oname = 'comp_sigbkgdata_massCR_afterBDT'
+    headerOpt = "mass CR"
+    
+elif which == 62:
+    samples = [['bkg', 'sig'],['data']] #data always  second
+    fractions = ['appl','']
+    regions = ['ms','ms']
+    if bm == 0:
+      legList = [["mixed data", "HH4b SM"], ["data"]]
+    elif bm == 13:
+      legList = [["mixed data", "HH4b Box"], ["data"]]
+    else:
+      legList = [["mixed data", "HH4b BM%d" % bm], ["data"]]
+    colorList = [[430], [1]]
+    sf = [[bkg_scale_factor, sig_scale_factor],[1.]]
+    dofill = [True,False]
+    isMC = False
+    oname = 'comp_sigbkgdata_massCR_afterBDT'
+    headerOpt = "mass CR"
 
 elif which == 500: #!!only with btag root file!!
     samples = [['bkg'],['data']] #data always  second
@@ -211,6 +251,8 @@ elif which == 9:
     isMC = True
     oname = 'comp_sigbkgms_afterBDT'
     headerOpt = "  H mass CR - test sam."
+
+
 
 ## 10nn
 elif which == 16: # -l 0 !!

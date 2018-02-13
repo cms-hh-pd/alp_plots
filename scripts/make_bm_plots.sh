@@ -2,5 +2,6 @@ bms=("20171120-160644-bm0" "20171120-161211-bm1" "20171120-161730-bm2" "20171120
 for bm in ${bms[@]}
 do
     #python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 6 --res 2 -n
-    python scripts/drawcomp_postFit.py -b $bm -l 1
+	python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 5 -c --res -1
+    #python scripts/drawcomp_postFit.py -b $bm -l 1
 done
