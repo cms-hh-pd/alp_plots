@@ -28,11 +28,13 @@ parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)", type
 parser.add_argument("-n", "--doNorm", help="do normalize ", action='store_true')
 parser.add_argument("-c", "--defaultCol", help="to use default colors", action='store_true')
 parser.add_argument("-l", "--list", help="hist list", dest="hlist", type=int, default=0)
+parser.add_argument("-d", "--report_dir", help="which report dir to use", dest="report_dir", required=True, default="reports")
 parser.add_argument("--lumi", help="int lumi to normalize to", dest="lumi", type=float, default=35.9)
 parser.set_defaults(doNorm=False, defaultCol=False)
 args = parser.parse_args()
 
-iDir       = '../hh2bbbb_limit/'
+
+iDir       = '../hh2bbbb_limit/'+args.report_dir+'/'
 filename = iDir+"/"+args.bdt+".root"
 headerOpt = args.bdt
 intLumi_fb = args.lumi
@@ -41,9 +43,9 @@ which = args.whichPlots
 getChi = False
 getVar = False
 drawH2 = False
-doNormToLumi = [False, False]
-weights = [[],[]]
-sf = [[],[]]
+doNormToLumi = [False, False,False]
+weights = [[],[], []]
+sf = [[],[], []]
 
 bm = int(args.bdt.split("-")[2][2:]) 
 
@@ -64,7 +66,7 @@ elif args.hlist == 1: # exact list of BDT input variables
                   'h_H0_mass','h_H0_pt','h_H0_csthst0_a','h_H0_dr','h_H0_dphi',
                   'h_H1_mass','h_H1_pt', 'h_H1_dr','h_H1_dphi',
                   'h_H0H1_mass', 'h_H0H1_pt', 'h_H0H1_csthst0_a',
-                  'h_X_mass'
+                  'h_X_mass',
                   'classifier'
                  ]
 elif args.hlist == 2:
@@ -175,18 +177,18 @@ elif which == 6:
     headerOpt = "" #btag CR
 
 elif which == 61:
-    samples = [['bkg', 'sig'],['data']] #data always  second
-    fractions = ['test','']
-    regions = ['ms','ms']
+    samples = [['bkg'], ['sig'],['data']] #data always  second
+    fractions = ['test','test','']
+    regions = ['ms','ms', 'ms']
     if bm == 0:
-      legList = [["mixed data", "HH4b SM"], ["data"]]
+      legList = [["mixed data"], ["HH4b SM"], ["data"]]
     elif bm == 13:
-      legList = [["mixed data", "HH4b Box"], ["data"]]
+      legList = [["mixed data"], ["HH4b Box"], ["data"]]
     else:
-      legList = [["mixed data", "HH4b BM%d" % bm], ["data"]]
-    colorList = [[430], [1]]
-    sf = [[bkg_scale_factor, sig_scale_factor],[1.]]
-    dofill = [True,False]
+      legList = [["mixed data"], ["HH4b BM%d" % bm], ["data"]]
+    colorList = [[430], [632],  [1]]
+    sf = [[bkg_scale_factor], [sig_scale_factor],[1.]]
+    dofill = [True, True, False]
     isMC = False
     oname = 'comp_sigbkgdata_massCR_afterBDT'
     headerOpt = "mass CR"
@@ -672,87 +674,59 @@ else:
     exit()
 ###############
 
-if args.defaultCol: colors = [0,0]
+if args.defaultCol: colors = [0,0,0]
 else: colors = colorList
 
 for n, w in enumerate(weights):
     if len(w)==0: print "## WARNING: weight[{}] is empty".format(n)
 
-snames1 = []
-for s in samples[0]:
-    if not s in samlists: 
-        if not s in samples: 
-            snames1.append(s)
-        else:
-            snames1.append(samples[s]['sam_name'])    
-    else: 
-        snames1.extend(samlists[s])
-#print snames1
+snames = []
+for i in range(len(samples)):
+    snames.append([])
+    for s in samples[i]:
+        if not s in samlists: 
+            if not s in samples: 
+                snames[i].append(s)
+            else:
+                snames[i].append(samples[s]['sam_name'])    
+        else: 
+            snames[i].extend(samlists[s])
 
-snames2 = []
-for s in samples[1]:
-    if not s in samlists: 
-        if not s in samples: 
-            snames2.append(s)
-        else:
-            snames2.append(samples[s]['sam_name'])    
-    else: 
-        snames2.extend(samlists[s])
-#print snames2
 
-plotDirs1 = []
-for sam in snames1:
-    option = ''
-    if fractions[0]: 
-        option += fractions[0]
-        if regions[0]: option += "_"
-    if regions[0]: option += regions[0]
+plotDirs = []
+for i in range(len(snames)):
+    plotDirs.append([])
+    for sam in snames[i]:
+        option = ''
+        if fractions[i]: 
+            option += fractions[i]
+            if regions[i]: option += "_"
+        if regions[i]: option += regions[i]
 
-    if option: plotDirs1.append(sam+'_'+option)
-    else: plotDirs1.append(sam)
-print "HISTS FROM FOLDER {}".format(plotDirs1) 
+        if option: plotDirs[i].append(sam+'_'+option)
+        else: plotDirs[i].append(sam)
+    print "HISTS FROM FOLDER {}".format(plotDirs[i]) 
 
-plotDirs2 = []
-for sam in snames2:
-    option = ''
-    if fractions[1]: 
-        option += fractions[1]
-        if regions[1]: option += "_"
-    if regions[1]: option += regions[1]
-
-    if option: plotDirs2.append(sam+'_'+option)
-    else: plotDirs2.append(sam)
-print "HISTS FROM FOLDER {}".format(plotDirs2) 
-
-oDir = args.oDir
-oDir += "/"+args.bdt
-if not os.path.exists(oDir): os.mkdir(oDir)
-oDir += "/"+oname
-if args.doNorm: oDir = oDir+"_norm"
-if args.clrebin > 1: 
-    oDir += "_rebin_" + str(args.clrebin)
-oDir = oDir+"/"
-if not os.path.exists(oDir): os.mkdir(oDir)
-oDir += option #keep the second sample options
-if not os.path.exists(oDir): os.mkdir(oDir)
+oDir = UtilsDraw.get_odir(args, oname, option)
 
 #----------------------------------
 for n, h in enumerate(histList):
     hOpt = hist_opt[h]
     if h == 'classifier': 
         h+='-'+args.bdt
-    hs1 = UtilsDraw.getHistos_bdt(h, filename, plotDirs1, intLumi_fb, doNormToLumi[0], weights[0], sf[0])
-    hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDirs2, intLumi_fb, doNormToLumi[1], weights[1], sf[1])
+    hs = []
+    for i in range(len(snames)):
+        hs.append(UtilsDraw.getHistos_bdt(h, filename, plotDirs[i], intLumi_fb, doNormToLumi[i], weights[i], sf[i]))
 
     if drawH2:
-        UtilsDraw.drawH2(hs1, hs2, hist_opt["h2_bdt"], snames1, args.clrebin, oDir, legList)
+        UtilsDraw.drawH2(hs[0], hs[1], hist_opt["h2_bdt"], snames[0], args.clrebin, oDir, legList)
     elif getVar: # variance check
-        UtilsDraw.drawBinVar(hs1, snames1, legList[0], hOpt, oDir, args.clrebin, headerOpt, isMC)
+        UtilsDraw.drawBinVar(hs[0], snames[0], legList[0], hOpt, oDir, args.clrebin, headerOpt, isMC)
     elif getChi: # chi square
-        UtilsDraw.drawChiSquare(hs1, snames1, legList[0], hs2, hOpt, oDir, xbmin, headerOpt, isMC, labels)
+        UtilsDraw.drawChiSquare(hs[0], snames[0], legList[0], hs[1], hOpt, oDir, xbmin, headerOpt, isMC, labels)
     else: 
-        if hs1 and hs2:
-            n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], 
+        if len(hs) > 0:
+            n,nerr = UtilsDraw.drawH1(hs, snames, legList, 
                          hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt, isMC, bm = int(args.bdt.split("-")[2][2:]))
         #if n2: 
         #   print "### n1/n2 numEvents: {} +- {} ###".format(n1/n2, UtilsDraw.getRelErr(n1,n1err,n2,n2err)*n1/n2) 

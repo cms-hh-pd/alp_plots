@@ -25,7 +25,7 @@ import argparse
 
 def draw_postfit(args, fit_results, postfit_file, bm):
   which = args.whichPlots
-  iDir       = '../hh2bbbb_limit/'
+  iDir       = '../hh2bbbb_limit/'+args.report_dir+'/'
   filename = iDir+"/"+args.bdt+".root"
   headerOpt = args.bdt
   intLumi_fb = args.lumi
@@ -85,63 +85,34 @@ def draw_postfit(args, fit_results, postfit_file, bm):
   else: colors = colorList
 
 
-  snames1 = []
-  for s in samples[0]:
-      if not s in samlists: 
-          if not s in samples: 
-              snames1.append(s)
-          else:
-              snames1.append(samples[s]['sam_name'])    
-      else: 
-          snames1.extend(samlists[s])
-  #print snames1
+  snames = []
+  for i in range(len(samples)):
+    snames.append([])
+    for s in samples[i]:
+        if not s in samlists: 
+            if not s in samples: 
+                snames[i].append(s)
+            else:
+                snames[i].append(samples[s]['sam_name'])    
+        else: 
+            snames[i].extend(samlists[s])
 
-  snames2 = []
-  for s in samples[1]:
-      if not s in samlists: 
-          if not s in samples: 
-              snames2.append(s)
-          else:
-              snames2.append(samples[s]['sam_name'])    
-      else: 
-          snames2.extend(samlists[s])
-  #print snames2
 
-  plotDirs1 = []
-  for sam in snames1:
-      option = ''
-      if fractions[0]: 
-          option += fractions[0]
-          if regions[0]: option += "_"
-      if regions[0]: option += regions[0]
+	plotDirs = []
+  for i in range(len(snames)):
+    plotDirs.append([])
+    for sam in snames[i]:
+        option = ''
+        if fractions[i]: 
+            option += fractions[i]
+            if regions[i]: option += "_"
+        if regions[i]: option += regions[i]
 
-      if option: plotDirs1.append(sam+'_'+option)
-      else: plotDirs1.append(sam)
-  print "HISTS FROM FOLDER {}".format(plotDirs1) 
+        if option: plotDirs[i].append(sam+'_'+option)
+        else: plotDirs[i].append(sam)
+    print "HISTS FROM FOLDER {}".format(plotDirs[i])
 
-  plotDirs2 = []
-  for sam in snames2:
-      option = ''
-      if fractions[1]: 
-          option += fractions[1]
-          if regions[1]: option += "_"
-      if regions[1]: option += regions[1]
-
-      if option: plotDirs2.append(sam+'_'+option)
-      else: plotDirs2.append(sam)
-  print "HISTS FROM FOLDER {}".format(plotDirs2) 
-
-  oDir = args.oDir
-  oDir += "/"+args.bdt
-  if not os.path.exists(oDir): os.mkdir(oDir)
-  oDir += "/"+oname
-  if args.doNorm: oDir = oDir+"_norm"
-  if args.clrebin > 1: 
-      oDir += "_rebin_" + str(args.clrebin)
-  oDir = oDir+"/"
-  if not os.path.exists(oDir): os.mkdir(oDir)
-  oDir += option #keep the second sample options
-  if not os.path.exists(oDir): os.mkdir(oDir)
+  oDir = UtilsDraw.get_odir(args, oname, option)
 
   #----------------------------------
   for n, h in enumerate(histList):
@@ -150,24 +121,26 @@ def draw_postfit(args, fit_results, postfit_file, bm):
       if h == 'classifier': 
           h+='-'+args.bdt
           pf_file = postfit_file
-      hs1 = None
-      hs2 = None
+      #hs1 = None
+      #hs2 = None
       #if args.hlist > 0:
       print filename
-      hs1 = UtilsDraw.getHistos_bdt(h, filename, plotDirs1, intLumi_fb, doNormToLumi[0], weights[0], sf[0])
-      hs2 = UtilsDraw.getHistos_bdt(h, filename, plotDirs2, intLumi_fb, doNormToLumi[1], weights[1], sf[1])
+  
+      hs = []
+      for i in range(len(snames)):
+        hs.append(UtilsDraw.getHistos_bdt(h, filename, plotDirs[i], intLumi_fb, doNormToLumi[i], weights[i], sf[i]))
 
       if drawH2:
-          UtilsDraw.drawH2(hs1, hs2, hist_opt["h2_bdt"], snames1, args.clrebin, oDir, legList)
+          UtilsDraw.drawH2(hs[0], hs[1], hist_opt["h2_bdt"], snames[0], args.clrebin, oDir, legList)
       elif getVar: # variance check
-          UtilsDraw.drawBinVar(hs1, snames1, legList[0], hOpt, oDir, args.clrebin, headerOpt, isMC)
+          UtilsDraw.drawBinVar(hs[0], snames[0], legList[0], hOpt, oDir, args.clrebin, headerOpt, isMC)
       elif getChi: # chi square
-          UtilsDraw.drawChiSquare(hs1, snames1, legList[0], hs2, hOpt, oDir, xbmin, headerOpt, isMC, labels)
+          UtilsDraw.drawChiSquare(hs[0], snames[0], legList[0], hs2, hOpt, oDir, xbmin, headerOpt, isMC, labels)
       else: 
-          if hs1 and hs2:
+          if len(hs) > 1:
               print "PF", pf_file
               print h
-              n1,n1err,n2,n2err = UtilsDraw.drawH1(hs1, snames1, legList[0], hs2, snames2, legList[1], 
+              n,nerr = UtilsDraw.drawH1(hs, snames, legList,
                            hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt, isMC, fit_results, pf_file)
 
 def parse_args(parser):
@@ -181,6 +154,7 @@ def parse_args(parser):
   parser.add_argument("-l", "--list", help="hist list", dest="hlist", type=int, default=0)
   parser.add_argument("--lumi", help="int lumi to normalize to", dest="lumi", type=float, default=35.9)
   #parser.add_argument("-p", "--postfit", help="postfit histograms file", required=True)
+  parser.add_argument("-d", "--report_dir", help="which report dir to use", dest="report_dir", required=True, default="reports")
   parser.set_defaults(doNorm=False, defaultCol=False)
   return parser.parse_args()
 
