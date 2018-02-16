@@ -424,18 +424,6 @@ elif which == 208:
     oname = 'tt-fix0011-tt-fix00'
     headerOpt = "   "
 
-elif which == 2071: 
-    samples = [['TT-fix-appl'],['TT']] #data always  second
-    fractions = ['','']
-    regions = ['','']
-    legList = [["mixed data as TT (appl)"], ["TT"]]
-    colorList = [[603], [430]]
-    dofill = [True,True]
-    isMC = True
-    sf = [[0.01077*35.9*0.96],[0.01077*35.9*0.96*4]]
-    oname = 'tt-tt-fix-appl'
-    headerOpt = "   "
-
 elif which == 2072: 
     samples = [['TT'],['TT-fix-appl']]
     fractions = ['','']

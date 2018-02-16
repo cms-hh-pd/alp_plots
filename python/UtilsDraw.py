@@ -866,7 +866,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         hres.GetXaxis().SetTitle(hsOpt['xname'])
         hres.GetYaxis().SetTitle('Events')
 
-        bkg_bias_fname = "/lustre/cmswork/hh/alp_mva/bias/bias_correction_20171018_bigset_unscaled.json"
+        bkg_bias_fname = "/lustre/cmswork/dcastrom/projects/hh/april_2017/CMSSW_8_0_25/src/Analysis/hh2bbbb_limit/notebooks/bias_07022018_full_disclosure/BM%d/bias_correction_bigset_unscaled.json" % bm
         with open(bkg_bias_fname,"r") as bkg_bias_file:
             json_dict = json.load(bkg_bias_file)
             print ("using bias file: ", bkg_bias_file)
@@ -923,7 +923,11 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         legend.AddEntry(hres, "tt mixed - tt MC", "p")
         legend.AddEntry(hbias, "Bias", "p")
         legend.Draw("same")
-
+        #print hbias.Integral(), hres.Integral()
+        #ks = hbias.KolmogorovTest(hres, "NX")
+        #print("KS: ", ks)
+        #latex.DrawLatex(0.5, 0.78, "KS p-val: %.3f" % ks)
+        
         #Residual panel
         c3.cd()
         pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.3)
@@ -960,7 +964,8 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         hresidual.GetXaxis().SetLabelSize(20)
         hresidual.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
 
-        hresidual.GetYaxis().SetRangeUser(-2.25,2.)
+        #hresidual.GetYaxis().SetRangeUser(min(h_error.GetMinimum(), hresidual.GetMinimum())*1.15,max(h_error.GetMaximum(), hresidual.GetMaximum())*1.15)
+        hresidual.GetYaxis().SetRangeUser(-3, 3)
         hresidual.GetYaxis().SetTitleSize(20)
         hresidual.GetYaxis().SetTitleFont(43)
         hresidual.GetYaxis().SetTitleOffset(1.40)
@@ -977,7 +982,6 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         h_error.SetFillColor(430)
         h_error.Draw("E2same")
 
-        
         c3.SaveAs(oDir+"/"+hsOpt['hname']+"_resc.pdf")
         c3.SaveAs(oDir+"/"+hsOpt['hname']+"_resc.png")            
         c3.SaveAs(oDir+"/"+hsOpt['hname']+"_resc.root")            
