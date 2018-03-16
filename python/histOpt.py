@@ -134,7 +134,8 @@ hist_opt = {
        'xmax'  : 1500.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_jets_ht_r" : {
        'hname' : "h_jets_ht_r",
@@ -144,7 +145,8 @@ hist_opt = {
        'xmax'  : 800.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_jets_csv" : {
        'hname' : "h_jets_csv",
@@ -264,7 +266,8 @@ hist_opt = {
        'xmax'  : 400.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_jet1_pt" : {
        'hname' : "h_jet1_pt",
@@ -274,7 +277,8 @@ hist_opt = {
        'xmax'  : 400.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_jet2_pt" : {
        'hname' : "h_jet2_pt",
@@ -284,7 +288,8 @@ hist_opt = {
        'xmax'  : 400.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_jet3_pt" : {
        'hname' : "h_jet3_pt",
@@ -294,7 +299,8 @@ hist_opt = {
        'xmax'  : 400,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_jet0pt_pt" : {
        'hname' : "h_jet0pt_pt",
@@ -314,7 +320,8 @@ hist_opt = {
        'xmax'  : 300.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_jet2pt_pt" : {
        'hname' : "h_jet2pt_pt",
@@ -324,7 +331,8 @@ hist_opt = {
        'xmax'  : 300.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_jet3pt_pt" : {
        'hname' : "h_jet3pt_pt",
@@ -368,6 +376,7 @@ hist_opt = {
        'yname' : "",
        'ylog'  : "",
        'ymax'  : 7000,
+       'legpos': "",
        'legpos': "left" },
 
    "h_jet2_eta" : {
@@ -380,7 +389,7 @@ hist_opt = {
        'yname' : "",
        'ylog'  : "",
        'ymax'  : 7000,
-       'legpos': "left" },
+       'legpos': "top" },
 
    "h_jet3_eta" : {
        'hname' : "h_jet3_eta",
@@ -392,7 +401,7 @@ hist_opt = {
        'yname' : "",
        'ylog'  : "",
        'ymax'  : 7000,
-       'legpos': "left" },
+       'legpos': "top" },
 
    "h_jet0pt_pt" : {
        'hname' : "h_jet0pt_pt",
@@ -413,7 +422,8 @@ hist_opt = {
        'xmax'  : 600.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_H1_mass" : {
        'hname' : "h_H1_mass",
@@ -423,7 +433,8 @@ hist_opt = {
        'xmax'  : 600.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
      "h_H0_pt" : {
        'hname' : "h_H0_pt",
@@ -433,7 +444,8 @@ hist_opt = {
        'xmax'  : 700.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_H1_pt" : {
        'hname' : "h_H1_pt",
@@ -443,7 +455,8 @@ hist_opt = {
        'xmax'  : 700.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_H0_eta" : {
        'hname' : "h_H0_eta",
@@ -518,7 +531,8 @@ hist_opt = {
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "",
-       'ymax'  : 9000 },
+       'ymax'  : 9000,
+       'legpos'  : "top" },
 
    "h_H1_dr" : {
        'hname' : "h_H1_dr",
@@ -529,7 +543,8 @@ hist_opt = {
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "",
-       'ymax'  : 6500 },
+       'ymax'  : 6500,
+       'legpos'  : "top" },
 
    "h_H0_deta_a" : {
        'hname' : "h_H0_deta_a",
@@ -604,7 +619,8 @@ hist_opt = {
        'xmax'  : 1200.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_H0H1_mass" : {
        'hname' : "h_H0H1_mass",
@@ -614,7 +630,8 @@ hist_opt = {
        'xmax'  : 1500.,
        'xlog'  : "",
        'yname' : "",
-       'ylog'  : "" },
+       'ylog'  : "",
+       'legpos'  : "top" },
 
    "h_H0H1_pt" : {
        'hname' : "h_H0H1_pt",
@@ -708,7 +725,8 @@ hist_opt = {
        'xmax'  : 600.,
        'yname' : "trailing di-jet mass [GeV]",
        'ymin'  : 0.,
-       'ymax'  : 600. },
+       'ymax'  : 600.,
+       'legpos'  : "top" },
 
    "h2_bdt" : {
        'hname' : "h2_bdt",
@@ -777,7 +795,7 @@ hist_opt = {
        'hname' : "classifier_log",
        'rebin' : 1,
        'xname' : "BDT output",
-       'xmin'  : 0.,
+       'xmin'  : 0.2,
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -792,7 +810,7 @@ hist_opt = {
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "",
-       'legpos': "left" },
+       'legpos': "topleft" },
 
    "h_cmva4" : {
        'hname' : "h_cmva4",
@@ -803,7 +821,7 @@ hist_opt = {
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "",
-       'legpos': "left" },
+       'legpos': "topleft" },
 
    "h_csv3" : {
        'hname' : "h_csv3",
