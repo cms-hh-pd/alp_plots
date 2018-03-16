@@ -854,6 +854,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
             e1 = h[0].GetBinError(i)
             e2 = h[1].GetBinError(i)
             #print  i, n1, n2, e1, e2
+            #print  "%d %.2f %.2f" % (i, n2 - n1, math.sqrt(pow(e1,2)+pow(e2,2)))
             if n1 :#and e1: 
                 hres.SetBinContent(i,(n2-n1)) # order is correct!! bkg - truth
                 #err = (pow(n1,3) + 15*pow(n1,2)*n2+15*pow(n2,2)*n1 + pow(n2,3))/(4*pow((n1+n2),3))
@@ -904,6 +905,17 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
                 hbias.SetBinContent(n+1, bias)
                 hbias.SetBinError(n+1, new_bkg_pred_tot_unc)
 
+        
+        for i in range(1, hres.GetXaxis().GetNbins()+1):
+            n1 = hres.GetBinContent(i)
+            n2 = hbias.GetBinContent(i)
+            e1 = hres.GetBinError(i)
+            e2 = hbias.GetBinError(i)
+            #print  i, n1, n2, e1, e2
+            #print  "%d %.2f %.2f" % (i, n2 - n1, math.sqrt(pow(e1,2)+pow(e2,2)))
+            
+        
+        
         ymax = 650.
         ymin = -200.
         if hbias.GetMaximum() > ymax: ymax = hbias.GetMaximum()*1.15
@@ -918,14 +930,14 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         hbias.SetLineColor(2)
         hbias.Draw("E X0")
         hres.Draw("E X0 same")
-
+        
         legend = setLegend(1,1)
         legend.AddEntry(hres, "tt mixed - tt MC", "p")
         legend.AddEntry(hbias, "Bias", "p")
         legend.Draw("same")
         #print hbias.Integral(), hres.Integral()
-        #ks = hbias.KolmogorovTest(hres, "NX")
-        #print("KS: ", ks)
+        #ks = hres.KolmogorovTest(hbias, "N")
+        #print("KS ttbar: ", ks)
         #latex.DrawLatex(0.5, 0.78, "KS p-val: %.3f" % ks)
         
         #Residual panel
@@ -981,6 +993,38 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         h_error.GetXaxis().SetTitle("")
         h_error.SetFillColor(430)
         h_error.Draw("E2same")
+    
+        hresidual.Fit("pol5")
+        myfunc = hresidual.GetFunction("pol5")
+        print myfunc
+        fithist = myfunc.CreateHistogram()
+        #for binn in range(1, fithist.GetNbinsX()):
+        #    print (binn, fithist.GetBinContent(binn))
+        #print myfunc.Integral(0., 74/80.), myfunc.Integral(76./80, 1.)*80/4., myfunc.Integral(0., 1.), myfunc.Integral(0., 2.)
+        squares = 0.
+        squares_0_2 = 0.
+        squares_70p = 0.
+        for binn in range(1, 81):
+            #print (binn, myfunc.Eval((binn-0.5)/80.), myfunc.Integral((binn - 1.) / 80., binn / 80.))
+            #print myfunc.Eval((binn-0.5)/80.), ", ",
+            """if abs(hres.GetBinContent(binn)) > abs(hbias.GetBinContent(binn)):
+                print hres.GetBinContent(binn), ", ",
+            else:     
+                print hbias.GetBinContent(binn), ", ","""
+            if binn > 0:
+                squares += myfunc.Eval((binn-0.5)/80.)**2
+            if binn > 16:
+                squares_0_2 += myfunc.Eval((binn-0.5)/80.)**2
+            if binn > 72:
+                squares_70p += myfunc.Eval((binn-0.5)/80.)**2
+        print
+        print "Tabel: BM%d &    & %.2f & %.2f & %.2f & %.2f & %.2f & %.2f" % (bm, myfunc.Integral(0., 1.), myfunc.Integral(0.2, 1.), myfunc.Integral(0.9, 1.), squares, squares_0_2, squares_70p)
+        
+        """for binn in range(1, 81):
+            #print (binn, myfunc.Eval((binn-0.5)/80.), myfunc.Integral((binn - 1.) / 80., binn / 80.))
+            #print myfunc.Eval((binn-0.5)/80.), ", ",
+            print max(abs(hres.GetBinContent(binn)), abs(hbias.GetBinContent(binn)), hbias.GetBinError(binn)), ", ",
+        print """
 
         c3.SaveAs(oDir+"/"+hsOpt['hname']+"_resc.pdf")
         c3.SaveAs(oDir+"/"+hsOpt['hname']+"_resc.png")            
@@ -1522,7 +1566,7 @@ def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = N
     h_data_bkg.Add(histos["bkg"], -1)
 
     for ibin in range(1, h_data_bkg.GetNbinsX()+1):
-        print h_data_bkg.GetBinError(ibin), histos["bkg"].GetBinError(ibin), histos["bkg"].GetBinError(ibin)/histos["bkg"].GetBinContent(ibin)
+        #print h_data_bkg.GetBinError(ibin), histos["bkg"].GetBinError(ibin), histos["bkg"].GetBinError(ibin)/histos["bkg"].GetBinContent(ibin)
         #print h_data_bkg.GetBinError(ibin), histos["bkg"].GetBinError(ibin), histos["data"].GetBinError(ibin), histos["sig"].GetBinError(ibin), histos["sig"].GetBinContent(ibin)
         pass
 
@@ -1612,8 +1656,9 @@ def get_odir(args, oname, option=""):
     if not os.path.exists(oDir): os.mkdir(oDir)
     oDir += "/"+args.report_dir
     if not os.path.exists(oDir): os.mkdir(oDir)
-    bm = args.bdt.split("-")[2]
-    oDir += "/"+bm
+    
+    #bm = args.bdt.split("-")[2]
+    #oDir += "/"+bm
     
     if not os.path.exists(oDir): os.mkdir(oDir)
     oDir += "/"+oname

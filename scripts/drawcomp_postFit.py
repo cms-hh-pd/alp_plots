@@ -146,6 +146,7 @@ def draw_postfit(args, fit_results, postfit_file, bm):
 def parse_args(parser):
   parser.add_argument("-w", "--whichPlots", help="which plots to be produced", type=int, default='0')
   parser.add_argument("-b", "--bdt", help="bdt version, equal to input file name (classifier report output)", required=True)
+  parser.add_argument("--bm", help="Benchmark number", type = int, required=True)
   parser.add_argument("-o", "--oDir", help="output directory", default="plots")
   parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==pulls)", type=int, default=-2)
   parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)", type=int, default=-1)
@@ -193,8 +194,9 @@ if __name__ == "__main__":
   
   bdt = args.bdt
   
-  bm = int(args.bdt.split("-")[2][2:])  
-  fit_file = "/lustre/cmswork/atiko/Hbb/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/unblind_29_01_bdt_0_2/BM%d/mlfit.root" % bm
+  #bm = int(args.bdt.split("-")[2][2:])
+  bm = int(args.bm)
+  fit_file = "/lustre/cmswork/atiko/Hbb/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/unblind_08_03_SM_bdt_0_2/BM%d/mlfit.root" % bm
   
   fit_results = read_fit_results(fit_file)
 
