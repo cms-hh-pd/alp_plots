@@ -436,6 +436,18 @@ elif which == 2072:
     oname = 'tt-tt-fix-appl'
     headerOpt = "   "
 
+elif which == 2073: 
+    samples = [['TT', "ttHbb"],['TT-fix-appl', "ttHbb-fix-appl"]]
+    fractions = ['','']
+    regions = ['','']
+    legList = [["TT", "ttH*10"], ["mixed data as TT (appl)", "mixed ttH * 10"]]
+    colorList = [[603, 603], [430, 430]]
+    dofill = [True,True]
+    isMC = True
+    sf = [[0.01077*35.9*0.96*4, 3 * 35.9 * 507.1 * 0.5824 * 0.96 * 4 / 3936004],[0.01077*35.9*0.96, 3 * 35.9 * 507.1 * 0.5824 * 0.96 / 3936004]]
+    oname = 'tt-tth_tt-fix-tth-fix-appl_3'
+    headerOpt = "   "
+
 elif which == 2008:
     samples = [['ttHbb-fix-00','TT-fix-00'],['ttHbb','TT']] #data always  second
     fractions = ['','']
