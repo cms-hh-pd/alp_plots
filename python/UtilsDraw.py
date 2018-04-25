@@ -867,7 +867,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         hres.GetXaxis().SetTitle(hsOpt['xname'])
         hres.GetYaxis().SetTitle('Events')
 
-        bkg_bias_fname = "/lustre/cmswork/dcastrom/projects/hh/april_2017/CMSSW_8_0_25/src/Analysis/hh2bbbb_limit/notebooks/bias_07022018_full_disclosure/BM%d/bias_correction_bigset_unscaled.json" % bm
+        bkg_bias_fname = "/lustre/cmswork/dcastrom/projects/hh/april_2017/CMSSW_8_0_25/src/Analysis/hh2bbbb_limit/notebooks/bias_21022018_with_weights/BM%d/bias_correction_bigset_unscaled.json" % bm
         with open(bkg_bias_fname,"r") as bkg_bias_file:
             json_dict = json.load(bkg_bias_file)
             print ("using bias file: ", bkg_bias_file)
