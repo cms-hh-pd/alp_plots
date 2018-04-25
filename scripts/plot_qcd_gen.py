@@ -10,7 +10,7 @@ from ROOT import TFile, TCanvas, TPad, TLine, TH1D, TLatex, TLegend
 def plot_qcd_gen(infile):
   f = TFile.Open(infile)
     
-  c = TCanvas("QCD MC distributions", "QCD MC distributions", 1000,1000)
+  c = TCanvas("QCD MC distributions", "QCD MC distributions", 600, 600)
   c.SetGrid()
 
   leg = TLegend(0.62,0.66,0.9,0.86)
@@ -24,6 +24,7 @@ def plot_qcd_gen(infile):
   bkg.Rebin(5)
   bkg.SetMaximum(0.5)
   bkg.SetLineWidth(2)
+  #c.SetLogY()
   bkg.Draw("e1")
   bkg.GetXaxis().SetTitle("BDT")
   leg.AddEntry(bkg, "Mixed data",  "p")
