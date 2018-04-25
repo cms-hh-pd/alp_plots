@@ -78,7 +78,7 @@ def getHistos_tdr(hist, filelist, plotDir, lumi, normtolumi, weight):
             h = tf.Get(plotDir+"/"+hist)
             h.Scale(w)
             hlist.append(h)
-            print h.Integral()
+            #print h.Integral()
         else:
             print "## WARNING: hist {} not found in {}".format(hist,tf)
 
@@ -245,8 +245,8 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = N
 
     hs   = THStack("hs","")
     for i, h in enumerate(histos):
-	print histos
-	print i, color
+	    #print histos
+	    #print i, color
         if color: col = color[i]
         else: col = sam_opt[snames[i]]['fillcolor']
         #print sam_opt[snames[i]]['sam_name']
@@ -753,21 +753,11 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         histos["data"] = hlist[1][0]
         histos["sig"] = hlist[0][1]
         histos["bkg"] = hlist[0][0]
-        print hlist
-        for binn in range(1, histos["data"].GetNbinsX()+1):
-            print binn, histos["data"].GetBinContent(binn), histos["sig"].GetBinContent(binn), histos["bkg"].GetBinContent(binn)
+        #print hlist
+        #for binn in range(1, histos["data"].GetNbinsX()+1):
+        #    print binn, histos["data"].GetBinContent(binn), histos["sig"].GetBinContent(binn), histos["bkg"].GetBinContent(binn)
         (h_data_bkg, h_sig, h_error) = getHistosPostFit(histos, hsOpt, snames[0], colors, fit_results, postfit_file)
         #print h_data_bkg.Integral(), h_sig.Integral(), h_err.Integral()
-        """hrat = h2.Clone("h_rat")
-        hrat.Divide(h1)
-        # consider only data error in the ratio plot
-        for ibin in range(1, h2.GetNbinsX()+1):
-            #print(h2.GetBinContent(ibin))
-            if(h2.GetBinContent(ibin)>0): 
-                hrat.SetBinError(ibin, h2.GetBinError(ibin)/h2.GetBinContent(ibin) )
-            else: 
-                hrat.SetBinError(ibin, 0.)
-        """
         
         h_data_bkg.SetTitle("")
         h_data_bkg.GetXaxis().SetTitleSize(20)
@@ -779,19 +769,6 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         #h_data_bkg.GetYaxis().SetRangeUser(-20,20)
         minbin = h_data_bkg.GetXaxis().GetFirst()
         maxbin = h_data_bkg.GetXaxis().GetLast()
-        """ymax_ = 1.5
-        ymax = 1.
-        ymin_ = 0.5
-        ymin = 1.
-    
-        for ibin in range(minbin, maxbin+1):       
-            binc = hrat.GetBinContent(ibin) 
-            if binc == 0. or (binc is None): 
-                continue
-            if binc*1.05 > ymax: 
-                ymax = binc*1.05
-            if binc*0.95 < ymin: 
-                ymin = binc*0.95"""
         y_max = max(h_data_bkg.GetMaximum(), hlist[0][-1].GetMaximum(), h_error.GetMaximum())*1.25
         y_min = min(h_data_bkg.GetMinimum(), hlist[0][-1].GetMinimum(), h_error.GetMinimum())*1.25
 
@@ -853,11 +830,8 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
             n2 = h[1].GetBinContent(i)
             e1 = h[0].GetBinError(i)
             e2 = h[1].GetBinError(i)
-            #print  i, n1, n2, e1, e2
-            #print  "%d %.2f %.2f" % (i, n2 - n1, math.sqrt(pow(e1,2)+pow(e2,2)))
             if n1 :#and e1: 
                 hres.SetBinContent(i,(n2-n1)) # order is correct!! bkg - truth
-                #err = (pow(n1,3) + 15*pow(n1,2)*n2+15*pow(n2,2)*n1 + pow(n2,3))/(4*pow((n1+n2),3))
                 hres.SetBinError(i, math.sqrt(pow(e1,2)+pow(e2,2)))
         hres.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         hres.SetMarkerStyle(8)
@@ -872,8 +846,6 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
             json_dict = json.load(bkg_bias_file)
             print ("using bias file: ", bkg_bias_file)
 
-        #print("bias_corr", json_dict['bias_corr'])
-        #for n, s_bin in enumerate(filt_hists['bkg_hem_mix']):
         hbias = hres.Clone("h_bias")
         for n in range(len(json_dict['bias_corr'])):
                 #if not s_bin.overflow:
@@ -884,24 +856,9 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
                 bias_unc = json_dict['bias_corr_unc_bs'][n]
                 bias_unc_stat = json_dict['bias_corr_unc_stat'][n]
                 
-                #bkg_pred_initial = value
-                #print n, n-1+skip_bins
-                #print bkg_pred_initial
-                #new_bkg_pred = bkg_pred_initial - bias #do not rescale (good for 4 times data)
-                #print new_bkg_pred
-                #if var > np.sqrt(bkg_pred_initial):
                 new_bkg_pred_stat = var
-                #else:
-                #  new_bkg_pred_stat = np.sqrt(bkg_pred_initial)
-                #print new_bkg_pred_stat
                                 
                 new_bkg_pred_tot_unc = np.sqrt(new_bkg_pred_stat**2 + bias_unc**2 + bias_unc_stat**2)
-
-                #value = new_bkg_pred
-                    
-
-                #filt_hists['bkg_hem_mix'][n].value = value
-                #filt_hists['bkg_hem_mix'][n].error = unc
                 hbias.SetBinContent(n+1, bias)
                 hbias.SetBinError(n+1, new_bkg_pred_tot_unc)
 
@@ -911,10 +868,6 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
             n2 = hbias.GetBinContent(i)
             e1 = hres.GetBinError(i)
             e2 = hbias.GetBinError(i)
-            #print  i, n1, n2, e1, e2
-            #print  "%d %.2f %.2f" % (i, n2 - n1, math.sqrt(pow(e1,2)+pow(e2,2)))
-            
-        
         
         ymax = 650.
         ymin = -200.
@@ -935,10 +888,6 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         legend.AddEntry(hres, "tt mixed - tt MC", "p")
         legend.AddEntry(hbias, "Bias", "p")
         legend.Draw("same")
-        #print hbias.Integral(), hres.Integral()
-        #ks = hres.KolmogorovTest(hbias, "N")
-        #print("KS ttbar: ", ks)
-        #latex.DrawLatex(0.5, 0.78, "KS p-val: %.3f" % ks)
         
         #Residual panel
         c3.cd()
@@ -1282,7 +1231,6 @@ def drawH2(hs, hs1, hsOpt, sname, rebin, oDir, legs):
         name = hsOpt['hname']
         print name
         c2 = TCanvas(name, name, 800, 800)
-        print h2.GetBinContent(10)
         h2.Rebin2D(rebin, rebin)
         h2.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         h2.GetYaxis().SetRangeUser(hsOpt['ymin'],hsOpt['ymax'])
@@ -1624,6 +1572,10 @@ def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = N
     
     
     err = max((fit_results["sig"][0] - fit_results["sig"][1]) / fit_results["sig"][0], (fit_results["sig"][2] - fit_results["sig"][0]) / fit_results["sig"][0])
+
+    #Set error centered at zero as requested by ARC
+    for ibin in range(1, h_err.GetNbinsX()+1):
+        h_err.SetBinContent(ibin, 0. )
 
     #If not loading already morphed fit results
     if postfit_file == None:

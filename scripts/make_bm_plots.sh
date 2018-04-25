@@ -15,5 +15,9 @@ do
     #python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 6 --res 2 -n
 	#python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 5 -c --res -1
     python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 1 -d classifier_reports/reports_SM/BM$bm
-	#python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 2072 --res 10 -d ttbar_bias_check/BM$bm	
+	#python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 2072 --res 10 -d ttbar_bias_check/BM$bm
+	
+	#Requested by ARC
+	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 5 -c --res -1 -d classifier_reports/reports_SM_masscut_corr/BM$bm
+	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 5 -c --res -1 -d classifier_reports/reports_SM_masscut_corr/BM$bm -r 8
 done
