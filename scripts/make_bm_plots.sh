@@ -1,6 +1,6 @@
 #bms=("20171120-160644-bm0" "20171120-161211-bm1" "20171120-161730-bm2" "20171120-162255-bm3" "20171120-162812-bm4" "20171120-163332-bm5" "20171120-163852-bm6" "20171120-164402-bm7" "20171120-164916-bm8" "20171120-165436-bm9" "20171120-165954-bm10" "20171120-170526-bm11" "20171120-171044-bm12" "20171120-171608-bm13")
 bm_string="20171120-160644-bm0"
-bms=(0 1 2 3 4 5 6 7 8 9 10 11 12 13)
+bms=(0) # 1 2 3 4 5 6 7 8 9 10 11 12 13)
 i=0
 #for bm in ${bms[@]}
 #do
@@ -20,4 +20,6 @@ do
 	#Requested by ARC
 	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 5 -c --res -1 -d classifier_reports/reports_SM_masscut_corr/BM$bm
 	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 5 -c --res -1 -d classifier_reports/reports_SM_masscut_corr/BM$bm -r 8
+	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 6 -c --res -1 -d classifier_reports/reports_SM_btagside/BM$bm
+	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 6 -c --res -1 -d classifier_reports/reports_SM_btagside/BM$bm -r 8
 done

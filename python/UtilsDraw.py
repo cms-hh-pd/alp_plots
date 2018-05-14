@@ -253,6 +253,35 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = N
         
         h.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
         h.SetMinimum(0.)
+        
+        #Just a quick hack to answer ARC question
+        #Actually not needed as it is done in classifier report already
+        """if "bkg_appl_ms" in h.GetName():
+            print i, h
+            #bkg_bias_fname = "/lustre/cmswork/dcastrom/projects/hh/april_2017/CMSSW_8_0_25/src/Analysis/hh2bbbb_limit/notebooks/bms_btagside_err_fixed/BM0/bias_correction_bigset_unscaled.json"
+            bkg_bias_fname = "/lustre/cmswork/dcastrom/projects/hh/april_2017/CMSSW_8_0_25/src/Analysis/hh2bbbb_limit/notebooks/bias_22032018_with_weights_also_mass_cut/BM0/bias_correction_mass_cut_bigset_unscaled.json"
+            with open(bkg_bias_fname,"r") as bkg_bias_file:
+                json_dict = json.load(bkg_bias_file)
+                print ("using bias file: ", bkg_bias_file)
+
+            hbias = h.Clone("h_bias")
+            for n in range(len(json_dict['bias_corr'])):
+                #if not s_bin.overflow:
+                #value = s_bin.value
+
+                bias = json_dict['bias_corr'][n]
+                var = json_dict['var'][n]
+                bias_unc = json_dict['bias_corr_unc_bs'][n]
+                bias_unc_stat = json_dict['bias_corr_unc_stat'][n]
+                
+                new_bkg_pred_stat = var
+                                
+                new_bkg_pred_tot_unc = np.sqrt(new_bkg_pred_stat**2 + bias_unc**2 + bias_unc_stat**2)
+                hbias.SetBinContent(n+1, bias)
+                hbias.SetBinError(n+1, new_bkg_pred_tot_unc)
+            h.Add(hbias, -1)
+        """
+        
         h.Scale(scale)
         h.Rebin(rebin)
         h.SetMarkerStyle(8)
@@ -710,6 +739,13 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         h_error.SetFillColor(430)
         h_error.Draw("E2same")
 
+        hrat.Fit("pol1")
+        myfunc = hrat.GetFunction("pol1")
+        print myfunc
+        fithist = myfunc.CreateHistogram()
+        for ibin in range(1,fithist.GetNbinsX()+1):
+            print "%.5f," % (fithist.GetBinContent(ibin)),
+        print 
         l = TLine(hsOpt['xmin'],1.5,hsOpt['xmax'],1.5);
         l0 = TLine(hsOpt['xmin'],1.4,hsOpt['xmax'],1.4);
         l00 = TLine(hsOpt['xmin'],1.3,hsOpt['xmax'],1.3);
@@ -794,6 +830,18 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         h_error.Draw("E2same")
         h_data_bkg.Draw("same e3 x0")
         
+        #Draw best fit slope from MS CR
+        if draw_slope:
+            slope = [0.98912, 0.98954, 0.98996, 0.99038, 0.99080, 0.99122, 0.99164, 0.99205, 0.99247, 0.99289, 0.99331, 0.99373, 0.99415, 0.99457, 0.99499, 0.99540, 0.99582, 0.99624, 0.99666, 0.99708, 0.99750, 0.99792, 0.99834, 0.99876, 0.99917, 0.99959, 1.00001, 1.00043, 1.00085, 1.00127, 1.00169, 1.00211, 1.00252, 1.00294, 1.00336, 1.00378, 1.00420, 1.00462, 1.00504, 1.00546, 1.00587, 1.00629, 1.00671, 1.00713, 1.00755, 1.00797, 1.00839, 1.00881, 1.00923, 1.00964, 1.01006, 1.01048, 1.01090, 1.01132, 1.01174, 1.01216, 1.01258, 1.01299, 1.01341, 1.01383, 1.01425, 1.01467, 1.01509, 1.01551, 1.01593, 1.01635, 1.01676, 1.01718, 1.01760, 1.01802, 1.01844, 1.01886, 1.01928, 1.01970, 1.02011, 1.02053, 1.02095, 1.02137, 1.02179, 1.02221, 1.02263, 1.02305, 1.02346, 1.02388, 1.02430, 1.02472, 1.02514, 1.02556, 1.02598, 1.02640, 1.02682, 1.02723, 1.02765, 1.02807, 1.02849, 1.02891, 1.02933, 1.02975, 1.03017, 1.03058]
+            print slope
+            bkg_slope = histos["data"].Clone("bkg_slope")
+            for b in range(1, bkg_slope.GetNbinsX()+1):
+                bkg_slope.SetBinContent(b, bkg_slope.GetBinContent(b) / slope[b-1])
+            bkg_slope.Add(histos["data"], -1)
+            bkg_slope.SetLineColor(ROOT.kBlue)
+            bkg_slope.Draw("hist same")
+    
+        #h_data_bkg.GetYaxis().SetRangeUser(y_min-150,y_max)
         
         leg_coords = 0.65,0.2,0.9,0.4
         if "legpos" in hsOpt:
