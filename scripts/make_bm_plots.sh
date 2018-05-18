@@ -14,7 +14,7 @@ for bm in ${bms[@]}
 do
     #python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 6 --res 2 -n
 	#python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 5 -c --res -1
-    python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 1 -d classifier_reports/reports_SM/BM$bm
+    python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 0 -d classifier_reports/reports_SM/BM$bm
 	#python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 2072 --res 10 -d ttbar_bias_check/BM$bm
 	
 	#Requested by ARC
@@ -22,4 +22,8 @@ do
 	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 5 -c --res -1 -d classifier_reports/reports_SM_masscut_corr/BM$bm -r 8
 	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 6 -c --res -1 -d classifier_reports/reports_SM_btagside/BM$bm
 	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 6 -c --res -1 -d classifier_reports/reports_SM_btagside/BM$bm -r 8
+
+    #CR plots:
+    #python scripts/drawcomp_afterBDT.py -b $bm_string -w 6 --res -1 -d classifier_reports/reports_SM_btagside/BM$bm
+    #python scripts/drawcomp_afterBDT.py -b $bm_string -w 5 --res -1 -d classifier_reports/reports_SM_nocut/BM$bm
 done

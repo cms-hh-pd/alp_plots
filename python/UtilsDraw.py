@@ -201,31 +201,39 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = N
 
     if postfit_file:
         myfile = TFile.Open(postfit_file)
-        fit = "postfit"        
+        fit = "postfit"
         bak = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_background")
         sig = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_signal")
         data = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("data")
         
+        bkg_stat_errors = [999999, 0.22416417654 , 0.259011711505 , 0.208770262943 , 0.21154376566 , 0.229430171263 , 0.224188682749 , 0.221549613233 , 0.221890375781 , 0.223720438616 , 0.220050310352 , 0.218170903697 , 0.221657830684 , 0.219268455221 , 0.228302440626 , 0.209950621523 , 0.199830787496 , 0.270969655014 , 0.227502029848 , 0.219172487098 , 0.240406628899 , 0.217973847342 , 0.206179941005 , 0.219971579933 , 0.22847623496 , 0.23573770625 , 0.24227327811 , 0.201625146022 , 0.215425920573 , 0.234445897951 , 0.225743100647 , 0.248078090542 , 0.210997977076 , 0.226575390998 , 0.208895554249 , 0.212082877311 , 0.217879362535 , 0.219426382082 , 0.205367390706 , 0.193419968163 , 0.24154695525 , 0.218317634489 , 0.21665863512 , 0.267536622676 , 0.228252418385 , 0.224051209454 , 0.2188135129 , 0.230283639549 , 0.227607441057 , 0.216079672833 , 0.193181731547 , 0.223707270041 , 0.230072029668 , 0.221803909214 , 0.234361126576 , 0.213422863845 , 0.203346390798 , 0.228136611704 , 0.19324973248 , 0.222589747661 , 0.224368896963 , 0.198238595685 , 0.204429587789 , 0.211665886548 , 0.217536741882]
+
+
         if snames[0] == "data":
             for i in range(0,66):
                 x, y = array('d', [0]), array('d', [0])
                 data.GetPoint(i, x, y)
             histos[0].SetBinContent(0, 0)
             histos[0].SetBinError(0, 0)
+        print sig.GetNbinsX()
         for ibin in range(1, sig.GetNbinsX()+1):
             #To avoid histos going out of scope later            
             for i in range(len(histos)):
                 if snames[i] == "bkg":
                     histos[i].SetBinContent(ibin, bak.GetBinContent(ibin))
                     histos[i].SetBinError(ibin, bak.GetBinError(ibin))
+                    #print ibin, bak.GetBinError(ibin), bak.GetBinError(ibin)*bkg_stat_errors[ibin]
+                    histos[i].SetBinError(ibin, bak.GetBinError(ibin)*bkg_stat_errors[ibin])
                 elif snames[i] == "sig":
                     histos[i].SetBinContent(ibin, sig.GetBinContent(ibin))
                     histos[i].SetBinError(ibin, sig.GetBinError(ibin))
+                    #histos[i].SetBinError(ibin, sig.GetBinError(0))
                 elif snames[i] == "data":
                     x, y = array('d', [0]), array('d', [0])
                     data.GetPoint(ibin-1, x, y)
                     histos[i].SetBinContent(ibin, y[0])
                     histos[i].SetBinError(ibin, data.GetErrorY(ibin))
+                    #histos[i].SetBinError(ibin, 0)
         scale = 1
     
     
@@ -536,8 +544,8 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
     latex.SetTextColor(1)
     latex.SetTextFont(42)
     latex.SetTextAlign(33)   
-    if ks:
-        latex.DrawLatex(0.5, 0.78, "KS p-val: %.3f" % ks)
+    #if ks:
+    #    latex.DrawLatex(0.5, 0.78, "KS p-val: %.3f" % ks)
     nskip = 0
     match = False 
     for n, sam in enumerate(snames[0]):
@@ -739,13 +747,13 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         h_error.SetFillColor(430)
         h_error.Draw("E2same")
 
-        hrat.Fit("pol1")
+        """hrat.Fit("pol1")
         myfunc = hrat.GetFunction("pol1")
         print myfunc
         fithist = myfunc.CreateHistogram()
         for ibin in range(1,fithist.GetNbinsX()+1):
             print "%.5f," % (fithist.GetBinContent(ibin)),
-        print 
+        print""" 
         l = TLine(hsOpt['xmin'],1.5,hsOpt['xmax'],1.5);
         l0 = TLine(hsOpt['xmin'],1.4,hsOpt['xmax'],1.4);
         l00 = TLine(hsOpt['xmin'],1.3,hsOpt['xmax'],1.3);
@@ -831,7 +839,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         h_data_bkg.Draw("same e3 x0")
         
         #Draw best fit slope from MS CR
-        if draw_slope:
+        if False:
             slope = [0.98912, 0.98954, 0.98996, 0.99038, 0.99080, 0.99122, 0.99164, 0.99205, 0.99247, 0.99289, 0.99331, 0.99373, 0.99415, 0.99457, 0.99499, 0.99540, 0.99582, 0.99624, 0.99666, 0.99708, 0.99750, 0.99792, 0.99834, 0.99876, 0.99917, 0.99959, 1.00001, 1.00043, 1.00085, 1.00127, 1.00169, 1.00211, 1.00252, 1.00294, 1.00336, 1.00378, 1.00420, 1.00462, 1.00504, 1.00546, 1.00587, 1.00629, 1.00671, 1.00713, 1.00755, 1.00797, 1.00839, 1.00881, 1.00923, 1.00964, 1.01006, 1.01048, 1.01090, 1.01132, 1.01174, 1.01216, 1.01258, 1.01299, 1.01341, 1.01383, 1.01425, 1.01467, 1.01509, 1.01551, 1.01593, 1.01635, 1.01676, 1.01718, 1.01760, 1.01802, 1.01844, 1.01886, 1.01928, 1.01970, 1.02011, 1.02053, 1.02095, 1.02137, 1.02179, 1.02221, 1.02263, 1.02305, 1.02346, 1.02388, 1.02430, 1.02472, 1.02514, 1.02556, 1.02598, 1.02640, 1.02682, 1.02723, 1.02765, 1.02807, 1.02849, 1.02891, 1.02933, 1.02975, 1.03017, 1.03058]
             print slope
             bkg_slope = histos["data"].Clone("bkg_slope")
@@ -1338,12 +1346,12 @@ def drawCMS(lumi, text, onTop=False ):
         latex.DrawLatex(0.15, 0.855, "CMS   "+text)
         latex.SetTextFont(52)
         latex.SetTextSize(0.02)
-        latex.DrawLatex(0.15, 0.830, "preliminary")
+        #latex.DrawLatex(0.15, 0.830, "preliminary")
     else: 
         latex.DrawLatex(0.15, 0.88, "CMS   "+text)
         latex.SetTextFont(52)
         latex.SetTextSize(0.02)
-        latex.DrawLatex(0.15, 0.850, "preliminary")
+        #latex.DrawLatex(0.15, 0.850, "preliminary")
 #------------
 
 def drawCMStdr(text, onTop=False):
@@ -1564,6 +1572,7 @@ def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = N
     for ibin in range(1, h_data_bkg.GetNbinsX()+1):
         #print h_data_bkg.GetBinError(ibin), histos["bkg"].GetBinError(ibin), histos["bkg"].GetBinError(ibin)/histos["bkg"].GetBinContent(ibin)
         #print h_data_bkg.GetBinError(ibin), histos["bkg"].GetBinError(ibin), histos["data"].GetBinError(ibin), histos["sig"].GetBinError(ibin), histos["sig"].GetBinContent(ibin)
+        print h_data_bkg.GetBinError(ibin), histos["bkg"].GetBinError(ibin), histos["data"].GetBinError(ibin), histos["sig"].GetBinError(ibin)#, histos["bkg"].GetBinError(ibin)/histos["bkg"].GetBinContent(ibin)
         pass
 
     h_sig = histos["sig"].Clone("signal")
@@ -1634,6 +1643,7 @@ def getHistosPostFit(histos, hsOpt, snames, color, fit_results, postfit_file = N
         for ibin in range(1, h_err.GetNbinsX()+1):
             #print ibin, err, h_err.GetBinContent(ibin), err * h_err.GetBinContent(ibin), h_err.GetBinError(ibin)
             h_err.SetBinError(ibin, math.sqrt(h_sig.GetBinError(ibin)**2 + h_data_bkg.GetBinError(ibin)**2) )
+            #h_err.SetBinError(ibin, math.sqrt(h_data_bkg.GetBinError(ibin)**2) )
             #print ibin, h_err.GetBinContent(ibin), h_err.GetBinError(ibin)
             
     return h_data_bkg, h_sig, h_err

@@ -158,11 +158,11 @@ elif which == 5:
     regions = ['ms','ms']
     legList = [["mixed data"], ["data"]]
     colorList = [[430], [1]]
-    sf = [[1.],[4.]]
+    sf = [[0.25],[1.]]
     dofill = [True,False]
     isMC = False
-    oname = 'comp_bkgdata_afterBDT'
-    headerOpt = "   mass CR"#, appl sample" #btag CR
+    oname = 'comp_bkgdata_ms_afterBDT'
+    headerOpt = ""#   mass CR", appl sample" #btag CR
 
 elif which == 6:
     samples = [['bkg'],['data']] #data always  second
@@ -253,6 +253,7 @@ elif which == 9:
     isMC = True
     oname = 'comp_sigbkgms_afterBDT'
     headerOpt = "  H mass CR - test sam."
+
 
 
 
