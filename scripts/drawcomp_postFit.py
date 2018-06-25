@@ -141,7 +141,7 @@ def draw_postfit(args, fit_results, postfit_file, bm):
               print "PF", pf_file
               print h
               n,nerr = UtilsDraw.drawH1(hs, snames, legList,
-                           hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt, isMC, fit_results, pf_file)
+                           hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt, isMC, "", fit_results, pf_file)
 
 def parse_args(parser):
   parser.add_argument("-w", "--whichPlots", help="which plots to be produced", type=int, default='0')

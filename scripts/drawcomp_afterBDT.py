@@ -24,6 +24,7 @@ parser.add_argument("-w", "--whichPlots", help="which plots to be produced", typ
 parser.add_argument("-b", "--bdt", help="bdt version, equal to input file name (classifier report output)", required=True)
 parser.add_argument("-o", "--oDir", help="output directory", default="plots")
 parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==pulls)", type=int, default=0)
+parser.add_argument("--reg", dest="region", help="whic region is used (default, ms, btag)", type=str, default="")
 parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)", type=int, default=-1)
 parser.add_argument("-n", "--doNorm", help="do normalize ", action='store_true')
 parser.add_argument("-c", "--defaultCol", help="to use default colors", action='store_true')
@@ -771,7 +772,7 @@ for n, h in enumerate(histList):
     else: 
         if len(hs) > 0:
             n,nerr = UtilsDraw.drawH1(hs, snames, legList, 
-                         hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt, isMC, bm = int(args.bdt.split("-")[2][2:]))
+                         hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt, isMC, args.region, bm = int(args.bdt.split("-")[2][2:]))
         #if n2: 
         #   print "### n1/n2 numEvents: {} +- {} ###".format(n1/n2, UtilsDraw.getRelErr(n1,n1err,n2,n2err)*n1/n2) 
         #   print "### n1: {} +- {} ###".format(n1,n1err) 

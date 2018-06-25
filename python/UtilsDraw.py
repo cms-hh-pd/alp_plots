@@ -462,7 +462,7 @@ def drawBinVar(hlist, snames, legstack, hsOpt, oDir, rebin, headerOpt, isMC):
     c1.SaveAs(oDir+"/"+"bdtVar_nn.root")
 #------------
 
-def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill, rebin, headerOpt, isMC, fit_results = None, postfit_file = None, bm = 0):
+def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill, rebin, headerOpt, isMC, region, fit_results = None, postfit_file = None, bm = 0):
     H_ref = 800     
     W_ref = 800
     if residuals == 5: H_ref = 1600
@@ -530,7 +530,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
     hs, herr, h = [], [], []
     
     if residuals == 5:
-        h_bkg_bias_corr = get_bias_corrected_histo(hlist[0][0], region = "btag")
+        h_bkg_bias_corr = get_bias_corrected_histo(hlist[0][0], region = region)
         #print hlist, hlist[0][0].Integral()*4
         #for n in range(1, hlist[1][0].GetNbinsX()+1):
         #    print n, hlist[1][0].GetBinContent(n), hlist[0][0].GetBinContent(n) * 4, h_bkg_bias_corr.GetBinContent(n)*4, h_bkg_bias_corr.GetBinError(n)*2
