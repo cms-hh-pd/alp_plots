@@ -61,21 +61,21 @@ def draw_postfit(args, fit_results, postfit_file, bm):
   bkg_scale_factor = fit_results["bkg"] * 0.25
   sig_scale_factor = fit_results["sig"][0] * args.lumi * trg_eff / (4172119.0 * 0.2)
 
-  samples = [['bkg', 'sig'],['data']] #data always  second
-  #samples = [['sig', 'bkg'],['data']] #data always  second
+  #samples = [['bkg', 'sig'],['data']] #data always  second
+  samples = [['sig', 'bkg'],['data']] #data always  second
   fractions = ['','']
   regions = ['appl','']
   if bm == 0:
-    legList = [["mixed data", "HH4b SM"], ["data"]]
+    legList = [["HH to 4b SM", "Mixed data",], ["Data"]]
   elif bm == 13:
-    legList = [["mixed data", "HH4b Box"], ["data"]]
+    legList = [["HH to 4b Box", "Mixed data"], ["Data"]]
   else:
-    legList = [["mixed data", "HH4b BM%d" % bm], ["data"]]
+    legList = [["HH to 4b BM%d" % bm, "Mixed data"], ["Data"]]
   #legList = [["HH4b SM", "mixed data"], ["data"]]
-  colorList = [[430, 632], [1]]
-  #colorList = [[632, 430], [1]]
-  sf = [[bkg_scale_factor, sig_scale_factor],[1.]]
-  #sf = [[sig_scale_factor, bkg_scale_factor],[1.]]
+  #colorList = [[430, 632], [1]]
+  colorList = [[632, 600], [1]]
+  #sf = [[bkg_scale_factor, sig_scale_factor],[1.]]
+  sf = [[sig_scale_factor, bkg_scale_factor],[1.]]
   dofill = [True,False]
   isMC = False
   oname = 'comp_bkgdata_postfit'
@@ -148,7 +148,7 @@ def parse_args(parser):
   parser.add_argument("-b", "--bdt", help="bdt version, equal to input file name (classifier report output)", required=True)
   parser.add_argument("--bm", help="Benchmark number", type = int, required=True)
   parser.add_argument("-o", "--oDir", help="output directory", default="plots")
-  parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==pulls)", type=int, default=-2)
+  parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==pulls)", type=int, default=-4)
   parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)", type=int, default=-1)
   parser.add_argument("-n", "--doNorm", help="do normalize ", action='store_true')
   parser.add_argument("-c", "--defaultCol", help="to use default colors", action='store_true')
@@ -197,6 +197,7 @@ if __name__ == "__main__":
   #bm = int(args.bdt.split("-")[2][2:])
   bm = int(args.bm)
   fit_file = "/lustre/cmswork/atiko/Hbb/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/unblind_08_03_SM_bdt_0_2/BM%d/mlfit.root" % bm
+  fit_file = "/lustre/cmswork/atiko/Hbb/CMSSW_7_4_7/src/HiggsAnalysis/CombinedLimit/unblind_11_06_bdt_0_2_bugfix/BM%d/mlfit.root" % bm
   
   fit_results = read_fit_results(fit_file)
 

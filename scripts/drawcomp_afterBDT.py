@@ -164,6 +164,32 @@ elif which == 5:
     oname = 'comp_bkgdata_ms_afterBDT'
     headerOpt = ""#   mass CR", appl sample" #btag CR
 
+elif which == 51:
+    samples = [['bkg'],['data']] #data always  second
+    fractions = ['appl','']
+    regions = ['ms','ms']
+    legList = [["Mixed data"], ["Data"]]
+    colorList = [[430], [1]]
+    sf = [[0.25],[1.]]
+    dofill = [True,False]
+    isMC = False
+    oname = 'comp_bkgdata_ms_afterBDT'
+    headerOpt = ""#   mass CR", appl sample" #btag CR
+
+elif which == 52:
+    samples = [['bkg'],['data']] #data always  second
+    fractions = ['appl','']
+    regions = ['','']
+    legList = [["Mixed data"], ["Data"]]
+    colorList = [[430], [1]]
+    sf = [[0.25],[1.]]
+    dofill = [True,False]
+    isMC = False
+    oname = 'comp_bkgdata_afterBDT'
+    headerOpt = ""#   mass CR", appl sample" #btag CR
+
+
+
 elif which == 6:
     samples = [['bkg'],['data']] #data always  second
     fractions = ['appl','']
@@ -209,6 +235,23 @@ elif which == 62:
     isMC = False
     oname = 'comp_sigbkgdata_massCR_afterBDT'
     headerOpt = "mass CR"
+
+elif which == 63:
+    samples = [['bkg', 'sig'],['data']] #data always  second
+    fractions = ['appl','']
+    regions = ['','']
+    if bm == 0:
+      legList = [["mixed data", "HH4b SM"], ["data"]]
+    elif bm == 13:
+      legList = [["mixed data", "HH4b Box"], ["data"]]
+    else:
+      legList = [["mixed data", "HH4b BM%d" % bm], ["data"]]
+    colorList = [[430], [1]]
+    sf = [[bkg_scale_factor, sig_scale_factor],[1.]]
+    dofill = [True,False]
+    isMC = False
+    oname = 'comp_sigbkgdata_afterBDT'
+    headerOpt = ""
 
 elif which == 500: #!!only with btag root file!!
     samples = [['bkg'],['data']] #data always  second
@@ -671,7 +714,7 @@ elif which == 583:
     oname = 'comp_bkgappl_data_afterBDT'
     headerOpt = ""
 else: 
-    print "ERROR: wrong '-w' argument"
+    print ("ERROR: wrong '-w' argument:", which)
     exit()
 ###############
 

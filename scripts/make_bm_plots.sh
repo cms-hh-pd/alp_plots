@@ -13,13 +13,19 @@ i=0
 for bm in ${bms[@]}
 do
     #python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 6 --res 2 -n
-	#python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 5 -c --res -1
-    python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 0 -d classifier_reports/reports_SM/BM$bm
-	#python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 2072 --res 10 -d ttbar_bias_check/BM$bm
+	#python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 51 --res 5  -d classifier_reports/reports_SM_no_bias_corr_mixing_fix/BM$bm    #Figure 2
+    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 52 --res 5  -d classifier_reports/reports_SM_no_bias_corr_btagside/BM$bm    #Figure 2 btagside
+    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 5 --res 2  -d classifier_reports/reports_sm/BM$bm
+
+    #python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 0 -d classifier_reports/reports_no_bias_corr_SM_mixing_fix_0_2/BM$bm --res -12
+    
+    #python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 1 -d classifier_reports/reports_SM_mixing_fix/BM$bm   #All vars after final fit
+    python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 0 -d classifier_reports/reports_SM_mixing_fix/BM$bm #Final BDT
+    #python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 2072 --res 10 -d ttbar_bias_check/BM$bm
 	
 	#Requested by ARC
-	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 5 -c --res -1 -d classifier_reports/reports_SM_masscut_corr/BM$bm
-	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 5 -c --res -1 -d classifier_reports/reports_SM_masscut_corr/BM$bm -r 8
+	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 5 -c --res -1 -d classifier_reports/reports_SM_mixing_fix_nocut_MS_bias_corr/BM$bm
+	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 5 -c --res -1 -d classifier_reports/reports_SM_mixing_fix_nocut_MS_bias_corr/BM$bm -r 8
 	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 6 -c --res -1 -d classifier_reports/reports_SM_btagside/BM$bm
 	#python scripts/drawcomp_afterBDT.py -b $bm_string -w 6 -c --res -1 -d classifier_reports/reports_SM_btagside/BM$bm -r 8
 
