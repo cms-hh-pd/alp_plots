@@ -139,7 +139,7 @@ def draw_postfit(args, fit_results, postfit_file, bm):
       else: 
           if len(hs) > 1:
               print "PF", pf_file
-              print h
+              #print h
               n,nerr = UtilsDraw.drawH1(hs, snames, legList,
                            hOpt, args.plotResidual, args.doNorm, oDir, colors, dofill, args.clrebin, headerOpt, isMC, "", fit_results, pf_file)
 
