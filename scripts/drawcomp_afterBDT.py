@@ -53,6 +53,26 @@ bm = int(args.bdt.split("-")[2][2:])
 bkg_scale_factor = 0.25
 sig_scale_factor = args.lumi * trg_eff / (4172119.0 * 0.2)
 
+qcdmc_evs = [samples["QCD_HT200to300"]["nevents"] + samples["QCD_HT200to300_ext"]["nevents"], 
+                samples["QCD_HT300to500"]["nevents"] + samples["QCD_HT300to500_ext"]["nevents"],
+                samples["QCD_HT500to700"]["nevents"] + samples["QCD_HT500to700_ext"]["nevents"],
+                samples["QCD_HT700to1000"]["nevents"] + samples["QCD_HT700to1000_ext"]["nevents"],
+                samples["QCD_HT1000to1500"]["nevents"] + samples["QCD_HT1000to1500_ext"]["nevents"],
+                samples["QCD_HT1500to2000"]["nevents"] + samples["QCD_HT1500to2000_ext"]["nevents"],
+                samples["QCD_HT2000toInf"]["nevents"] + samples["QCD_HT2000toInf_ext"]["nevents"]]
+qcdmc_xss = [samples["QCD_HT200to300"]["xsec_br"], 
+                samples["QCD_HT300to500"]["xsec_br"],
+                samples["QCD_HT500to700"]["xsec_br"],
+                samples["QCD_HT700to1000"]["xsec_br"],
+                samples["QCD_HT1000to1500"]["xsec_br"],
+                samples["QCD_HT1500to2000"]["xsec_br"],
+                samples["QCD_HT2000toInf"]["xsec_br"]]
+
+qcdmc_sfs = []
+for i in range(len(qcdmc_evs)):
+    qcdmc_sfs.append(qcdmc_xss[i] / qcdmc_evs[i])
+
+
 
 if args.hlist == -1:
     histList   = [ 'clf-tt', 'classifier']
@@ -170,24 +190,24 @@ elif which == 51:
     fractions = ['appl','']
     regions = ['ms','ms']
     legList = [["Mixed data"], ["Data"]]
-    colorList = [[430], [1]]
+    colorList = [[600], [1]]
     sf = [[0.25],[1.]]
     dofill = [True,False]
     isMC = False
     oname = 'comp_bkgdata_ms_afterBDT'
-    headerOpt = ""#   mass CR", appl sample" #btag CR
+    headerOpt = "#font[12]{m}_{H} CR"#   mass CR", appl sample" #btag CR
 
 elif which == 52:
     samples = [['bkg'],['data']] #data always  second
     fractions = ['appl','']
     regions = ['','']
     legList = [["Mixed data"], ["Data"]]
-    colorList = [[430], [1]]
+    colorList = [[600], [1]]
     sf = [[0.25],[1.]]
     dofill = [True,False]
     isMC = False
     oname = 'comp_bkgdata_afterBDT'
-    headerOpt = ""#   mass CR", appl sample" #btag CR
+    headerOpt = "b tag CR"#   mass CR", appl sample" #btag CR
 
 
 
@@ -298,7 +318,17 @@ elif which == 9:
     oname = 'comp_sigbkgms_afterBDT'
     headerOpt = "  H mass CR - test sam."
 
-
+elif which == 99:
+    samples = [["QCD_HT200to300_m", "QCD_HT300to500_m", "QCD_HT500to700_m", "QCD_HT700to1000_m", "QCD_HT1000to1500_m", "QCD_HT1500to2000_m", "QCD_HT2000toInf_m"],['bkg']]
+    fractions = ['','appl']
+    regions = ['','']
+    legList = [["QCD multijet MC"], ["Mixed data"]]
+    colorList = [[16, 16, 16, 16, 16, 16, 16], [600]]
+    sf = [qcdmc_sfs,[0.25]]
+    dofill = [True,False]
+    isMC = True
+    oname = 'comp_bkgQCDMC_afterBDT'
+    headerOpt = ""#   mass CR", appl sample" #btag CR
 
 
 ## 10nn
