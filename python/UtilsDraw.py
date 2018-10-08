@@ -315,8 +315,8 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = N
         
     if "sig" in snames:
         i = snames.index("sig")
-        sig100 = histos[i].Clone("sig x5")
-        sig100.Scale(5)
+        sig100 = histos[i].Clone("sig x50")
+        sig100.Scale(50)
         sig100.SetLineStyle(2)
         sig100.SetFillStyle(0)
         histos.append(sig100)
@@ -505,6 +505,8 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         #pad1.SetRightMargin(0.) 
         pad1.Draw()             
         pad1.cd()
+        if "classifier" in hsOpt["hname"]:
+            hsOpt['xmin'] = 0.
         #if residuals == -2: pad1.SetLogy() """       
     else:
         pad1 = c1
@@ -960,8 +962,8 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         leg = TLegend(*leg_coords)
         leg.SetTextSize(0.05)
         leg.AddEntry(h_data_bkg, "Data - fitted background", "p")
-        leg.AddEntry(h_sig, "HH4b fitted")
-        leg.AddEntry(hlist[0][-1], "HH4b fitted x5")
+        leg.AddEntry(h_sig, "HH #rightarrow b#bar{b}b#bar{b} fitted")
+        leg.AddEntry(hlist[0][-1], "HH #rightarrow b#bar{b}b#bar{b} fitted x5")
         leg.AddEntry(h_error, "Total uncertainty")
         leg.Draw("same")
         
@@ -1043,7 +1045,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         leg = TLegend(*leg_coords)
         leg.SetTextSize(0.05)
         leg.AddEntry(h_data_bkg, "Data - fitted background", "p")
-        leg.AddEntry(h_sig, "HH4b fitted")
+        leg.AddEntry(h_sig, "HH #rightarrow b#bar{b}b#bar{b} fitted")
         #leg.AddEntry(hlist[0][-1], "HH4b fitted x5")
         leg.AddEntry(h_error, "Only bias uncertainty")
         leg.Draw("same")
@@ -1104,7 +1106,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
             y_min = min(h_data_bkg.GetMinimum(), h_sig.GetMinimum(), min_error)*1.2
             
         h_data_bkg.GetYaxis().SetRangeUser(y_min,y_max)
-        h_data_bkg.GetYaxis().SetTitleSize(20)
+        h_data_bkg.GetYaxis().SetTitleSize(24)
         h_data_bkg.GetYaxis().SetTitleFont(43)
         h_data_bkg.GetYaxis().SetTitleOffset(1.40)
         h_data_bkg.GetYaxis().SetLabelFont(43)
@@ -1120,8 +1122,8 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
     
         h_data_bkg.Draw("e1")
         h_data_bkg.GetYaxis().SetTitle("Normalized residuals")
-        #if not residuals == -14 and not "classifier" in hsOpt["hname"]:
-        #    hlist[0][-1].Draw("hist same")
+        if not residuals == -14 and not "classifier" in hsOpt["hname"]:
+            hlist[0][-1].Draw("hist same")
         
         h_sig.Draw("hist same")
         
@@ -1136,16 +1138,20 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         #        leg_coords = 0.65,0.78,0.9,1.
         #    elif hsOpt["legpos"] == "left" or hsOpt["legpos"] == "topleft":
         leg_coords = 0.2,0.7,0.35,0.96
+        if not "classifier" in hsOpt["hname"]:
+            leg_coords = 0.2,0.62,0.35,0.96
         if "legpos" in hsOpt:
             if hsOpt["legpos"] == "middle":
                 leg_coords = 0.47,0.7,0.63,0.96
+                if not "classifier" in hsOpt["hname"]:
+                    leg_coords = 0.47,0.62,0.63,0.96
         leg = TLegend(*leg_coords)
         leg.SetTextSize(0.05)
         leg.AddEntry(h_data_bkg, "(Data - background) / background", "p")
-        leg.AddEntry(h_sig, "(HH to 4b signal) / background")
+        leg.AddEntry(h_sig, "(HH #rightarrow b#bar{b}b#bar{b} signal) / background")
         if not residuals == -14:
-            #if not "classifier" in hsOpt["hname"]:
-            #    leg.AddEntry(hlist[0][-1], "HH4b fitted x5")
+            if not "classifier" in hsOpt["hname"]:
+                leg.AddEntry(hlist[0][-1], "HH #rightarrow b#bar{b}b#bar{b} fitted x50 / background", "l")
             leg.AddEntry(h_error, "Total uncertainty")
         else:
             leg.AddEntry(bkg_slope, "Thingie")
@@ -1173,7 +1179,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         h_data_bkg = getHistosRatio(histos, hsOpt, snames[0], colors)
         
         h_data_bkg.SetTitle("")
-        h_data_bkg.GetXaxis().SetTitleSize(20)
+        h_data_bkg.GetXaxis().SetTitleSize(25)
         h_data_bkg.GetXaxis().SetTitleFont(43)
         h_data_bkg.GetXaxis().SetTitleOffset(4.)
         h_data_bkg.GetXaxis().SetLabelFont(43)
@@ -1205,8 +1211,8 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         #h_data_bkg.GetYaxis().SetTitle('data/bkg')
         #h_data_bkg.SetLineWidth(0)         
     
-        h_data_bkg.Draw("e1")
-        h_data_bkg.GetYaxis().SetTitle("Normalized residuals")
+        h_data_bkg.Draw("e1 x0")
+        h_data_bkg.GetYaxis().SetTitle("Data / bkg.")
         #if not residuals == -14 and not "classifier" in hsOpt["hname"]:
         #    hlist[0][-1].Draw("hist same")
         
@@ -1226,9 +1232,9 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
                 leg_coords = 0.47,0.75,0.63,0.96
         leg = TLegend(*leg_coords)
         leg.SetTextSize(0.07)
-        leg.AddEntry(h_data_bkg, "(Data - background) / background", "p")
+        leg.AddEntry(h_data_bkg, "Data / bkg.", "p")
         leg.AddEntry(0, "Statistical unc. only", "")
-        #leg.AddEntry(h_sig, "(HH to 4b signal) / background")
+        #leg.AddEntry(h_sig, "(HH #rightarrow b#bar{b}b#bar{b} signal) / background")
         #leg.AddEntry(h_error, "Total uncertainty")
         leg.Draw("same")
         
@@ -1256,7 +1262,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         #    print ibin, histos["bkg"].GetBinContent(ibin), histos["qcd_mc"].GetBinContent(ibin), h_data_bkg.GetBinContent(ibin)
     
         h_data_bkg.SetTitle("")
-        h_data_bkg.GetXaxis().SetTitleSize(20)
+        h_data_bkg.GetXaxis().SetTitleSize(25)
         h_data_bkg.GetXaxis().SetTitleFont(43)
         h_data_bkg.GetXaxis().SetTitleOffset(4.)
         h_data_bkg.GetXaxis().SetLabelFont(43)
@@ -1288,8 +1294,8 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         #h_data_bkg.GetYaxis().SetTitle('data/bkg')
         #h_data_bkg.SetLineWidth(0)         
     
-        h_data_bkg.Draw("e1")
-        h_data_bkg.GetYaxis().SetTitle("Normalized residuals")
+        h_data_bkg.Draw("e1 x0")
+        h_data_bkg.GetYaxis().SetTitle("Mixed data / simulation")
         #if not residuals == -14 and not "classifier" in hsOpt["hname"]:
         #    hlist[0][-1].Draw("hist same")
         
@@ -1309,7 +1315,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
                 leg_coords = 0.47,0.75,0.63,0.96
         leg = TLegend(*leg_coords)
         leg.SetTextSize(0.07)
-        leg.AddEntry(h_data_bkg, "(Data - background) / background", "p")
+        leg.AddEntry(h_data_bkg, "Mixed data / simulation", "p")
         leg.AddEntry(0, "Statistical unc. only", "")
         #leg.AddEntry(h_sig, "(HH to 4b signal) / background")
         #leg.AddEntry(h_error, "Total uncertainty")
@@ -1414,7 +1420,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         leg = TLegend(*leg_coords)
         leg.SetTextSize(0.05)
         leg.AddEntry(h_data_bkg, "Background / data ", "p")
-        leg.AddEntry(h_sig, "(HH to 4b signal + background) / data", "l")
+        leg.AddEntry(h_sig, "(HH #rightarrow b#bar{b}b#bar{b} signal + background) / data", "l")
         leg.AddEntry(h_error, "Total uncertainty")
         leg.Draw("same")
         
@@ -1461,9 +1467,17 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         hres_nocorr.SetMarkerSize(0.8)
         hres_nocorr.SetMarkerColor(1)
         hres_nocorr.SetLineColor(1)
+        #hres_nocorr.GetYaxis().SetTitleSize(22)  
+        #hres_nocorr.GetXaxis().SetTitleSize(200)
+        hres_nocorr.GetXaxis().SetTitleSize(25)
+        hres_nocorr.GetXaxis().SetTitleFont(43)
+        hres_nocorr.GetXaxis().SetTitleOffset(2.)
+        hres_nocorr.GetYaxis().SetTitleSize(23)
+        hres_nocorr.GetYaxis().SetTitleFont(43)
+        hres_nocorr.GetYaxis().SetTitleOffset(1.)
         hres_nocorr.GetXaxis().SetTitle(hsOpt['xname'])
         hres_nocorr.SetNdivisions(520, "X")
-        hres_nocorr.GetXaxis().SetRangeUser(hsOpt['xmin'],1.02)   
+        hres_nocorr.GetXaxis().SetRangeUser(hsOpt['xmin'],1.02) 
         hres_nocorr.GetYaxis().SetTitle('Residuals (s.d. units)')
         
         hres = hres_nocorr.Clone("h_res")
@@ -1576,7 +1590,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         pline_nocorr.Draw("same")
         
         text_mean = "Mean: %.2f #pm %.2f" % mean_uncorr
-        text_sigma = "S. d.: %.2f #pm %.2f" % sigma_uncorr
+        text_sigma = "S.d.: %.2f #pm %.2f" % sigma_uncorr
         latex.SetTextFont(42)
         latex.SetTextAlign(12)
         latex.SetTextSize(0.11)
@@ -1615,7 +1629,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         pline.Draw("same")
         
         text_mean = "Mean: %.2f #pm %.2f" % mean_corr
-        text_sigma = "S. d.: %.2f #pm %.2f" % sigma_corr
+        text_sigma = "S.d.: %.2f #pm %.2f" % sigma_corr
         latex.SetTextFont(42)
         latex.SetTextAlign(12)
         latex.SetTextSize(0.11)

@@ -416,10 +416,10 @@ hist_opt = {
 #di-jets
    "h_H0_mass" : {
        'hname' : "h_H0_mass",
-       'rebin' : 10,
+       'rebin' : 4,
        'xname' : "#font[12]{M}_{H1} [GeV]",
-       'xmin'  : 30.,
-       'xmax'  : 750.,
+       'xmin'  : 60.,
+       'xmax'  : 840.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "",
@@ -427,10 +427,10 @@ hist_opt = {
 
    "h_H1_mass" : {
        'hname' : "h_H1_mass",
-       'rebin' : 10,
+       'rebin' : 4,
        'xname' : "#font[12]{M}_{H2} [GeV]",
-       'xmin'  : 30.,
-       'xmax'  : 750.,
+       'xmin'  : 60.,
+       'xmax'  : 645.,
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "",
@@ -624,9 +624,9 @@ hist_opt = {
 
    "h_H0H1_mass" : {
        'hname' : "h_H0H1_mass",
-       'rebin' : 20,
+       'rebin' : 8,
        'xname' : "#font[12]{M}_{HH} [GeV]",
-       'xmin'  : 200.,
+       'xmin'  : 150.,
        'xmax'  : 1500.,
        'xlog'  : "",
        'yname' : "",

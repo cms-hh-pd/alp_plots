@@ -13,10 +13,10 @@ i=0
 for bm in ${bms[@]}
 do
     #python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 6 --res 2 -n
-	#python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 51 --res 5 --reg ms -d classifier_reports/reports_SM_no_bias_corr_mixing_fix/BM$bm    #Figure 2
-    python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 52 --res 5 --reg btag -d classifier_reports/reports_SM_no_bias_corr_btagside/BM$bm    #Figure 2 btagside
-    python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 51 --res -8 --reg ms -d classifier_reports/cwr_reports_mass_cut_remixing_fix//BM$bm    #MS plots
-    python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 52 --res -8 --reg btag -d classifier_reports/cwr_reports_btagside_bias_corrected/BM$bm    #btag plots
+	python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 51 --res 5 --reg ms -d classifier_reports/reports_SM_no_bias_corr_mixing_fix/BM$bm    #Figure 2
+    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 52 --res 5 --reg btag -d classifier_reports/reports_SM_no_bias_corr_btagside/BM$bm    #Figure 2 btagside
+    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 51 --res -8 --reg ms -d classifier_reports/cwr_reports_mass_cut_remixing_fix//BM$bm    #MS plots
+    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 52 --res -8 --reg btag -d classifier_reports/cwr_reports_btagside_bias_corrected/BM$bm    #btag plots
     #python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 99 --res -9 -n -d classifier_reports/cwr_reports_qcdmc/BM$bm    #QCDMC plots
     #python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 5 --res 2  -d classifier_reports/reports_sm/BM$bm
 

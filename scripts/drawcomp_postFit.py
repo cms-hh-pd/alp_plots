@@ -66,12 +66,12 @@ def draw_postfit(args, fit_results, postfit_file, bm):
   fractions = ['','']
   regions = ['appl','']
   if bm == 0:
-    legList = [["HH to 4b SM", "Mixed data",], ["Data"]]
+    legList = [["HH #rightarrow b#bar{b}b#bar{b} SM", "Mixed data",], ["Data"]]
   elif bm == 13:
-    legList = [["HH to 4b Box", "Mixed data"], ["Data"]]
+    legList = [["HH #rightarrow b#bar{b}b#bar{b} Box", "Mixed data"], ["Data"]]
   else:
-    legList = [["HH to 4b BM%d" % bm, "Mixed data"], ["Data"]]
-  #legList = [["HH4b SM", "mixed data"], ["data"]]
+    legList = [["HH #rightarrow b#bar{b}b#bar{b} BM%d" % bm, "Mixed data"], ["Data"]]
+  #legList = [["HH #rightarrow b#bar{b}b#bar{b} SM", "mixed data"], ["data"]]
   #colorList = [[430, 632], [1]]
   colorList = [[632, 600], [1]]
   #sf = [[bkg_scale_factor, sig_scale_factor],[1.]]
