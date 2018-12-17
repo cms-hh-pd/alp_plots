@@ -481,7 +481,7 @@ hist_opt = {
    "h_H0_csthst0_a" : {
        'hname' : "h_H0_csthst0_a",
        'rebin' : 4,
-       'xname' : "cos#theta*_{H_{1} -- j_{1}}",
+       'xname' : "cos#theta* _{H_{1} #font[122]{\55} j_{1}}", #   cos#theta*_{H_{1} -- j_{1}  \text{--}\mathrm{j}_1}
        'xmin'  : 0.,
        'xmax'  : 1.,
        'xlog'  : "",

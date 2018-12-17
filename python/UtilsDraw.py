@@ -581,7 +581,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
     if residuals == 5:
         ymax = ymax / 2
     herr[0].SetMaximum(ymax)
-    herr[0].GetYaxis().SetTitleSize(20)
+    herr[0].GetYaxis().SetTitleSize(25)
     herr[0].GetYaxis().SetTitleFont(43)
     herr[0].GetYaxis().SetTitleOffset(1.40)
     herr[0].GetYaxis().SetLabelFont(43)
@@ -1058,7 +1058,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         c1.cd()
         pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.4)
         pad2.SetTopMargin(0.)
-        pad2.SetBottomMargin(0.2)
+        pad2.SetBottomMargin(0.22)
         pad2.Draw()
         pad2.cd()
         pad2.SetTicky(0)
@@ -1072,9 +1072,9 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
                 only_bias_unc = residuals == -14)
         
         h_data_bkg.SetTitle("")
-        h_data_bkg.GetXaxis().SetTitleSize(20)
+        h_data_bkg.GetXaxis().SetTitleSize(28)
         h_data_bkg.GetXaxis().SetTitleFont(43)
-        h_data_bkg.GetXaxis().SetTitleOffset(4.)
+        h_data_bkg.GetXaxis().SetTitleOffset(3.)
         h_data_bkg.GetXaxis().SetLabelFont(43)
         h_data_bkg.GetXaxis().SetLabelSize(20)
         h_data_bkg.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -1106,7 +1106,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
             y_min = min(h_data_bkg.GetMinimum(), h_sig.GetMinimum(), min_error)*1.2
             
         h_data_bkg.GetYaxis().SetRangeUser(y_min,y_max)
-        h_data_bkg.GetYaxis().SetTitleSize(24)
+        h_data_bkg.GetYaxis().SetTitleSize(22)
         h_data_bkg.GetYaxis().SetTitleFont(43)
         h_data_bkg.GetYaxis().SetTitleOffset(1.40)
         h_data_bkg.GetYaxis().SetLabelFont(43)
@@ -1179,9 +1179,9 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         h_data_bkg = getHistosRatio(histos, hsOpt, snames[0], colors)
         
         h_data_bkg.SetTitle("")
-        h_data_bkg.GetXaxis().SetTitleSize(25)
+        h_data_bkg.GetXaxis().SetTitleSize(30)
         h_data_bkg.GetXaxis().SetTitleFont(43)
-        h_data_bkg.GetXaxis().SetTitleOffset(4.)
+        h_data_bkg.GetXaxis().SetTitleOffset(3.)
         h_data_bkg.GetXaxis().SetLabelFont(43)
         h_data_bkg.GetXaxis().SetLabelSize(20)
         h_data_bkg.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -1197,7 +1197,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         y_min = h_data_bkg.GetMinimum() / 1.15
 
         h_data_bkg.GetYaxis().SetRangeUser(y_min,y_max)
-        h_data_bkg.GetYaxis().SetTitleSize(20)
+        h_data_bkg.GetYaxis().SetTitleSize(22)
         h_data_bkg.GetYaxis().SetTitleFont(43)
         h_data_bkg.GetYaxis().SetTitleOffset(1.40)
         h_data_bkg.GetYaxis().SetLabelFont(43)
@@ -1262,9 +1262,9 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         #    print ibin, histos["bkg"].GetBinContent(ibin), histos["qcd_mc"].GetBinContent(ibin), h_data_bkg.GetBinContent(ibin)
     
         h_data_bkg.SetTitle("")
-        h_data_bkg.GetXaxis().SetTitleSize(25)
+        h_data_bkg.GetXaxis().SetTitleSize(30)
         h_data_bkg.GetXaxis().SetTitleFont(43)
-        h_data_bkg.GetXaxis().SetTitleOffset(4.)
+        h_data_bkg.GetXaxis().SetTitleOffset(3.)
         h_data_bkg.GetXaxis().SetLabelFont(43)
         h_data_bkg.GetXaxis().SetLabelSize(20)
         h_data_bkg.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -1280,7 +1280,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         y_min = h_data_bkg.GetMinimum() / 1.35
 
         h_data_bkg.GetYaxis().SetRangeUser(y_min,y_max)
-        h_data_bkg.GetYaxis().SetTitleSize(20)
+        h_data_bkg.GetYaxis().SetTitleSize(22)
         h_data_bkg.GetYaxis().SetTitleFont(43)
         h_data_bkg.GetYaxis().SetTitleOffset(1.40)
         h_data_bkg.GetYaxis().SetLabelFont(43)
@@ -1469,18 +1469,19 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         hres_nocorr.SetLineColor(1)
         #hres_nocorr.GetYaxis().SetTitleSize(22)  
         #hres_nocorr.GetXaxis().SetTitleSize(200)
-        hres_nocorr.GetXaxis().SetTitleSize(25)
+        hres_nocorr.GetXaxis().SetTitleSize(28)
         hres_nocorr.GetXaxis().SetTitleFont(43)
-        hres_nocorr.GetXaxis().SetTitleOffset(2.)
-        hres_nocorr.GetYaxis().SetTitleSize(23)
+        hres_nocorr.GetXaxis().SetTitleOffset(1.5)
+        hres_nocorr.GetYaxis().SetTitleSize(25)
         hres_nocorr.GetYaxis().SetTitleFont(43)
-        hres_nocorr.GetYaxis().SetTitleOffset(1.)
+        hres_nocorr.GetYaxis().SetTitleOffset(1.5)
         hres_nocorr.GetXaxis().SetTitle(hsOpt['xname'])
         hres_nocorr.SetNdivisions(520, "X")
         hres_nocorr.GetXaxis().SetRangeUser(hsOpt['xmin'],1.02) 
         hres_nocorr.GetYaxis().SetTitle('Residuals (s.d. units)')
         
         hres = hres_nocorr.Clone("h_res")
+        hres.GetXaxis().SetTitleOffset(2)
         residuals_corr = []
         h_bkg_bias_corr_norm = h_bkg_bias_corr.Clone("h_bkg_bias_corr_norm")
         
@@ -2247,13 +2248,13 @@ def drawPostFitH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt,
 		herr.SetBinContent(ibin, 1.)
 		herr.SetBinError   (ibin, 0.)
     
-    hrat.SetTitle("")
     hrat.GetXaxis().SetTitleSize(20)
     hrat.GetXaxis().SetTitleFont(43)
-    hrat.GetXaxis().SetTitleOffset(4.)
+    hrat.GetXaxis().SetTitleOffset(3.)
     hrat.GetXaxis().SetLabelFont(43)
     hrat.GetXaxis().SetLabelSize(20)
     hrat.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+    hrat.SetTitle("")
     minbin = hrat.GetXaxis().GetFirst()
     maxbin = hrat.GetXaxis().GetLast()
     ymax_ = 1.5
