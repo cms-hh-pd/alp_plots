@@ -423,7 +423,7 @@ hist_opt = {
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "",
-       'legpos'  : "top" },
+       'legpos'  : "middle" },
 
    "h_H1_mass" : {
        'hname' : "h_H1_mass",
@@ -434,7 +434,7 @@ hist_opt = {
        'xlog'  : "",
        'yname' : "",
        'ylog'  : "",
-       'legpos'  : "top" },
+       'legpos'  : "middle" },
 
      "h_H0_pt" : {
        'hname' : "h_H0_pt",

@@ -1142,7 +1142,7 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
             leg_coords = 0.2,0.62,0.35,0.96
         if "legpos" in hsOpt:
             if hsOpt["legpos"] == "middle":
-                leg_coords = 0.47,0.7,0.63,0.96
+                leg_coords = 0.4,0.7,0.56,0.96
                 if not "classifier" in hsOpt["hname"]:
                     leg_coords = 0.47,0.62,0.63,0.96
         leg = TLegend(*leg_coords)
@@ -2398,7 +2398,7 @@ def getHistosPostFitRatio(histos, hsOpt, snames, color, fit_results, postfit_fil
     #If not loading already morphed fit results
     if postfit_file == None:
         for ibin in range(1, h_err.GetNbinsX()+1):
-            h_err.SetBinError(ibin, math.sqrt((err * h_err.GetBinContent(ibin))**2 + h_data_bkg.GetBinError(ibin)**2) )
+            h_err.SetBinError(ibin, math.sqrt((err * h_err.GetBinError(ibin))**2 + h_data_bkg.GetBinError(ibin)**2) )
     else:
         for ibin in range(1, h_err.GetNbinsX()+1):
             if not only_bias_unc:
