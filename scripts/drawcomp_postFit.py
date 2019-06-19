@@ -65,6 +65,7 @@ def draw_postfit(args, fit_results, postfit_file, bm):
   samples = [['sig', 'bkg'],['data']] #data always  second
   fractions = ['','']
   regions = ['appl','']
+  
   if bm == 0:
     legList = [["HH #rightarrow b#bar{b}b#bar{b} SM", "Mixed data",], ["Data"]]
   elif bm == 13:
@@ -80,6 +81,15 @@ def draw_postfit(args, fit_results, postfit_file, bm):
   isMC = False
   oname = 'comp_bkgdata_postfit'
   headerOpt = ""#"test sample" #btag CR
+  if args.last_2bins:
+    regions = ['appl_last_2bins', 'last_2bins']
+    headerOpt = "BDT > 0.975"
+  elif args.below_0_2:
+    regions = ['appl_below_0_2', 'below_0_2']
+    headerOpt = "BDT < 0.2"
+  elif args.full_region:
+    regions = ['appl_full_region', 'full_region']
+    #headerOpt = "BDT < 0"
 
   if args.defaultCol: colors = [0,0]
   else: colors = colorList
@@ -151,6 +161,9 @@ def parse_args(parser):
   parser.add_argument("--res", dest="plotResidual", help="to plot residuals (2==pulls)", type=int, default=-4)
   parser.add_argument("-r", "--clrebin", help="to rebin (classifier output)", type=int, default=-1)
   parser.add_argument("-n", "--doNorm", help="do normalize ", action='store_true')
+  parser.add_argument("--below_0_2", action='store_true')
+  parser.add_argument("--last_2bins", action='store_true')
+  parser.add_argument("--full_region", action='store_true')
   parser.add_argument("-c", "--defaultCol", help="to use default colors", action='store_true')
   parser.add_argument("-l", "--list", help="hist list", dest="hlist", type=int, default=0)
   parser.add_argument("--lumi", help="int lumi to normalize to", dest="lumi", type=float, default=35.9)

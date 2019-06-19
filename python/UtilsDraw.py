@@ -195,15 +195,21 @@ def getScale(hsOpt, hlist1, hlist2, skip1=-1, skip2=-1): #h2/h1
 
 
 def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = None, residuals = None):
-
     if color: col = color[0]
     else: col = sam_opt[snames[0]]['fillcolor']
-    if postfit_file:
+    if postfit_file and "full_region" not in histos[0].GetName():
+        print "YADA"
         myfile = TFile.Open(postfit_file)
         fit = "postfit"
         bak = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_background")
         sig = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("total_signal")
         data = myfile.Get("shapes_fit_s").Get("hh_bbbb").Get("data")
+        maxBin = sig.GetNbinsX()
+        minBin = 1
+        if "below_0_2" in histos[0].GetName():
+            maxBin = 16
+        elif "last_2bins" in histos[0].GetName():
+            minBin = 79
         
         if snames[0] == "data":
             for i in range(0,66):
@@ -211,7 +217,7 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = N
                 data.GetPoint(i, x, y)
             histos[0].SetBinContent(0, 0)
             histos[0].SetBinError(0, 0)
-        for ibin in range(1, sig.GetNbinsX()+1):
+        for ibin in range(minBin, maxBin+1):
             #To avoid histos going out of scope later            
             for i in range(len(histos)):
                 if snames[i] == "bkg":
@@ -226,8 +232,7 @@ def getStackH(histos, hsOpt, rebin, snames, color, scale, fill, postfit_file = N
                     histos[i].SetBinContent(ibin, y[0])
                     histos[i].SetBinError(ibin, data.GetErrorY(ibin))
         scale = 1
-    
-    
+        
     
     herr = histos[0].Clone("hs_error")
     herr.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
@@ -469,8 +474,9 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
     
     iPos = 11
     iPeriod = 4
-    
-    c1 = TCanvas("c1", hsOpt['hname'], H_ref, W_ref)
+
+
+    c1 = TCanvas("c1"+hsOpt['hname'], hsOpt['hname'], H_ref, W_ref)
     setTDRStyle()
     
     T = 0.08*H_ref
@@ -578,6 +584,11 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
     herr[0].GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
     #herr[0].GetXaxis().SetNdivisions(000) 
     herr[0].SetMinimum(1)
+    if "BDT > 0.975" in headerOpt:
+        herr[0].SetMinimum(0.01)  
+        if hsOpt["hname"] == "h_H0_mass" or hsOpt["hname"] == "h_H1_mass":
+            herr[0].GetXaxis().SetRangeUser(60, 160)
+        
     if residuals == 5:
         ymax = ymax / 2
     herr[0].SetMaximum(ymax)
@@ -1077,7 +1088,12 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         h_data_bkg.GetXaxis().SetTitleOffset(3.)
         h_data_bkg.GetXaxis().SetLabelFont(43)
         h_data_bkg.GetXaxis().SetLabelSize(20)
+        
         h_data_bkg.GetXaxis().SetRangeUser(hsOpt['xmin'],hsOpt['xmax'])
+        if "BDT > 0.975" in headerOpt:
+            if hsOpt["hname"] == "h_H0_mass" or hsOpt["hname"] == "h_H1_mass":
+                h_data_bkg.GetXaxis().SetRangeUser(70, 150)
+
         #h_data_bkg.GetYaxis().SetRangeUser(-20,20)
         minbin = h_data_bkg.GetXaxis().GetFirst()
         maxbin = h_data_bkg.GetXaxis().GetLast()
@@ -1098,13 +1114,26 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         y_max = max(max(h_data_bkg.GetMaximum(), h_sig.GetMaximum(), max_error)*1.6, hlist[0][-1].GetMaximum() * 1.05) 
         y_min = min(min(h_data_bkg.GetMinimum(), h_sig.GetMinimum(), min_error)*1.6, hlist[0][-1].GetMinimum() * 1.05) 
 
+        print ("HOHOI", hsOpt["hname"], headerOpt)
         if "classifier" in hsOpt["hname"]:
             y_max = max(h_data_bkg.GetMaximum(), h_sig.GetMaximum(), max_error)*1.1 
             y_min = min(h_data_bkg.GetMinimum(), h_sig.GetMinimum(), min_error)*1.1
+        elif "mass" in hsOpt["hname"] and "BDT < 0.2" in headerOpt:
+            y_max = max(h_data_bkg.GetMaximum(), h_sig.GetMaximum(), max_error)*2 
+            y_min = min(h_data_bkg.GetMinimum(), h_sig.GetMinimum(), min_error)*1.4
+            print "HII"
         elif "mass" in hsOpt["hname"]:
             y_max = max(h_data_bkg.GetMaximum(), h_sig.GetMaximum(), max_error)*1.2 
             y_min = min(h_data_bkg.GetMinimum(), h_sig.GetMinimum(), min_error)*1.2
-            
+        elif "h_H0H1_pt" in hsOpt["hname"] and "BDT < 0.2" in headerOpt:
+            print "HUU"
+            y_max = max(h_data_bkg.GetMaximum(), h_sig.GetMaximum(), max_error)*1.6 
+            y_min = min(h_data_bkg.GetMinimum(), h_sig.GetMinimum(), min_error)*1.25
+        elif "BDT > 0.975" in headerOpt:
+            y_max = max(h_data_bkg.GetMaximum(), h_sig.GetMaximum(), max_error)*1.4 
+            y_min = min(h_data_bkg.GetMinimum(), h_sig.GetMinimum(), min_error)*1.2
+        print y_max, y_min        
+
         h_data_bkg.GetYaxis().SetRangeUser(y_min,y_max)
         h_data_bkg.GetYaxis().SetTitleSize(22)
         h_data_bkg.GetYaxis().SetTitleFont(43)
@@ -1123,7 +1152,8 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
         h_data_bkg.Draw("e1")
         h_data_bkg.GetYaxis().SetTitle("Normalized residuals")
         if not residuals == -14 and not "classifier" in hsOpt["hname"]:
-            hlist[0][-1].Draw("hist same")
+            if not "BDT > 0.975" in headerOpt:
+                hlist[0][-1].Draw("hist same")
         
         h_sig.Draw("hist same")
         
@@ -1145,13 +1175,17 @@ def drawH1(hlist, snames, legstack, hsOpt, residuals, norm, oDir, colors, dofill
                 leg_coords = 0.4,0.7,0.56,0.96
                 if not "classifier" in hsOpt["hname"]:
                     leg_coords = 0.47,0.62,0.63,0.96
+        
+        if "BDT > 0.975" in headerOpt:
+            leg_coords = 0.2,0.7,0.35,0.96
         leg = TLegend(*leg_coords)
         leg.SetTextSize(0.05)
         leg.AddEntry(h_data_bkg, "(Data - background) / background", "p")
         leg.AddEntry(h_sig, "(HH #rightarrow b#bar{b}b#bar{b} signal) / background")
         if not residuals == -14:
             if not "classifier" in hsOpt["hname"]:
-                leg.AddEntry(hlist[0][-1], "HH #rightarrow b#bar{b}b#bar{b} fitted x50 / background", "l")
+                if not "BDT > 0.975" in headerOpt:
+                    leg.AddEntry(hlist[0][-1], "HH #rightarrow b#bar{b}b#bar{b} fitted x50 / background", "l")
             leg.AddEntry(h_error, "Total uncertainty")
         else:
             leg.AddEntry(bkg_slope, "Thingie")
@@ -2142,7 +2176,7 @@ def drawPostFitH1(hlist1, snames1, legstack1, hlist2, snames2, legstack2, hsOpt,
     gStyle.SetOptStat(False)
     gStyle.SetOptTitle(0);
 
-    c1 = TCanvas("c1", hsOpt['hname'], 800, 800)       
+    c1 = TCanvas("c1"+hsOpt['hname'], hsOpt['hname'], 800, 800)       
     if residuals==-1:
         pad1 = TPad("pad1", "pad1", 0, 0.3, 1, 1.0)
         pad1.SetBottomMargin(0.03) 
@@ -2803,9 +2837,11 @@ def get_bias_corrected_histo(histo, region = "", only_bias_unc = False):
         bkg_bias_fname = "/lustre/cmswork/dcastrom/projects/hh/april_2017/CMSSW_8_0_25/src/Analysis/hh2bbbb_limit/notebooks/bms_btagsideBM0/bias_correction_bigset_unscaled.json"
     elif region == "sig_unfixed":
         bkg_bias_fname = "/lustre/cmswork/dcastrom/projects/hh/april_2017/CMSSW_8_0_25/src/Analysis/hh2bbbb_limit/notebooks/bias_22032018_with_weights_also_mass_cut/BM0/bias_correction_bigset_unscaled.json"
-    else:
+    elif region == "":
         bkg_bias_fname = "/lustre/cmswork/dcastrom/projects/hh/april_2017/CMSSW_8_0_25/src/Analysis/hh2bbbb_limit/bias_08062018BM0/bias_correction_bigset_unscaled.json"
-        
+    else: #We have not calculated the bias correction for that region, return uncorrected
+        return histo
+
     with open(bkg_bias_fname,"r") as bkg_bias_file:
         json_dict = json.load(bkg_bias_file)
         print ("using bias file: ", bkg_bias_file)

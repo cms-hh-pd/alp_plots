@@ -667,7 +667,7 @@ hist_opt = {
    "h_H0H1_csthst1_a" : {
        'hname' : "h_H0H1_csthst1_a",
        'rebin' : 4,
-       'xname' : "cos#theta*_{H_{1} H_{2} -- H_{1}}",
+       'xname' : "cos#theta*_{H_{1} H_{2} -- H_{2}}",
        'xmin'  : 0.,
        'xmax'  : 1.,
        'xlog'  : "",
@@ -776,7 +776,7 @@ hist_opt = {
        'hname' : "classifier",
        'rebin' : 1,
        'xname' : "BDT output",
-       'xmin'  : 0.2,
+       'xmin'  : 0.,
        'xmax'  : 1.,
        'xlog'  : "",
        'yname' : "",
@@ -803,7 +803,7 @@ hist_opt = {
 
    "h_cmva3" : {
        'hname' : "h_cmva3",
-       'rebin' : 4, 
+       'rebin' : 1, 
        'xname' : "#font[12]{CMVA_{3}}",
        'xmin'  : 0.44,
        'xmax'  : 1.,
@@ -814,7 +814,7 @@ hist_opt = {
 
    "h_cmva4" : {
        'hname' : "h_cmva4",
-       'rebin' : 4, 
+       'rebin' : 2, 
        'xname' : "#font[12]{CMVA_{4}}",
        'xmin'  : 0.44, #0.1,
        'xmax'  : 1.,

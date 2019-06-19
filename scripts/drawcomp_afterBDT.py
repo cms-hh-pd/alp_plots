@@ -767,6 +767,9 @@ for i in range(len(samples)):
         else: 
             snames[i].extend(samlists[s])
 
+if "ms" in args.region:
+    regions = [args.region, args.region]
+
 
 plotDirs = []
 for i in range(len(snames)):
@@ -783,6 +786,7 @@ for i in range(len(snames)):
     print "HISTS FROM FOLDER {}".format(plotDirs[i]) 
 
 oDir = UtilsDraw.get_odir(args, oname, option)
+
 
 #----------------------------------
 for n, h in enumerate(histList):

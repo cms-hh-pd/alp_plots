@@ -13,18 +13,19 @@ i=0
 for bm in ${bms[@]}
 do
     #python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 6 --res 2 -n
-	python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 51 --res 5 --reg ms -d classifier_reports/reports_SM_no_bias_corr_mixing_fix/BM$bm    #Figure 2
-    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 52 --res 5 --reg btag -d classifier_reports/reports_SM_no_bias_corr_btagside/BM$bm    #Figure 2 btagside
-    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 51 --res -8 --reg ms -d classifier_reports/cwr_reports_mass_cut_remixing_fix//BM$bm    #MS plots
-    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 52 --res -8 --reg btag -d classifier_reports/cwr_reports_btagside_bias_corrected/BM$bm    #btag plots
-    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 99 --res -9 -n -d classifier_reports/cwr_reports_qcdmc/BM$bm    #QCDMC plots
-    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 5 --res 2  -d classifier_reports/reports_sm/BM$bm
+	python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 51 --res 5 --reg ms -d classifier_reports/reports_SM_no_bias_corr_mixing_fix/BM$bm    #Figure 6
+    python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 52 --res 5 --reg btag -d classifier_reports/reports_SM_no_bias_corr_btagside/BM$bm    #Figure 6 btagside
+    python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 51 --res -8 --reg ms -d classifier_reports/cwr_reports_mass_cut_remixing_fix//BM$bm    #MS plots
+    python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 52 --res -8 --reg btag -d classifier_reports/cwr_reports_btagside_bias_corrected/BM$bm    #btag plots
+    python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 99 --res -9 -n -d classifier_reports/cwr_reports_qcdmc/BM$bm    #QCDMC plots
+    python scripts/drawcomp_afterBDT.py -b $bm_string -l 0 -w 5 --res 2  -d classifier_reports/reports_sm/BM$bm
 
     #python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 0 -d classifier_reports/reports_no_bias_corr_SM_mixing_fix_0_2/BM$bm --res -12
     
-    #python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 1 -d classifier_reports/reports_SM_mixing_fix/BM$bm   #All vars after final fit
+    
+    python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 1 -d classifier_reports/reports_SM_mixing_fix/BM$bm   #All vars after final fit
     #python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 1 -d classifier_reports/reports_SM_mixing_fix/BM$bm --res -24  #All vars after final fit, ratio
-    #python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 0 -d classifier_reports/reports_SM_mixing_fix/BM$bm #Final BDT
+    python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 0 -d classifier_reports/reports_SM_mixing_fix/BM$bm #Final BDT
     #python scripts/drawcomp_afterBDT.py -b $bm -l 0 -w 2072 --res 10 -d ttbar_bias_check/BM$bm
 	
 	#Requested by ARC
@@ -36,4 +37,14 @@ do
     #CR plots:
     #python scripts/drawcomp_afterBDT.py -b $bm_string -w 6 --res -1 --reg btag -d classifier_reports/reports_SM_btagside/BM$bm
     #python scripts/drawcomp_afterBDT.py -b $bm_string -w 5 --res -1 --reg btag -d classifier_reports/reports_SM_nocut/BM$bm
+
+    #For review:
+    #python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 1 --last_2bins -d classifier_reports/reports_with_high_and_low_bdt_regions/BM$bm   #All vars after final fit, last 2 bins
+    #python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 1 --below_0_2 -d classifier_reports/reports_with_high_and_low_bdt_regions/BM$bm   #All vars after final fit, BDT < 0.2
+    #python scripts/drawcomp_postFit.py -b $bm_string --bm $bm -l 1 --full_region -d classifier_reports/reports_with_high_and_low_bdt_regions/BM$bm   #All vars after final fit, full BDT
+
+    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 51 --res -8 --reg ms -d classifier_reports/reports_mass_cut_cmva4//BM$bm    #MS plots
+    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 51 --res -8 --reg ms_cmva4_0_545__0_55 -d classifier_reports/reports_mass_cut_cmva4//BM$bm    #MS plots
+    #python scripts/drawcomp_afterBDT.py -b $bm_string -l 1 -w 51 --res -8 --reg ms_cmva4_0_54__0_545 -d classifier_reports/reports_mass_cut_cmva4//BM$bm    #MS plots
+    
 done
